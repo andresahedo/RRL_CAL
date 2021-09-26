@@ -59,6 +59,7 @@ import mx.gob.sat.siat.juridica.base.web.controller.bean.bussiness.BaseCloudBusi
 import mx.gob.sat.siat.juridica.base.web.controller.bean.bussiness.ConsultasBussines;
 import mx.gob.sat.siat.juridica.base.web.util.DateComparator;
 import mx.gob.sat.siat.juridica.base.web.util.VistaConstantes;
+import mx.gob.sat.siat.juridica.ca.util.constants.RegistroSolicitudConstants;
 import mx.gob.sat.siat.juridica.ca.util.validador.TipoRolContribuyenteIDC;
 import mx.gob.sat.siat.juridica.oficialia.web.controller.bean.constantes.OficialiaConstantesController;
 import mx.gob.sat.siat.juridica.rrl.dto.DatosBandejaTareaDTO;
@@ -1781,12 +1782,12 @@ public class ConsultasController extends BaseCloudController<DocumentoOficialDTO
         session.setAttribute("numeroAsuntoFaltantes", tramite.getNumeroAsunto());
         String urlFirma;
         if(tramite.getTipoTramite().equals(DiscriminadorConstants.T1_CLASIFICACION_ARANCELARIA)) {
-        	urlFirma = UrlFirma.PAGINA_FIRMA_SOLICITUD.toString();
+        	urlFirma = RegistroSolicitudConstants.FIRMAR_SOLICITUD;
         }else {
-        	urlFirma = UrlFirma.PAGINA_FIRMA_SOLICITUD_CAL.toString();
+        	urlFirma = RegistroSolicitudConstants.FIRMAR_SOLICITUD_CAL;
         }
         
-    	return urlFirma+"?faces-redirec=true";
+    	return urlFirma;
     }
     
     

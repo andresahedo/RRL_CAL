@@ -444,7 +444,7 @@ public class DocumentoDaoImpl extends BaseJPADao implements DocumentoDao {
 	public List<DocumentoOficial> obtenerDocumentoOficialTipo(String idtramite, String idTipoDocume0toOficial) {
 		StringBuffer queryConsulta = new StringBuffer();
 		queryConsulta.append("SELECT do FROM DocumentoOficial do ");
-		queryConsulta.append("WHERE do.tramite = :idTramite and do.ideTipoDocOficial =:idTipoDocume0toOficial");
+		queryConsulta.append("WHERE do.tramite.numeroAsunto = :idTramite and do.ideTipoDocOficial =:idTipoDocume0toOficial");
 		Query query = getEntityManager().createQuery(queryConsulta.toString());
 		query.setParameter("idTramite", idtramite);
 		query.setParameter("idTipoDocume0toOficial", idTipoDocume0toOficial);

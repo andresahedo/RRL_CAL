@@ -40,5 +40,6 @@
 			<attribute name="test" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="src" path="/juridica-domain"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
