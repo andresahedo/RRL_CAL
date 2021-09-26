@@ -106,6 +106,8 @@ public class ConsultaRecursoRevocacionFacadeImpl extends BaseCloudFacadeImpl
         }
         return listaDocumentoDTO;
     }
+    
+    
 
     @Override
     public List<DocumentoOficialDTO> obtenerDocumentosOficialesPromovente(String numFolio, Long idRequerimiento) {
@@ -357,5 +359,17 @@ public class ConsultaRecursoRevocacionFacadeImpl extends BaseCloudFacadeImpl
         }
         return docsOfDto;
     }
+
+	@Override
+	public List<DocumentoOficialDTO> obtenerDocumentoOficialesTipo(String idTipoTramite,
+			String idTipoDocumentoOficial) {
+		List<DocumentoOficialDTO> docsOfDto = new ArrayList<DocumentoOficialDTO>();
+		 List<DocumentoOficial> documentoOficials = documentosServices.obtenerDocumentosOficialesTipo(idTipoTramite, idTipoDocumentoOficial);
+		for(DocumentoOficial documentoOficial: documentoOficials) {
+			DocumentoOficialDTO documentoOficialDTO = documentoOficialDTOTransformer.transformarDTO(documentoOficial);
+			docsOfDto.add(documentoOficialDTO);
+		}
+		return docsOfDto;
+	}
 
 }

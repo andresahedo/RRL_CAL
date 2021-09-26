@@ -21,6 +21,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -437,5 +439,23 @@ public class DocumentoDaoImpl extends BaseJPADao implements DocumentoDao {
         }
 
     }
+
+	@Override
+	public List<DocumentoOficial> obtenerDocumentoOficialTipo(String idtramite, String idTipoDocume0toOficial) {
+		StringBuffer queryConsulta = new StringBuffer();
+		queryConsulta.append("SELECT do FROM DocumentoOficial do ");
+		queryConsulta.append("WHERE do.tramite = :idTramite and do.ideTipoDocOficial =:idTipoDocume0toOficial");
+		Query query = getEntityManager().createQuery(queryConsulta.toString());
+		query.setParameter("idTramite", idtramite);
+		query.setParameter("idTipoDocume0toOficial", idTipoDocume0toOficial);
+		try {
+			return query.getResultList();
+		} catch (Exception e) {
+			return new ArrayList<DocumentoOficial>();
+		}
+		
+	}
+
+	
 
 }

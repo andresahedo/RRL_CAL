@@ -90,8 +90,17 @@
             </p:panel>
         </p:panel>
 
+<p:panel id="mostrarFirma">
 
-
+  
+  <c:if  style="visibility: visible" id="a" test="#{!consultasController.validarAcusesFaltantes}">
+	 <p:commandLink actionListener="#{consultasController.acusesFaltantes}">
+		<h:outputText value="Entrar para consultar acuses" />
+	</p:commandLink>
+  </c:if>
+  
+  </p:panel>
+  
         <p:panel id="display">
             <table>
                 <tr>

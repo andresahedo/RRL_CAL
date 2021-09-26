@@ -33,16 +33,20 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
+import org.primefaces.extensions.component.ajaxerrorhandler.AjaxErrorHandler.PropertyKeys;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import mx.gob.sat.siat.juridica.base.constantes.NumerosConstantes;
+import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.TipoTramite;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.DiscriminadorConstants;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.TipoDocumentoOficial;
 import mx.gob.sat.siat.juridica.base.dto.CatalogoDTO;
 import mx.gob.sat.siat.juridica.base.dto.DocumentoDTO;
@@ -1393,6 +1397,8 @@ public class ConsultasController extends BaseCloudController<DocumentoOficialDTO
         return documentoOficialDataModel;
     }
 
+    
+  
     /**
      * @param documentoOficialDataModel
      *            the documentoOficialDataModel to set
@@ -1763,6 +1769,26 @@ public class ConsultasController extends BaseCloudController<DocumentoOficialDTO
         context.execute("listaDocumentosOficiales.clearSelection()");
         setBolDocDtoOficial(true);
     }
+    
+    public boolean getValidarAcusesFaltantes() {
+    	HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+    	session.removeAttribute("numeroAsuntoFaltantes");
+    	return consultasBussines.obtenerDocumentosOficialesTipo(tramite.getNumeroAsunto(), TipoDocumentoOficial.OFICIO_TERMINOS_CONDICIONES.getClave()).isEmpty();
+    }
+    
+    public String acusesFaltante() {
+    	HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+        session.setAttribute("numeroAsuntoFaltantes", tramite.getNumeroAsunto());
+        String urlFirma;
+        if(tramite.getTipoTramite().equals(DiscriminadorConstants.T1_CLASIFICACION_ARANCELARIA)) {
+        	urlFirma = UrlFirma.PAGINA_FIRMA_SOLICITUD.toString();
+        }else {
+        	urlFirma = UrlFirma.PAGINA_FIRMA_SOLICITUD_CAL.toString();
+        }
+        
+    	return urlFirma+"?faces-redirec=true";
+    }
+    
     
     public void descargarDocumentoOficialeVer(ActionEvent event){
         DocumentoOficialDTO documento = (DocumentoOficialDTO) event.getComponent().getAttributes().get("verDocumentoOficial");

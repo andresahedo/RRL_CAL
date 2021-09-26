@@ -52,5 +52,7 @@ public interface ConsultaRecursoRevocacionFacade extends BaseCloudFacade {
     List<ObservacionDTO> obtenerObservacionesPorTramite(String numAsunto);
 
     List<DocumentoOficialDTO> obtenerDocOficialesGenerados(String numAsunto);
+    
+    List<DocumentoOficialDTO> obtenerDocumentoOficialesTipo(String idTipoTramite, String idTipoDocumentoOficial);
 
 }

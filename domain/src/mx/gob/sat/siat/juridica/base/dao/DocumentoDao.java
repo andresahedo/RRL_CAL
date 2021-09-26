@@ -26,8 +26,12 @@ public interface DocumentoDao {
     void guardarDocumentoOficial(DocumentoOficial doc);
 
     List<DocumentoOficial> obtenerDocumentosPorTipo(String numAsunto, String tipoDocumento, Long idRequerimieto);
+    
+    List<DocumentoOficial> obtenerDocumentoOficialTipo(String idtramite, String idTipoDocume0toOficial);
 
     List<DocumentoSolicitud> obtenerDocumentosComplementarios(Long idSolicitud);
+    
+    
 
     List<DocumentoSolicitud> obtenerDocumentosAnexados(Long idSolicitud);
 

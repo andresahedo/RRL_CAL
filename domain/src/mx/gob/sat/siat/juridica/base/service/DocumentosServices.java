@@ -141,5 +141,7 @@ public interface DocumentosServices extends Serializable {
     List<DocumentoOficial> obtenerDocumentosOficialesAnexadosPorTipo(String numeroAsunto, String clave);
     
     void guardarDocumentoOficial(DocumentoOficial documentoOficial);
+    
+    List<DocumentoOficial> obtenerDocumentosOficialesTipo(String idtramite, String idTipoDocume0toOficial);
 
 }

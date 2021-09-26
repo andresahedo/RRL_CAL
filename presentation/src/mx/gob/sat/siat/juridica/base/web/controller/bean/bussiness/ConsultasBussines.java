@@ -188,5 +188,9 @@ public class ConsultasBussines extends BaseCloudBusiness implements Serializable
     public List<ObservacionDTO> obtenerObservacionesPorTramite(String numAsunto) {
         return getConsultaRecursoRevocacionFacade().obtenerObservacionesPorTramite(numAsunto);
     }
+    
+    public List<DocumentoOficialDTO> obtenerDocumentosOficialesTipo(String idTipoTramite, String idTipoDocumentoOficial){
+    	return consultaRecursoRevocacionFacade.obtenerDocumentoOficialesTipo(idTipoTramite, idTipoDocumentoOficial);
+    }
 
 }

@@ -348,4 +348,10 @@ public class DocumentosServicesImpl extends BaseSerializableBusinessServices imp
         documentoDao.guardarDocumentoOficial(documentoOficial);
     }
 
+	@Override
+	public List<DocumentoOficial> obtenerDocumentosOficialesTipo(String idtramite, String idTipoDocume0toOficial) {
+		
+		return documentoDao.obtenerDocumentoOficialTipo( idtramite,  idTipoDocume0toOficial);
+	}
+
 }
