@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+
+        <style type="text/css">
+.noBorder td {
+    border-style: hidden !important;
+}
+
+.ui-widget {
+    font-family: Arial, sans-serif !important;
+    font-size: 11px !important;
+}
+
+.ui-panel {
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+</style>
+
+        <h:form id="remitirForm">
+            <p:panel id="msgPanel" style="border-style: hidden !important;">
+                <p:messages id="messages" autoUpdate="false" globalOnly="true" showDetail="true" showSummary="false"
+                    escape="false" />
+            </p:panel>
+            <p:panel id="panelRevisarDocumentos" style="border-style: hidden !important;">
+                <p:confirmDialog closable="false" message="#{msg['rrl.mensaje.documento.complementario']}"
+                    visible="#{remitirRecursoRevocacionController.nuevoDocumento}" id="confirmarDialog"
+                    widgetVar="confirmarAccion" showEffect="fade">
+                    <table align="right">
+                        <tr>
+                            <td><p:commandButton oncomplete="confirmarAccion.hide()" value="Si" ajax="false"
+                                    action="#{remitirRecursoRevocacionController.remitir}"
+                                    styleClass="ui-confirmdialog-yes" icon="ui-icon-check" /> <p:commandButton
+                                    value="No" oncomplete="confirmarAccion.hide()" process="@this,confirmarDialog"
+                                    action="#{remitirRecursoRevocacionController.regresarPagina}"
+                                    styleClass="ui-confirmdialog-no" icon="ui-icon-close" /></td>
+                        </tr>
+                    </table>
+                </p:confirmDialog>
+            </p:panel>
+
+            <p:panel id="funcionarioPanelTooltip" header="#{msg['rrl.remitirAsunto.titulo']}"
+                style="border-style: hidden !important;">
+                <pe:tooltip for="funcionarioPanelTooltip" value="#{msg['rrl.remitirAsunto.tooltip.titulo']}"
+                    mouseTracking="true" adjustX="20" adjustY="20" atPosition="top left" showEffect="fade" />
+            </p:panel>
+
+            <p:panel id="funcionarioPanel" style="border-style: hidden !important;">
+                <p:outputLabel value="#{msg['vuj.camposObligatorios']}" style="color:red" />
+                <p:panelGrid styleClass="noBorder" columns="3" cellpadding="5">
+                    <h:outputText value="#{msg['vuj.resol.funcionario']}" />
+                    <h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" />
+                    <h:outputText value="#{msg['vuj.resol.estadoProcesal']}" />
+
+                    <p:inputText maxlength="500" readonly="true" id="funcionarioInput"
+                        value="#{remitirRecursoRevocacionController.userProfile.nombreCompleto}" />
+                    <p:inputText maxlength="13" value="#{remitirRecursoRevocacionController.userProfile.rfc}"
+                        readonly="true" id="rfcFuncionarioInput" />
+                    <p:inputText maxlength="32" readonly="true"
+                        value="#{remitirRecursoRevocacionController.datosBandejaTareaDTO.estadoProcesal}"
+                        id="estadoProcesalInput" />
+
+                    <h:outputText value="#{msg['vuj.resol.numAsunto']}" />
+                    <h:outputText value="#{msg['vuj.fechaRecepcion']}" />
+                    <h:outputText value="#{msg['vuj.resol.fechaVenc']}" />
+
+                    <p:inputText readonly="true" maxlength="13"
+                        value="#{remitirRecursoRevocacionController.datosBandejaTareaDTO.numeroAsunto}"
+                        id="numAsuntoInput" />
+                    <p:inputText readonly="true" value="#{remitirRecursoRevocacionController.tramiteDTO.fechaRecepcion}"
+                        id="fechaRecepcionInput">
+                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                    </p:inputText>
+                    <p:inputText readonly="true"
+                        value="#{remitirRecursoRevocacionController.tramiteDTO.fechaVencimiento}"
+                        id="fechaVencimientoInput">
+                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                    </p:inputText>
+                </p:panelGrid>
+                <p:panelGrid columns="1" styleClass="noBorder">
+                    <p:column>
+
+                        <p:outputLabel value="#{msg['rrl.emitir.reemitir.administracion' ]}" />
+
+                        <p:outputLabel value=" * " style="color:red" />
+                        <h:graphicImage id="ayudaIdAdmin" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdAdmin" value="#{msg['atender.requerimiento.autoridadAlaQueSeRemite']}"
+                            adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" />
+
+                    </p:column>
+                    <p:column>
+
+                        <p:selectOneMenu id="documento"
+                            value="#{remitirRecursoRevocacionController.datosRemision.idAtuoridadEmisora}" filter="true"
+                            widgetVar="comboUnidades" required="true" filterMatchMode="contains">
+                            <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                            <f:selectItems value="#{remitirRecursoRevocacionController.listaUnidadesEmisoras}"
+                                var="unidades" itemLabel="#{unidades.descripcion}" itemValue="#{unidades.clave}" />
+                        </p:selectOneMenu>
+
+                        <p:message display="text" for="documento" />
+                        <!-- <pe:tooltip for="documento" value="#{msg['remitir.autoridad']}" /> -->
+
+                    </p:column>
+                </p:panelGrid>
+                <p:panelGrid columns="1" styleClass="noBorder">
+                    <p:column>
+
+                        <p:outputLabel value="#{msg['rrl.emitir.reemitir.administrador']}"></p:outputLabel>
+
+                        <p:outputLabel value=" * " style="color:red" />
+                        <h:graphicImage id="ayudaIdAdminFirma" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdAdminFirma" value="#{msg['rrl.emitir.reemitir.administrador.tooltip']}"
+                            adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" />
+
+                    </p:column>
+                    <p:column>
+
+                        <p:selectOneMenu id="documen" style="width:500px;"
+                            value="#{remitirRecursoRevocacionController.rfcAsignar}" widgetVar="comboAdministradores"
+                            required="true" filter="true" filterMatchMode="contains">
+                            <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                            <f:selectItems value="#{remitirRecursoRevocacionController.administradoresAsignar}"
+                                var="admin" itemLabel="#{admin.descripcion}" itemValue="#{admin.clave}" />
+                        </p:selectOneMenu>
+                        <p:message display="text" for="documen" />
+
+                    </p:column>
+                </p:panelGrid>
+                <p:row>
+                    <p:column>
+
+                        <h:panelGrid columns="2" styleClass="panelMontoStyle" style="float:right;">
+                            <p:column>
+                                <p:commandButton value="#{msg['vuj.boton.anterior']}"
+                                    actionListener="#{remitirRecursoRevocacionController.cargaDatos}" process="@this"
+                                    ajax="true" update="@form" />
+                            </p:column>
+                            <p:commandButton id="remitirButton" ajax="true" update="@form"
+                                value="#{msg['vuj.boton.enviarParaAutorizacion']}"
+                                action="#{remitirRecursoRevocacionController.siguienteValidacion}" />
+                        </h:panelGrid>
+                        <br />
+                        <br />
+                        <br />
+                    </p:column>
+                </p:row>
+            </p:panel>
+
+        </h:form>
+        <script type="text/javascript">
+		function goBack() {
+		    window.history.go(-1)
+		}
+	</script>
+    </ui:define>
+</ui:composition>
+
+</html>

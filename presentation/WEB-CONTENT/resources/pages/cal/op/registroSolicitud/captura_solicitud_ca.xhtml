@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+
+        <style type="text/css">
+.ui-wizard-navbar {
+    float: right;
+}
+
+.ui-panel {
+    border-style: hidden !important;
+}
+</style>
+        <script type="text/javascript">
+    
+    	function cambiaEstadoPrincipal(){
+        	$('#pform\\:cambiaRequerido').click();
+		}
+		
+    	function cambiaEstado(){
+        	$('#pform\\:cambiaNoRequerido').click();
+		}
+		
+    </script>
+        <h:outputStylesheet library="css" name="azure.css" />
+        <h:outputStylesheet library="css" name="tabsWizard.css" />
+
+        <f:metadata>
+            <f:event listener="#{registroSolicitudCALOPController.validaAccesoOficialia}" type="preRenderView" />
+            <f:viewParam name="msgRedirect" value="#{registroSolicitudCALOPController.messagesRedirect}" />
+            <f:event type="preRenderView" listener="#{registroSolicitudCALOPController.mensajesRedirect}" />
+        </f:metadata>
+        <h:form id="pform">
+            <p:commandButton action="#{registroSolicitudCALOPController.cambiaNoReq}" id="cambiaNoRequerido"
+                style="display:none" />
+            <p:commandButton action="#{registroSolicitudCALOPController.cambiaRequeridoPrincipal}" id="cambiaRequerido"
+                style="display:none" />
+            <p:commandButton action="#{registroSolicitudCALOPController.anexarDocumentoNube}" id="anexarNube"
+                update=":FIELForm:tablaDocumentos" style="display:none" />
+        </h:form>
+        <script>
+		var submitFirmaAsociado = false;
+	</script>
+        <h:form id="FIELForm">
+            <p:panel style="width:#{sessionScope.tamanioBuzon}#{sessionScope.tipoTamanioBuzon};">
+                <p:wizard flowListener="#{registroSolicitudCALOPController.onFlowProcess}" id="wizardPrueba"
+                    nextLabel="#{msg['vuj.boton.siguiente']}" backLabel="#{msg['vuj.boton.anterior']}">
+                    <p:tab id="datosSolicitante" title=" " titleStyleClass="tPaso1">
+                        <p:panel header="#{registroSolicitudCALOPController.modalidadTramite}" style="align:left;"></p:panel>
+                        <p:panel id="funcionarioPanel">
+                            <p:panel style="border:hidden;">
+                                <p:outputLabel escape="false" value="#{registroSolicitudCALOPController.mensajeAviso}"
+                                    style="color:red"></p:outputLabel>
+                            </p:panel>
+                            <p:panel id="msgPanel" style="border:hidden;">
+                                <p:messages id="messages" autoUpdate="false" showDetail="true" showSummary="false"
+                                    escape="false" />
+                            </p:panel>
+                            <ui:include src="/resources/pages/cal/op/registroSolicitud/datosSolicitante.xhtml" />
+                        </p:panel>
+                    </p:tab>
+
+                    <p:tab id="personasRelacionadas" title=" " titleStyleClass="tPaso2">
+                        <p:panel header="#{registroSolicitudCALOPController.modalidadTramite}" style="align:left;"></p:panel>
+                        <p:panel id="personasRelacionadasPanel">
+                            <p:panel style="border:hidden;">
+                                <p:outputLabel escape="false" value="#{registroSolicitudCALOPController.mensajeAviso}"
+                                    style="color:red"></p:outputLabel>
+                            </p:panel>
+                            <p:panel id="msgPanelPersonas" style="border:hidden;">
+                                <p:messages id="messagesPersonas" autoUpdate="false" showDetail="true"
+                                    showSummary="false" escape="false" />
+                            </p:panel>
+                            <p:panel>
+                                <ui:include
+                                    src="/resources/pages/cal/op/registroSolicitud/datosPersonasRelacionadas.xhtml" />
+                            </p:panel>
+                        </p:panel>
+
+                    </p:tab>
+                    <p:tab id="datosPromocion" title=" " titleStyleClass="tPaso3">
+                        <p:panel header="#{registroSolicitudCALOPController.modalidadTramite}" style="align:left;"></p:panel>
+                        <p:panel id="datosPromocionPanel">
+                            <p:panelGrid columns="1" style="float:right;border:hidden;">
+                                <p:commandButton id="guaradarSolicitudParcialDatosPromoButton"
+                                    value="#{msg['vuj.boton.guardar']}" oncomplete="cambiaEstadoPrincipal();"
+                                    update=":FIELForm:msgPanelPromocion"
+                                    actionListener="#{registroSolicitudCALOPController.guardarSolicitudParcial}">
+                                    <p:ajax event="click"
+                                        listener="#{registroSolicitudCALOPController.cambiaNoReqPrincipal}" />
+                                </p:commandButton>
+                            </p:panelGrid>
+                            <p:panel style="border:hidden;">
+                                <p:outputLabel escape="false" value="#{registroSolicitudCALOPController.mensajeAviso}"
+                                    style="color:red"></p:outputLabel>
+                            </p:panel>
+                            <p:panel id="msgPanelPromocion" style="border:hidden;">
+                                <p:messages id="messagesPromocion" autoUpdate="false" showDetail="true"
+                                    showSummary="false" escape="false" />
+                            </p:panel>
+                            <p:panel>
+                                <ui:include src="/resources/pages/cal/op/registroSolicitud/datosPromocion.xhtml" />
+                            </p:panel>
+                        </p:panel>
+                    </p:tab>
+                    <p:tab id="datosAdicionales" title=" " titleStyleClass="tPaso4">
+                        <p:panel header="#{registroSolicitudCALOPController.modalidadTramite}" style="align:left;"></p:panel>
+                        <p:panel id="datosAdicionalesPanel">
+                            <p:panelGrid columns="1" style="float:right;border:hidden;">
+                                <p:commandButton id="guaradarSolicitudParcialDatosAdicionalesButton"
+                                    value="#{msg['vuj.boton.guardar']}" oncomplete="cambiaEstadoPrincipal();"
+                                    update=":FIELForm:msgPanelDatosAdicionales"
+                                    actionListener="#{registroSolicitudCALOPController.guardarSolicitudParcial}">
+                                    <p:ajax event="click"
+                                        listener="#{registroSolicitudCALOPController.cambiaNoReqPrincipal}" />
+                                </p:commandButton>
+                            </p:panelGrid>
+                            <p:panel style="border:hidden;">
+                                <p:outputLabel escape="false" value="#{registroSolicitudCALOPController.mensajeAviso}"
+                                    style="color:red"></p:outputLabel>
+                            </p:panel>
+                            <p:panel id="msgPanelDatosAdicionales" style="border:hidden;">
+                                <p:messages id="messagesDatosAdicionales" autoUpdate="false" showDetail="true"
+                                    showSummary="false" escape="false" />
+                            </p:panel>
+                            <p:panel>
+                                <ui:include src="/resources/pages/cal/op/registroSolicitud/datosAdicionales.xhtml" />
+                            </p:panel>
+                        </p:panel>
+                    </p:tab>
+                    <p:tab id="seleccionDocumentos" title=" " titleStyleClass="tPaso5">
+
+                        <p:panel header="Seleccion de Documentos">
+                            <ui:include src="/resources/pages/cal/op/registroSolicitud/seleccionDocumentos.xhtml" />
+                        </p:panel>
+                    </p:tab>
+                    <p:tab id="anexarDocumentos" title=" " titleStyleClass="tPaso6">
+
+                        <p:panel header="Anexar Documentos " style="width:100%">
+                            <ui:include src="/resources/pages/cal/op/registroSolicitud/anexarDocumentos.xhtml" />
+                        </p:panel>
+                    </p:tab>
+                    <p:tab id="firmar" title=" " titleStyleClass="tPaso7">
+
+                        <p:panel header="Firmar" style="width:100%">
+                            <ui:include src="#{registroSolicitudCALOPController.direccionFirma}" />
+                        </p:panel>
+                    </p:tab>
+                </p:wizard>
+            </p:panel>
+            <script type="text/javascript">
+				$(document).ready(function() {
+					modWizardButtons();
+				});
+				function modWizardButtons(){
+		        	$( ".ui-button-icon-left" ).removeClass( "ui-icon" );
+		        	$("#FIELForm\\:wizardPrueba_back").removeClass("ui-button-text-icon-left");
+		        	$("#FIELForm\\:wizardPrueba_back").addClass("ui-button-text-only");
+		        	$("#FIELForm\\:wizardPrueba_next").removeClass("ui-button-text-icon-left");
+		        	$("#FIELForm\\:wizardPrueba_next").addClass("ui-button-text-only");
+				}
+			</script>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

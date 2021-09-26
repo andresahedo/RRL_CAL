@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:body>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <h:outputScript name='/js/calendar_es.js' target="head" />
+    <style type="text/css">
+.noBorder td {
+    border-style: hidden !important;
+}
+
+.noBorder tr {
+    border-style: hidden !important;
+}
+</style>
+    <style type="text/css">
+.noResize {
+    resize: none;
+}
+.data-table table > thead {
+    display: none;
+}
+
+.data-table table > tbody,
+.data-table table > tbody > tr,
+.data-table table > tbody > tr > td {
+	text-align: left;
+	vertical-align: middle;
+	border: none !important;
+}
+</style>
+
+
+
+    <p:panel id="oficialia" visible="#{consultasAutorizacionesTramiteController.datosBandejaTareaDTO.oficialia}">
+        <p:outputLabel value="#{msg['rrl.consulta.oficialia']}" style="color:red; font-weight: bold;" />
+    </p:panel>
+
+    <p:panel id="panelPromocion1" style="width:100%">
+        <p:panelGrid id="datosAsunto" columns="2" styleClass="noBorder">
+            <h:outputLabel value="#{msg['cal.consultas.numeroAsunto']}" />
+            <p:spacer></p:spacer>
+            <p:inputText value="#{consultasAutorizacionesTramiteController.tramiteDTO.numeroAsunto}" readonly="true" />
+            <p:spacer></p:spacer>
+
+            <h:outputLabel value="#{msg['cal.consultas.administracion']}" />
+            <p:spacer></p:spacer>
+            <p:inputText value="#{consultasAutorizacionesTramiteController.administracion}" size="100" readonly="true" />
+            <p:spacer></p:spacer>
+
+            <h:outputLabel value="#{msg['cal.consultas.modalidad']}" />
+            <p:spacer></p:spacer>
+            <p:inputText value="#{consultasAutorizacionesTramiteController.modalidad}" size="100" readonly="true" />
+            <p:spacer></p:spacer>
+        </p:panelGrid>
+    </p:panel>
+
+    <p:panel id="panelPromocion2" style="width:100%" header="#{msg['ca.tabCaptura.personasOir.recibir.notificaciones']}">
+        <p:dataTable paginator="true" rows="10" var="personaOirNot" rowIndexVar="rowIndex"
+            emptyMessage="#{msg['vuj.grid.vacio']}" rowKey="#{personaOirNot}"
+            value="#{consultasAutorizacionesTramiteController.personaOirNotificacionesDataModel}"
+            id="personaOirNotTable">
+
+            <p:column headerText="#{msg['ca.captura.solicitud.nombre']}" resizable="false">
+                <p style="word-break: break-all;">
+                    <h:outputText value="#{personaOirNot.nombreCompleto}" id="nombreCompleto"
+                        style="white-space:pre-line;" />
+                </p>
+            </p:column>
+            <p:column headerText="#{msg['ca.captura.solicitud.rfc']}" style="width:15%" resizable="false">
+                <p style="word-break: break-all;" align="center">
+                    <h:outputText value="#{personaOirNot.rfc}" id="rfc" style="white-space:pre-line;" />
+                </p>
+            </p:column>
+            <p:column headerText="#{msg['ca.captura.solicitud.telefono']}" resizable="false">
+                <h:outputText value="#{personaOirNot.telefono}" id="telefono" />
+            </p:column>
+            <p:column headerText="#{msg['ca.captura.solicitud.direccion']}" resizable="false">
+                <p style="word-break: break-all;">
+                    <h:outputText value="#{personaOirNot.direccion}" id="direccion" style="white-space:pre-line;" />
+                </p>
+            </p:column>
+        </p:dataTable>
+    </p:panel>
+    <p:panel id="panelPromocion4" style="width:100%" header="#{msg['ca.tabCaptura.personasInvolucradas']}">
+        <p:dataTable paginator="true" rows="10" rowIndexVar="rowIndex" var="personaInv"
+            emptyMessage="#{msg['vuj.grid.vacio']}" rowKey="#{personaInv}"
+            value="#{consultasAutorizacionesTramiteController.personaInvolucradaDataModel}" id="personaInvTable">
+
+            <p:column headerText="#{msg['cal.consultas.promocion.nombreRazonSocial']}" resizable="false">
+                <p style="word-break: break-all;">
+                    <h:outputText value="#{personaInv.nombreCompleto}" id="nombreCompleto" style="white-space:pre-line;" />
+                </p>
+            </p:column>
+            <p:column headerText="#{msg['ca.captura.solicitud.rfc.num.fiscal']}" style="width:15%" resizable="false">
+                <p style="word-break: break-all;" align="center">
+                    <h:outputText value="#{personaInv.rfc}" id="rfc" />
+                </p>
+            </p:column>
+            <p:column headerText="#{msg['ca.captura.solicitud.residenteExtranjeroBln']}" style="width:10%"
+                resizable="false">
+                <p:selectBooleanCheckbox value="#{personaInv.extranjero}" disabled="true" />
+            </p:column>
+            <p:column headerText="#{msg['ca.captura.solicitud.direccion']}" resizable="false">
+                <p style="word-break: break-all;">
+                    <h:outputText value="#{personaInv.direccion}" id="direccion" style="white-space:pre-line;" />
+                </p>
+            </p:column>
+        </p:dataTable>
+    </p:panel>
+    <p:panel id="panelPromocion5" style="width:100%" header="#{msg['vuj.tab.promocion']}">
+        <p:panelGrid id="datosPromocion" columns="2" styleClass="noBorder">
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.montoOperacion']}" />
+                <p:outputLabel value=" *" style="color:red">
+                </p:outputLabel>
+            </p:row>
+
+            <p:spacer></p:spacer>
+            <p:row>
+                <pe:inputNumber value="#{consultasAutorizacionesTramiteController.solicitud.montoOperacion}"
+                    emptyValue="0.00" decimalPlaces="2" size="20" readonly="true" id="montoOperacion"
+                    maxValue="99999999999999999.99" symbol="$" />
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.actividadInteresado']}" />
+                <p:outputLabel value=" *" style="color:red">
+                </p:outputLabel>
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:row>
+
+                <p:inputText value="#{consultasAutorizacionesTramiteController.solicitud.actividadInteresado}"
+                    cols="100" rows="1" maxlength="500" size="100" readonly="true" />
+
+            </p:row>
+
+            <p:spacer></p:spacer>
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.hechosCircunstancias']}" />
+                <p:outputLabel value=" *" style="color:red">
+                </p:outputLabel>
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:row>
+                <p:scrollPanel mode="native" style="border-style: hidden !important;">
+                    <p:inputTextarea value="#{consultasAutorizacionesTramiteController.solicitud.hechosCircunstancias}"
+                        styleClass="noResize" autoResize="false" cols="100" rows="3" maxlength="3800" size="3800"
+                        style='height:50px;' readonly="true" />
+                </p:scrollPanel>
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.razonNegocio']}" />
+                <p:outputLabel value=" *" style="color:red">
+                </p:outputLabel>
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:scrollPanel mode="native" style="border-style: hidden !important;">
+                <p:inputTextarea value="#{consultasAutorizacionesTramiteController.solicitud.razonesNegocio}" cols="100"
+                    styleClass="noResize" autoResize="false" rows="3" maxlength="3800" size="3800" style='height:50px;'
+                    readonly="true" />
+            </p:scrollPanel>
+        </p:panelGrid>
+    </p:panel>
+
+    <p:panel id="panelPromocion6" style="width:100%" header="#{msg['ca.captura.solicitud.promocion.hechosPlanteados']}">
+        <p:panelGrid id="hechosPlanteados" columns="2" styleClass="noBorder">
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.cboHechosPlanteados']}" />
+                <p:outputLabel value=" *" style="color:red">
+                </p:outputLabel>
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:row>
+                <h:selectOneMenu effect="fade" id="cboHechosPlanteadosSelect" filter="true" filterMatchMode="contains"
+                    value="#{consultasAutorizacionesTramiteController.solicitud.hechosCircunstanciasPrevPlanteadas}"
+                    disabled="true">
+                    <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                    <f:selectItems value="#{consultasAutorizacionesTramiteController.listaGranContribuyente}"
+                        var="hechosCircPrevPlan" itemLabel="#{hechosCircPrevPlan.descripcion}"
+                        itemValue="#{hechosCircPrevPlan.clave}" />
+                </h:selectOneMenu>
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.autoridad']}"
+                    rendered="#{consultasAutorizacionesTramiteController.hechosCirc}">
+                </h:outputLabel>
+            </p:row>
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.fechaPromocion']}"
+                    rendered="#{consultasAutorizacionesTramiteController.hechosCirc}">
+                </h:outputLabel>
+            </p:row>
+            <p:row>
+                <h:selectOneMenu effect="fade" id="autoridadSelect" widgetVar="comboAutoridad" filter="true"
+                    filterMatchMode="contains"
+                    value="#{consultasAutorizacionesTramiteController.solicitud.claveAutoridad}" style="width:250px ;"
+                    rendered="#{consultasAutorizacionesTramiteController.hechosCirc}" disabled="true">
+                    <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                    <f:selectItems value="#{consultasAutorizacionesTramiteController.listaAutoridad}" var="autoridad"
+                        itemLabel="#{autoridad.descripcion}" itemValue="#{autoridad.clave}" />
+                </h:selectOneMenu>
+            </p:row>
+
+            <p:inputText id="fechaInicio" value="#{consultasAutorizacionesTramiteController.solicitud.fechaPromocion}"
+                rendered="#{consultasAutorizacionesTramiteController.hechosCirc}" readonly="true">
+                <f:convertDateTime pattern="dd/MM/yyyy" />
+            </p:inputText>
+        </p:panelGrid>
+    </p:panel>
+
+    <p:panel id="panelPromocion7" style="width:100%" header="#{msg['ca.captura.solicitud.promocion.mediosPlanteados']}">
+        <p:panelGrid id="mediosPlanteados" columns="2" styleClass="noBorder">
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.cboMediosPlanteados']}" />
+                <p:outputLabel value=" *" style="color:red">
+                </p:outputLabel>
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:spacer></p:spacer>
+            <p:spacer></p:spacer>
+            <p:row>
+                <h:selectOneMenu effect="fade" id="cboMediosDefensaSelect" filter="true" filterMatchMode="contains"
+                    value="#{consultasAutorizacionesTramiteController.solicitud.hechosCircunstanciasMatMedios}"
+                    disabled="true">
+                    <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                    <f:selectItems value="#{consultasAutorizacionesTramiteController.listaGranContribuyente}"
+                        var="hechosCircMatMed" itemLabel="#{hechosCircMatMed.descripcion}"
+                        itemValue="#{hechosCircMatMed.clave}" />
+                </h:selectOneMenu>
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:spacer></p:spacer>
+            <p:spacer></p:spacer>
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.mediosDefensa']}"
+                    rendered="#{consultasAutorizacionesTramiteController.mediosDefensa}" />
+                <p:outputLabel value=" *" style="color:red"
+                    rendered="#{consultasAutorizacionesTramiteController.mediosDefensa}">
+                </p:outputLabel>
+            </p:row>
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.numeroAsunto']}"
+                    rendered="#{consultasAutorizacionesTramiteController.mediosDefensa}" />
+                <p:outputLabel value=" *" style="color:red"
+                    rendered="#{consultasAutorizacionesTramiteController.mediosDefensa}">
+                </p:outputLabel>
+            </p:row>
+
+            <p:row>
+                <h:selectOneMenu effect="fade" id="mediosDefensaSelect" widgetVar="comboMediosDefensa" filter="true"
+                    filterMatchMode="contains" rendered="#{consultasAutorizacionesTramiteController.mediosDefensa}"
+                    value="#{consultasAutorizacionesTramiteController.solicitud.claveMedioDefensa}"
+                    style="width:250px ;" disabled="true">
+                    <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                    <f:selectItems value="#{consultasAutorizacionesTramiteController.listaMediosDefensa}" var="mDefensa"
+                        itemLabel="#{mDefensa.descripcion}" itemValue="#{mDefensa.clave}" />
+                </h:selectOneMenu>
+            </p:row>
+            <p:row>
+                <p:inputText value="#{consultasAutorizacionesTramiteController.solicitud.numeroAsunto}"
+                    rendered="#{consultasAutorizacionesTramiteController.mediosDefensa}" id="numeroAsuntoText"
+                    maxlength="30" size="35" readonly="true" />
+            </p:row>
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.sentidoResolucion']}"
+                    rendered="#{consultasAutorizacionesTramiteController.mediosDefensa}" />
+                <p:outputLabel value=" *" style="color:red"
+                    rendered="#{consultasAutorizacionesTramiteController.mediosDefensa}">
+                </p:outputLabel>
+            </p:row>
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.autoridad']}"
+                    rendered="#{consultasAutorizacionesTramiteController.mediosDefensa}" />
+                <p:outputLabel value=" *" style="color:red"
+                    rendered="#{consultasAutorizacionesTramiteController.mediosDefensa}">
+                </p:outputLabel>
+            </p:row>
+            <p:row>
+
+                <h:selectOneMenu effect="fade" id="sentidoResolucionSelect"
+                    rendered="#{consultasAutorizacionesTramiteController.mediosDefensa}"
+                    widgetVar="comboSentidoResolucion" filter="true" filterMatchMode="contains"
+                    value="#{consultasAutorizacionesTramiteController.solicitud.claveSentidoResolucion}"
+                    style="width:250px ;" disabled="true">
+                    <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                    <f:selectItems value="#{consultasAutorizacionesTramiteController.listaSentidosResolucion}"
+                        var="sResolucion" itemLabel="#{sResolucion.descripcion}" itemValue="#{sResolucion.clave}" />
+                </h:selectOneMenu>
+            </p:row>
+            <p:row>
+                <p:inputText value="#{consultasAutorizacionesTramiteController.solicitud.descripcionAutoridad}"
+                    rendered="#{consultasAutorizacionesTramiteController.mediosDefensa}" id="descripcionAutoridadText"
+                    maxlength="30" size="35" readonly="true" />
+            </p:row>
+        </p:panelGrid>
+    </p:panel>
+
+    <p:panel id="panelPromocion8" style="width:100%" header="#{msg['ca.captura.solicitud.promocion.sujetoEjercicio']}">
+        <p:panelGrid id="sujetoEjercicio" columns="2" styleClass="noBorder">
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.cboSujetoEjercicio']}" />
+                <p:outputLabel value=" *" style="color:red">
+                </p:outputLabel>
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:row>
+                <h:selectOneMenu effect="fade" id="cboSujetoEjercicioSelect" filter="true" filterMatchMode="contains"
+                    value="#{consultasAutorizacionesTramiteController.solicitud.contribuyenteSujetoEjercicio}"
+                    disabled="true">
+                    <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                    <f:selectItems value="#{consultasAutorizacionesTramiteController.listaGranContribuyente}"
+                        var="hechosCircPrevPlan" itemLabel="#{hechosCircPrevPlan.descripcion}"
+                        itemValue="#{hechosCircPrevPlan.clave}" />
+                </h:selectOneMenu>
+            </p:row>
+            <p:spacer rendered="#{consultasAutorizacionesTramiteController.sujetoEjercicio}"></p:spacer>
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.periodosContribuciones']}"
+                    rendered="#{consultasAutorizacionesTramiteController.sujetoEjercicio}" />
+                <p:outputLabel value=" *" style="color:red"
+                    rendered="#{consultasAutorizacionesTramiteController.sujetoEjercicio}">
+                </p:outputLabel>
+            </p:row>
+            <p:spacer rendered="#{consultasAutorizacionesTramiteController.sujetoEjercicio}"></p:spacer>
+            <p:row>
+                <p:scrollPanel mode="native" style="border-style: hidden !important;">
+                    <p:inputTextarea
+                        value="#{consultasAutorizacionesTramiteController.solicitud.periodosContribuciones}"
+                        rendered="#{consultasAutorizacionesTramiteController.sujetoEjercicio}"
+                        id="testAreaPeriodosContribuciones" cols="100" rows="3" maxlength="3800" size="3800"
+                        styleClass="noResize" autoResize="false" style='height:50px;' readonly="true">
+                    </p:inputTextarea>
+                </p:scrollPanel>
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.plazo']}"
+                    rendered="#{consultasAutorizacionesTramiteController.sujetoEjercicio}" />
+                <p:outputLabel value=" *" style="color:red"
+                    rendered="#{consultasAutorizacionesTramiteController.sujetoEjercicio}">
+                </p:outputLabel>
+            </p:row>
+            <p:spacer rendered="#{consultasAutorizacionesTramiteController.sujetoEjercicio}"></p:spacer>
+            <p:row>
+                <h:selectOneMenu effect="fade" id="plazoSelect" widgetVar="comboPlazos" filter="true"
+                    filterMatchMode="contains" rendered="#{consultasAutorizacionesTramiteController.sujetoEjercicio}"
+                    value="#{consultasAutorizacionesTramiteController.solicitud.plazo}" style="width:200px ;"
+                    disabled="true">
+                    <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                    <f:selectItems value="#{consultasAutorizacionesTramiteController.listaPlazo}" var="plazo"
+                        itemLabel="#{plazo.descripcion}" itemValue="#{plazo.clave}" />
+                </h:selectOneMenu>
+            </p:row>
+            <p:spacer rendered="#{consultasAutorizacionesTramiteController.sujetoEjercicio}"></p:spacer>
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.autoridadRevisando']}"
+                    rendered="#{consultasAutorizacionesTramiteController.sujetoEjercicio}">
+                </h:outputLabel>
+            </p:row>
+            <p:spacer rendered="#{consultasAutorizacionesTramiteController.sujetoEjercicio}"></p:spacer>
+            <p:row>
+                <h:selectOneMenu effect="fade" id="autoridadRevisandoSelect" widgetVar="comboAutoridadRevisando"
+                    filter="true" filterMatchMode="contains"
+                    rendered="#{consultasAutorizacionesTramiteController.sujetoEjercicio}"
+                    value="#{consultasAutorizacionesTramiteController.solicitud.claveAutoridadRevisando}"
+                    style="width:250px ;" disabled="true">
+                    <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                    <f:selectItems value="#{consultasAutorizacionesTramiteController.listaAutoridad}"
+                        var="autoridadRevisando" itemLabel="#{autoridadRevisando.descripcion}"
+                        itemValue="#{autoridadRevisando.clave}" />
+                </h:selectOneMenu>
+            </p:row>
+        </p:panelGrid>
+    </p:panel>
+
+    <p:panel id="panelPromocion9" style="width:100%"
+        header="#{msg['ca.captura.solicitud.promocion.clasificacionArancelaria']}"
+        rendered="#{consultasAutorizacionesTramiteController.clasificacionArancelaria}">
+        <p:panelGrid id="clasificacionArancelaria" columns="3" styleClass="noBorder">
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.tipoClasificacion']}" />
+                <p:outputLabel value=" *" style="color:red">
+                </p:outputLabel>
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:spacer></p:spacer>
+            <p:row>
+                <h:selectOneMenu effect="fade" id="cboClasificacionArancelariaSelect" filter="true"
+                    filterMatchMode="contains"
+                    value="#{consultasAutorizacionesTramiteController.solicitud.tipoClasificacion}" disabled="true">
+                    <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                    <f:selectItems value="#{consultasAutorizacionesTramiteController.listaTipoClasificacion}"
+                        var="tipoClasificacion" itemLabel="#{tipoClasificacion.descripcion}"
+                        itemValue="#{tipoClasificacion.clave}" />
+                </h:selectOneMenu>
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:spacer></p:spacer>
+            <p:row>
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.descripcionMercancia']}" />
+                <p:outputLabel value=" *" style="color:red">
+                </p:outputLabel>
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:spacer></p:spacer>
+            <p:row>
+                <p:scrollPanel mode="native" style="border-style: hidden !important;">
+                    <p:inputTextarea value="#{consultasAutorizacionesTramiteController.solicitud.descripcionMercancia}"
+                        id="descripcionMercancia" cols="100" rows="3" maxlength="3800" size="3800" styleClass="noResize"
+                        autoResize="false" style='height:50px;' readonly="true">
+                    </p:inputTextarea>
+                </p:scrollPanel>
+            </p:row>
+            <p:spacer rendered="#{consultasAutorizacionesTramiteController.tipoClasificacionArancelariaCombo}"></p:spacer>
+            <p:spacer rendered="#{consultasAutorizacionesTramiteController.tipoClasificacionArancelariaCombo}"></p:spacer>
+            <p:row rendered="#{consultasAutorizacionesTramiteController.tipoClasificacionArancelariaCombo}">
+                <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.fraccionAplicable']}"
+                    rendered="#{consultasAutorizacionesTramiteController.tipoClasificacionArancelariaCombo}" />
+                <p:outputLabel value=" *" style="color:red">
+                </p:outputLabel>
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:spacer></p:spacer>
+            <p:row>
+                <p:spacer></p:spacer>
+                <p:inputMask value="#{consultasAutorizacionesTramiteController.solicitud.fraccionAplicable}"
+                    id="fraccionAplicableText" maxlength="8" size="20" mask="9999.99.99"
+                    rendered="#{consultasAutorizacionesTramiteController.tipoClasificacionArancelariaCombo}"
+                    readonly="true" />
+            </p:row>
+            <p:spacer></p:spacer>
+            <p:spacer></p:spacer>
+        </p:panelGrid>
+    </p:panel>
+
+    <p:panel id="panelPromocion10" style="width:100%"
+        rendered="#{consultasAutorizacionesTramiteController.clasificacionArancelaria}">
+        <p:dataTable paginator="true" rows="10" rowIndexVar="rowIndex" var="fraccAraDuda"
+            emptyMessage="#{msg['vuj.grid.vacio']}" rowKey="#{fraccAraDuda.idFraccionArancelaria}"
+            value="#{consultasAutorizacionesTramiteController.fraccionArancelariaDudaDataModel}" id="fraccAraDudaTable"
+            rendered="#{consultasAutorizacionesTramiteController.tipoClasificacionArancelariaCombo}">
+
+            <p:column headerText="#{msg['ca.captura.solicitud.promocion.fraccionDudaTable']}">
+                <h:outputText value="#{fraccAraDuda.fraccionArancelaria}" id="nombre" />
+            </p:column>
+        </p:dataTable>
+    </p:panel>
+    
+    <p:panel id="panelPromocion11" style="width:100%"
+    	rendered="#{consultasAutorizacionesTramiteController.banderaManifiestos}"
+    	header="#{msg['ca.captura.solicitud.promocion.manifiestos']}">
+    	<p:dataTable var="manifiesto" value="#{consultasAutorizacionesTramiteController.solicitud.manifiestos}"
+    		resizableColumns="false" id="manifiestoTable" styleClass="data-table">
+    		<p:column>
+       			<p:selectBooleanCheckbox disabled="true" value="#{manifiesto.aceptado}"/>
+       		</p:column>
+       		<p:column>
+       			<h:outputText value="#{manifiesto.manifiesto}"/>
+       		</p:column>
+    	</p:dataTable>
+    </p:panel>
+
+</h:body>
+</ui:composition>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+
+    <ui:define name="content">
+
+
+        <style type="text/css">
+.noBorder td {
+    border-style: none !important
+}
+
+.noBorder tr {
+    border-style: none !important
+}
+
+.ui-panel-titlebar {
+    text-align: center;
+}
+
+.ui-panel {
+    border-style: none !important;
+    width: #{sessionScope.tamanioApp}px;
+}
+</style>
+
+
+        <ui:include src="/resources/pages/configurarusuarios/encabezado.xhtml" />
+        <h:form id="asignarTramitesForm" style="float:left;width:100%">
+
+
+            <p:panel id="panelMensajes" style="float:left">
+                <p:messages id="messages" showDetail="true" globalOnly="true">
+                    <p:message showDetail="true" rendered=""></p:message>
+                </p:messages>
+            </p:panel>
+
+            <p:panel id="asignarPermisosPanel" style="float:left"
+                header="#{msg['usuarios.asignar.tramites.encabezadoPanel']}" styleClass="noBorder">
+                <p:panelGrid columns="2" styleClass="noBorder">
+                    <p:row>
+                        <h:outputText id="rfcFuncionario" value="#{msg['usuarios.asignar.tramites.rfc']}">
+                        </h:outputText>
+                    </p:row>
+                    <p:spacer></p:spacer>
+                    <p:row>
+                        <p:inputText id="inputRFC" value="#{administrarUsuarioUAController.usuarioDTO.rfc}"
+                            readonly="true">
+                        </p:inputText>
+                    </p:row>
+                    <p:spacer></p:spacer>
+                    <p:row>
+                        <h:outputText id="nombreFuncionario" value="#{msg['usuarios.asignar.tramites.empleado']}">
+                        </h:outputText>
+                    </p:row>
+                    <p:spacer></p:spacer>
+                    <p:row>
+                        <p:inputText id="inputUsuario" value="#{administrarUsuarioUAController.usuarioDTO.nombre}"
+                            readonly="true">
+                        </p:inputText>
+                    </p:row>
+                    <p:spacer></p:spacer>
+                    <p:row>
+                        <h:outputText id="permiso" value="#{msg['usuarios.asignar.tramites.permiso']}">
+                        </h:outputText>
+                        <p:outputLabel style="color:red"> *</p:outputLabel>
+                    </p:row>
+                    <p:spacer></p:spacer>
+                    <p:row>
+                        <p:selectOneMenu id="comboPermisos" filter="true" filterMatchMode="contains"
+                            requiredMessage="Dato requerido" value="#{administrarUsuarioUAController.permisoSelected}"
+                            converter="#{informacionUsuarioConverter}" required="true">
+                            <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue=""></f:selectItem>
+                            <f:selectItems value="#{administrarUsuarioUAController.comboPermisos}" var="permiso"
+                                id="itemSel" itemLabel="#{permiso.descripcionRol}" itemValue="#{permiso.idRol}"></f:selectItems>
+                            <p:ajax event="change" listener="#{administrarUsuarioUAController.ocultarResponsable}"
+                                immediate="true" process="@this" update=":asignarTramitesForm:panelPermisos" />
+                        </p:selectOneMenu>
+                        <p:message for="comboPermisos" display="text" />
+                    </p:row>
+                </p:panelGrid>
+
+
+
+
+            </p:panel>
+
+            <p:panel id="panelPermisos" visible="#{administrarUsuarioUAController.visibleGrid}" styleClass="noBorder">
+
+                <p:treeTable id="#{administrarUsuarioUAController.idTreeDinamico}" style="width:100%" var="servicio"
+                    value="#{administrarUsuarioUAController.tramitesTree}" styleClass="noBorder">
+                    <f:facet name="header">
+                        <h:outputText value=" " />
+                    </f:facet>
+                    <p:column headerText="" styleClass="#{servicio.header}">
+                        <h:outputText value="#{servicio.modalidad}" />
+                    </p:column>
+                    <p:column headerText="#{msg['usuarios.tramites.tramiteTabla']}" styleClass="#{servicio.header}">
+
+                        <p:selectBooleanCheckbox value="#{servicio.tramite}"
+                            valueChangeListener="#{administrarUsuarioUAController.checkAll}">
+                            <p:ajax update=":asignarTramitesForm:panelPermisos" />
+                            <f:attribute name="idTipoTramite" value="#{servicio.idTipoTramite}" />
+                            <f:attribute name="idServicio" value="#{servicio.idServicio}" />
+                        </p:selectBooleanCheckbox>
+
+                    </p:column>
+                    <p:column headerText="Responsable" rendered="#{administrarUsuarioUAController.blnAbogado}"
+                        styleClass="#{servicio.header}">
+
+                        <p:selectBooleanCheckbox value="#{servicio.responsable}"
+                            valueChangeListener="#{administrarUsuarioUAController.checkAllResponsable}">
+                            <p:ajax update=":asignarTramitesForm:panelPermisos" />
+                            <f:attribute name="idTipoTramite" value="#{servicio.idTipoTramite}" />
+                            <f:attribute name="idServicio" value="#{servicio.idServicio}" />
+                        </p:selectBooleanCheckbox>
+                    </p:column>
+
+                </p:treeTable>
+                <style type="text/css">
+.ui-chkbox-all {
+    visibility: hidden;
+    height: 2px !important;
+}
+
+.ui-column-filter {
+    visibility: hidden;
+}
+</style>
+            </p:panel>
+
+
+            <p:panel style="float:left" styleClass="noBorder">
+                <table align="right">
+                    <tr>
+                        <td><p:commandButton value="Guardar" ajax="true" update="@form"
+                                oncomplete="if(!args.validationFailed){confirmarAsignar.show()}"
+                                action="#{administrarUsuarioUAController.activarConfirm}"
+                                process="@this, :asignarTramitesForm:comboPermisos, :asignarTramitesForm:panelPermisos">
+                            </p:commandButton></td>
+                        <td><p:commandButton value="Regresar" ajax="true"
+                                actionListener="#{administrarUsuarioUAController.back}" process="@this" update="@form"></p:commandButton></td>
+                    </tr>
+                </table>
+            </p:panel>
+            <p:confirmDialog message="#{administrarUsuarioUAController.msgConfirmacion}" showEffect="fade"
+                hideEffect="explode" id="confirmarDialogo" header="Confirmación" severity="alert"
+                widgetVar="confirmarAsignar">
+                <table align="right">
+                    <tr>
+                        <td><p:commandButton value="Si"
+                                actionListener="#{administrarUsuarioUAController.guardarTramitesAsignados}"
+                                styleClass="ui-confirmdialog-yes" icon="ui-icon-check" process="@this"
+                                update=":asignarTramitesForm, :asignarTramitesForm:panelMensajes"
+                                oncomplete="confirmarAsignar.hide();" /> <p:commandButton value="No"
+                                onclick="confirmarAsignar.hide();" type="button" styleClass="ui-confirmdialog-no"
+                                icon="ui-icon-close" /></td>
+                    </tr>
+                </table>
+            </p:confirmDialog>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

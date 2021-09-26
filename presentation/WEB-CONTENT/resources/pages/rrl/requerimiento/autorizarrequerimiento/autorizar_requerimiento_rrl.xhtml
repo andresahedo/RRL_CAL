@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+        <f:event listener="#{autorizarRequerimientoRRLController.validaAcceso}" type="preRenderView" />
+
+        <style type="text/css">
+.ui-panel {
+    border-style: hidden !important;
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+</style>
+
+        <h:form id="requerimientoForm">
+            <p:ajaxStatus onstart="statusDialog.show();" oncomplete="statusDialog.hide();" />
+            <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+                draggable="false" closable="false">
+                <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+            </p:dialog>
+
+            <p:panel id="navegationPanel" style="border:none">
+                <table align="right">
+                    <tr>
+                        <td><p:commandButton id="anteriorButton"
+                                action="/resources/pages/rrl/bandeja/bandeja.jsf?faces-redirect=true" process="@this"
+                                value="#{msg['vuj.boton.anterior']}" /></td>
+
+
+
+                        <c:choose>
+                            <c:when test="#{autorizarRequerimientoRRLController.datosBandeja.tipoTramite== '10101'}">
+
+                                <td><p:commandButton id="siguienteRequerimientoButton"
+                                        value="#{msg['vuj.boton.siguiente']}" partialSubmit="true"
+                                        update=":requerimientoForm:msgPanel,:requerimientoForm:confirmarDialogo"
+                                        process="@form" ajax="true"
+                                        action="#{autorizarRequerimientoRRLController.prepararDocumentosRequerimientos}">
+
+                                    </p:commandButton></td>
+
+                            </c:when>
+                            <c:otherwise>
+
+                                <td><p:commandButton id="siguienteRequerimientoButton"
+                                        value="#{msg['vuj.boton.siguiente']}" update=":requerimientoForm:msgPanel"
+                                        process="@form" ajax="true"
+                                        actionListener="#{autorizarRequerimientoRRLController.prepararDocumentosRequerimientosCal}" /></td>
+
+
+
+                            </c:otherwise>
+
+                        </c:choose>
+
+                        <td><p:commandButton id="rechazarButton" process="@this"
+                                value="#{msg['vuj.boton.rechazar']}" onclick="rechazoReqDlg.show()" /> <p:confirmDialog
+                                showEffect="fade" hideEffect="explode" style="width:100%;"
+                                header="#{msg['vuj.confirmacion.header']}"
+                                message="#{msg['vuj.confirmacion.rechazo.requerimiento']}" icon="ui-icon-alert"
+                                widgetVar="rechazoReqDlg">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td align="right"><p:commandButton value="#{msg['confirm.si']}"
+                                                styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                                update="requerimientoForm:msgPanel, :requerimientoForm:funcionarioPanel"
+                                                process="@this"
+                                                actionListener="#{autorizarRequerimientoRRLController.rechazarRequerimiento}"
+                                                oncomplete="rechazoReqDlg.hide()" /> <p:commandButton
+                                                value="#{msg['confirm.no']}" type="button"
+                                                styleClass="ui-confirmdialog-no" icon="ui-icon-close"
+                                                onclick="rechazoReqDlg.hide()" /></td>
+                                    </tr>
+                                </table>
+                            </p:confirmDialog></td>
+                    </tr>
+                </table>
+
+            </p:panel>
+
+
+
+
+
+
+
+
+
+
+            <p:panel id="msgPanel" style="border:none">
+                <p:messages id="messages" showDetail="true" autoUpdate="true" globalOnly="true" />
+            </p:panel>
+            <p:panel id="confirmPanel" style="border:none">
+
+                <p:confirmDialog closable="false" global="false"
+                    message="#{msg['rrl.mensaje.documento.complementario']}"
+                    visible="#{autorizarRequerimientoRRLController.nuevoDocumento}" id="confirmarDialogo"
+                    widgetVar="confirmarAccion" showEffect="fade" style="width:100%;">
+
+                    <table style="width: 100%;">
+
+                        <td align="right"><p:commandButton oncomplete="confirmarAccion.hide()" value="Si"
+                                action="#{autorizarRequerimientoRRLController.continuarPrepararDocumentosRequerimientos}"
+                                styleClass="ui-confirmdialog-yes" icon="ui-icon-check" /> <p:commandButton value="No"
+                                oncomplete="confirmarAccion.hide()" process="@this,confirmarDialogo"
+                                action="#{autorizarRequerimientoRRLController.regresarPaginaAutorizarRequerimiento}"
+                                styleClass="ui-confirmdialog-no" icon="ui-icon-close" /></td>
+                    </table>
+
+                </p:confirmDialog>
+
+            </p:panel>
+
+
+            <p:panel id="funcionarioPanel">
+                <table>
+                    <tr>
+                        <td><h:outputText value="#{msg['rrl.requerimiento.nombreAbogado']} " /></td>
+                        <td><h:outputText value="#{msg['rrl.requerimiento.rfcAbogado']} " /></td>
+                        <td colspan="2"><h:outputText value="#{msg['rrl.requerimiento.estadoProcesal']} " /></td>
+                    </tr>
+                    <tr>
+                        <td><p:inputText maxlength="500" readonly="true"
+                                value="#{autorizarRequerimientoRRLController.requerimiento.nombrePersona}" /></td>
+                        <td><p:inputText maxlength="20" readonly="true"
+                                value="#{autorizarRequerimientoRRLController.requerimiento.rfc}" /></td>
+                        <td colspan="2"><p:inputText maxlength="20" readonly="true"
+                                value="#{autorizarRequerimientoRRLController.requerimiento.tramite.estadoProcesal}" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><h:outputText value="#{msg['rrl.requerimiento.numeroAsunto']} " /></td>
+                        <td><h:outputText value="#{msg['vuj.fechaRecepcion']}" /></td>
+                        <td><h:outputText value="#{msg['rrl.requerimiento.fechaVencimiento']} " /></td>
+                    </tr>
+                    <tr>
+                        <td><p:inputText maxlength="500" readonly="true"
+                                value="#{autorizarRequerimientoRRLController.requerimiento.tramite.numeroAsunto}" /></td>
+                        <td><p:inputText readonly="true"
+                                value="#{autorizarRequerimientoRRLController.requerimiento.tramite.fechaRecepcion}"
+                                id="fechaRecepcionInput">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText></td>
+                        <td><p:inputText maxlength="20" readonly="true"
+                                value="#{autorizarRequerimientoRRLController.requerimiento.tramite.fechaVencimiento}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText></td>
+                    </tr>
+
+                    <tr>
+                        <td><p:outputLabel value="#{msg['vuj.camposObligatorios']} " style="color:red"></p:outputLabel></td>
+                        <td></td>
+                        <td colspan="2"></td>
+                    </tr>
+                </table>
+                <table width="40%">
+                    <tr>
+                        <td><h:outputText value="#{msg['rrl.requerimiento.tipoRequerimiento']} " /> <p:outputLabel
+                                style="color:red">*</p:outputLabel> <h:graphicImage id="ayudaTipoRequerimiento"
+                                url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaTipoRequerimiento"
+                                value="#{msg['tipo.requerimientoAutorizar']}"></pe:tooltip></td>
+                        <td><c:if test="#{autorizarRequerimientoRRLController.requerimientoAutoridad}">
+                                <h:outputText value="#{msg['rrl.requerimiento.autoridadesSolicitadas']} " />
+                                <p:outputLabel style="color:red">*</p:outputLabel>
+                                <h:graphicImage id="ayudaTipoRequerimiento1" url="/resources/css/images/ayuda.png" />
+                                <pe:tooltip for="ayudaTipoRequerimiento1" value="#{msg['elegir.autoridad']}"></pe:tooltip>
+                            </c:if></td>
+                        <td colspan="2"></td>
+                    </tr>
+
+                    <tr>
+                        <td><p:selectOneMenu id="tipoRequerimientoSelect" widgetVar="comboTipoRequerimiento"
+                                value="#{autorizarRequerimientoRRLController.requerimiento.claveTipoRequerimiento}"
+                                style="width:100%;" disabled="true" filter="true" filterMatchMode="contains">
+                                <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue=" " />
+                                <f:selectItems value="#{autorizarRequerimientoRRLController.listaTiposRequerimiento}"
+                                    var="tipoReq" itemLabel="#{tipoReq.descripcion}" itemValue="#{tipoReq.clave}" />
+                            </p:selectOneMenu> <h:inputHidden id="claveTipoRequerimientoHidden"
+                                value="#{autorizarRequerimientoRRLController.requerimiento.claveTipoRequerimiento}" /></td>
+                        <td><c:if test="#{autorizarRequerimientoRRLController.requerimientoAutoridad}">
+
+                                <p:selectOneMenu id="autoridadSelect" filter="true" filterMatchMode="contains"
+                                    value="#{autorizarRequerimientoRRLController.requerimiento.claveUnidadAdministrativa}"
+                                    widgetVar="comboAutoridades" style="width:100%;">
+                                    <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                                    <f:selectItems value="#{autorizarRequerimientoRRLController.listaAutoridades}"
+                                        var="autoridad" itemLabel="#{autoridad.descripcion}"
+                                        itemValue="#{autoridad.clave}" />
+                                </p:selectOneMenu>
+                                <p:message display="text" for="autoridadSelect"></p:message>
+                            </c:if> <h:inputHidden id="prueba1"
+                                value="#{autorizarRequerimientoRRLController.datosBandeja.tipoTramite}" /></td>
+                        <td colspan="2"></td>
+                    </tr>
+                </table>
+            </p:panel>
+
+        </h:form>
+
+
+        <p:panel id="solicitantePanel" style="border:none">
+            <c:choose>
+                <c:when test="#{autorizarRequerimientoRRLController.datosBandeja.tipoTramite=='10101'}">
+                    <ui:decorate template="/resources/pages/consultas/consulta.xhtml">
+                    </ui:decorate>
+                </c:when>
+                <c:otherwise>
+                    <ui:decorate template="/resources/pages/cal/consultas/consultaFuncionario.xhtml">
+                    </ui:decorate>
+                </c:otherwise>
+            </c:choose>
+        </p:panel>
+
+
+
+    </ui:define>
+</ui:composition>
+
+</html>

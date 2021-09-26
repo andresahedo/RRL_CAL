@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <h:outputStylesheet library="css" name="html5.css" />
+            <h:outputScript name="/js/html5.js" />
+        </f:facet>
+
+        <style type="text/css">
+.ui-selectonemenu-panel {
+    width: 50px
+}
+
+.ui-panel {
+    border-style: none !important;
+}
+
+.ui-panelgrid td {
+    border-style: none;
+}
+
+.ui-panelgrid tr {
+    border-style: none;
+}
+</style>
+
+    </h:head>
+    <h:body>
+        <h:form id="formBandeja">
+            <p:panelGrid columns="1" style="width:40%;">
+                <p:outputLabel value="CONTRIBUYENTE" style="width:100%;" />
+
+                <h:link value="Bandeja de Tareas"
+                    outcome="/resources/pages/rrl/bandeja/bandejaPromovente.jsf?showMessages=false" />
+                <p:outputLabel value="Recursos Administrativos" style="width:90%;" />
+                <p:outputLabel value="Recursos de Revocaci&oacute;n" style="font-weight:bold;width:80%;" />
+
+
+                <h:link value="Registro de Promoci&oacute;n" outcome="/resources/pages/home/juridicaMain.jsf">
+                    <f:param name="urlDestino" value="/resources/pages/rrl/terminosRRL.jsf?numPantalla=1" />
+                </h:link>
+
+                <h:link value="Consulta de Recursos" outcome="/resources/pages/consultas/bandejaConsultas.jsf" />
+
+
+                <p:outputLabel value="Consultas y Autorizaciones" style="width:90%;" />
+                <h:link value="Captura de Solicitud" outcome="/resources/pages/home/juridicaMain.jsf">
+                    <f:param name="urlDestino" value="/resources/pages/cal/terminosCAL.jsf?numPantalla=2" />
+                </h:link>
+
+                <h:link value="Asuntos Guardados Parcialmente"
+                    outcome="/resources/pages/consultas/bandejaPendientes.jsf" />
+
+                <p:outputLabel value="EMPLEADO" style="width:100%;" />
+
+                <p:outputLabel value="Seguimiento a asuntos" style="font-weight:bold;width:100%;" />
+
+                <h:link value="Tareas pendientes por atender" outcome="/resources/pages/home/juridicaMain.jsf">
+                    <f:param name="urlDestino" value="/resources/pages/rrl/bandeja/bandeja.jsf?showMessages=false" />
+                </h:link>
+                
+                <h:link value="Descarga de Documentos Remitidos y/o Resueltos Notificados" outcome="/resources/pages/home/juridicaMain.jsf">
+                    <f:param name="urlDestino" value="/resources/pages/rrl/bandeja/BandejaAsuntosConcluidos.jsf?showMessages=false" />
+                </h:link>
+                
+                <h:link value="Bandeja Rechazos Oficialia"
+                    outcome="/resources/pages/consultas/bandejaConsultasOficialia.jsf" />
+                <p:outputLabel value="Recursos Administrativos" style="padding: 10px;width:90%;" />
+                <p:outputLabel value="Recursos de Revocaci&oacute;n" style="font-weight:bold;width:80%;" />
+
+
+                <h:link value="Reasignar Asuntos"
+                    outcome="/resources/pages/rrl/bandejaReasignarRecursoRevocacion.jsf?showMessages=false" />
+                <p:outputLabel value="Consultas y Autorizaciones" style="font-weight:bold;width:100%;" />
+
+
+                <h:link value="Reasignar Asuntos"
+                    outcome="/resources/pages/rrl/bandejaReasignarRecursoRevocacion.jsf?showMessages=false" />
+
+
+                <p:outputLabel value="Oficial&iacute;a de Partes" style="font-weight:bold;width:100%;" />
+
+
+                <h:link value="Seleccionar Tramite"
+                    outcome="/resources/pages/cal/registroSolicitud/seleccionTramite.jsf" />
+                <p:outputLabel value="Administraci&oacute;n de usuarios" style="font-weight:bold;width:100%;" />
+
+
+
+                <h:link value="Menu Administrador"
+                    outcome="/resources/pages/configurarusuarios/indexAdmin.jsf?limpiar=true" />
+
+                <p:outputLabel value="Componente Java" style="font-weight:bold;width:100%;" />
+                <h:link value="Probar componente"
+                    outcome="/resources/pages/configurarusuarios/pruebasActualizacionesNovell.jsf?limpiar=true" />
+
+            </p:panelGrid>
+        </h:form>
+
+    </h:body>
+</ui:composition>

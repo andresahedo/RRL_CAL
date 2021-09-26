@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+
+	<h:head>
+
+		<style type="text/css">
+			width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+				word-wrap:break-word;
+			}
+			.panelContent td {
+				border: black solid 1px !important;
+			}
+		</style>
+		<f:event
+			listener="#{bandejaAsuntosConcluidosController.iniciarBandejaAsuntosConcluidos}"
+			type="preRenderView" />
+	</h:head>
+
+
+	<p:panel style="float:left;" id="bandejaPanel"
+		header="Consulta de Asuntos">
+		<table cellpadding="0">
+			<tr>
+				<td style="padding-right: 30px;"><h:outputText value="#{msg['vuj.resol.funcionario']}" /></td>
+				<td style="padding-right: 30px;"><h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" /></td>
+				<td style="padding-right: 30px;"><h:outputText value="Estado Procesal" /></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td style="padding-right: 30px;"><p:inputText id="funcionario" readonly="true"
+						value="#{bandejaAsuntosConcluidosController.userProfile.nombreCompleto}" /></td>
+
+				<td style="padding-right: 30px;"><p:inputText id="rfcFuncionario" readonly="true"
+						value="#{bandejaAsuntosConcluidosController.userProfile.rfc}"
+						required="true" /></td>
+
+				<td style="padding-right: 30px;"><p:inputText id="estadoProcesal" readonly="true"
+						value="#{turnarRecursoAsuntosConcluidosController.tramite.estadoProcesal}" />
+				</td>
+			</tr>
+			<tr>
+
+				<td style="padding-top: 30px; padding-right: 30px;"><h:outputText value="N&uacute;mero de Asunto " /></td>
+				<td style="padding-top: 30px; padding-right: 30px;"><h:outputText value="#{msg['vuj.fechaRecepcion']}" /></td>
+			</tr>
+
+			<tr>
+				<td style="padding-right: 30px;"><p:inputText id="numeroAsunto2" readonly="true"
+						value="#{turnarRecursoAsuntosConcluidosController.datosBandejaTareaDTO.numeroAsunto}">
+					</p:inputText></td>
+
+				<td style="padding-right: 30px;"><p:inputText readonly="true"
+						value="#{turnarRecursoAsuntosConcluidosController.tramite.fechaRecepcion}"
+						id="fechaRecepcionInput">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</p:inputText></td>
+
+				<td align="right" width="100%">
+					<p:button id="anterior" value="Anterior" href="/resources/pages/rrl/bandeja/BandejaAsuntosConcluidos.jsf?showMessages=false" />
+				</td>
+			</tr>
+		</table>
+		<br />
+	<c:choose>
+		<c:when test="#{turnarRecursoAsuntosConcluidosController.tipoTramite}">
+			<p:tabView id="tabSolicitud">
+				<p:tab id="tab1"
+					title="#{msg['cal.consultas.tab.datosPromovente']}">
+					<ui:include
+						src="#{consultasAutorizacionesTramiteController.tabSolicitante}" />
+				</p:tab>
+				<p:tab id="tab2" title="#{msg['cal.consultas.tab.datosPromocion']}">
+					<ui:include
+						src="#{consultasAutorizacionesTramiteController.tabTramite}" />
+				</p:tab>
+				<p:tab id="tab4" title="#{msg['cal.consultas.tab.documentos']}">
+					<ui:include src="#{consultasAutorizacionesTramiteController.tabDocumentosConcluidos}" />
+				</p:tab>
+				<p:tab id="tab3" title="#{msg['cal.consultas.tab.requerimiento']}">
+					<ui:include
+						src="#{consultasAutorizacionesTramiteController.tabRequerimientosConcluidos}" />
+				</p:tab>
+			</p:tabView>
+			<p:dialog id="dialogVisor" widgetVar="visorDialog" header="PDF"
+				dynamic="true" modal="true" styleClass="dialogVisor"
+				position="left top" closeOnEscape="true" draggable="false"
+				resizable="false">
+				<c:if
+					test="#{not empty consultasAutorizacionesTramiteController.urlDescargaSelected}">
+					<p:media player="pdf"
+						value="#{consultasAutorizacionesTramiteController.urlDescargaSelected}"
+						width="780px" height="480px" styleClass="dialogMedia"> 
+       				Su navegador no es compatible con la vista previa de pdfs. Para descargar el documento de click en esta
+		       		<a
+							href="#{consultasAutorizacionesTramiteController.urlDescargaSelected}"
+							target="_blank"> liga </a>
+					</p:media>
+				</c:if>
+			</p:dialog>
+		</c:when>
+		<c:otherwise>
+			<p:tabView id="tabSolicitud">
+				<p:tab id="tab1" title="Datos del Promovente">
+					<ui:include src="#{consultasController.tabSolicitante}" />
+				</p:tab>
+				<p:tab id="tab2" title="Datos de la Promoción">
+					<ui:include src="#{consultasController.tabTramite}" />
+				</p:tab>
+
+				<p:tab id="tab3" title="Documentos Adjuntos">
+					<ui:include src="#{consultasController.tabDocumentosConcluidos}" />
+				</p:tab>
+
+				<p:tab id="tab4" title="Requerimientos de Información">
+					<ui:include src="#{consultasController.tabRequerimientosConcluidos}" />
+				</p:tab>
+			</p:tabView>
+		</c:otherwise>
+	</c:choose>
+	</p:panel>
+	<h:outputScript name='/js/calendar_es.js' target="head" />
+</ui:composition>

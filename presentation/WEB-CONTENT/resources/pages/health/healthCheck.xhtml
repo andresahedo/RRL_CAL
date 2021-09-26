@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+	<h:head>
+		<style type="text/css">
+			.headerGrid tr,.headerGrid td {	border: none; }
+		</style>
+	</h:head>
+
+	<h:body>
+		<p:ajaxStatus onstart="statusDialog.show();" oncomplete="statusDialog.hide();" />
+        <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+            draggable="false" closable="false">
+            <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+        </p:dialog>		
+		<p:panel header="Validación de servicios SIAT">
+			<h:form id="mainForm">
+				<p:accordionPanel style="width:1000px ;">
+					<p:tab title="BPM :: Busqueda por folio">
+						<p:panelGrid id="banderaBpmId" columns="2" styleClass="headerGrid">
+							<h:column>
+								<h:outputText value="Folio: " />
+							</h:column>
+							<h:column>
+								<p:inputText id="folioTramiteId"
+									value="#{healthCheckController.folioTramite}"
+									style="width:200px;font-size:12px;" maxlength="50" />
+							</h:column>
+							<h:column>
+								<p:graphicImage value="/resources/images/error.png" width="30px"
+									rendered="#{healthCheckController.healthDTO.servicioOk == false}">
+								</p:graphicImage>
+								<p:graphicImage value="/resources/images/success.png" width="30px"
+									rendered="#{healthCheckController.healthDTO.servicioOk}">
+								</p:graphicImage>
+							</h:column>
+							<h:column>
+								<p:commandButton value="Validar"
+									action="#{healthCheckController.validarBusquedaBPM}"
+									update="banderaBpmId respuestaConsola" />
+							</h:column>
+						</p:panelGrid>
+					</p:tab>
+					<p:tab title="BPM :: Tareas por usuario ">
+						<p:panelGrid id="banderaTareasBpmId" columns="2" styleClass="headerGrid">
+							<h:column>
+								<h:outputText value="RFC: " />
+							</h:column>
+							<h:column>
+								<p:inputText id="rfcBPMId"
+									value="#{healthCheckController.rfcBPM}"
+									style="width:200px;font-size:12px;" maxlength="50" />
+							</h:column>
+							<h:column>
+								<p:graphicImage value="/resources/images/error.png" width="30px"
+									rendered="#{healthCheckController.healthDTO.servicioOk == false}">
+								</p:graphicImage>
+								<p:graphicImage value="/resources/images/success.png" width="30px"
+									rendered="#{healthCheckController.healthDTO.servicioOk}">
+								</p:graphicImage>
+							</h:column>
+							<h:column>
+								<p:commandButton value="Validar"
+									action="#{healthCheckController.obtenerNumeroTareasPorUsuario}"
+									update="banderaTareasBpmId respuestaConsola" />
+							</h:column>
+						</p:panelGrid>
+					</p:tab>					
+					<p:tab title="Consola">
+						<h:column>
+							<p:inputTextarea rows="6" cols="125" id="respuestaConsola"
+								readonly="true"
+								value="#{healthCheckController.healthDTO.respuesta}" />
+						</h:column>
+					</p:tab>
+					<p:tab title="Sincronización Usuario">
+						<p:panelGrid id="sincronizacion" columns="2" styleClass="headerGrid">
+							<h:column>
+								<h:outputLabel value="Fecha sincronizacion" for="fecha"/>
+							</h:column>
+							<h:column>
+								<h:outputText value="#{healthCheckController.healthDTO.fechaUltimaSincronizacion}"
+									id="fecha">
+									<f:convertDateTime pattern="dd/MM/yyyy"/>
+								</h:outputText>
+							</h:column>
+							<h:column>
+								<h:outputLabel value="Permitir sincronizacion" for="permiteEjecucion"/>
+							</h:column>
+							<h:column>
+								<h:selectBooleanCheckbox value="#{healthCheckController.healthDTO.permitirEjecucionSincronizacion}"
+									id="permiteEjecucion"/>
+							</h:column>
+							<h:column>
+								<p:commandButton value="Guardar Cambios"
+									action="#{healthCheckController.obtenerDatosUsuariosSincronizacion}"
+									update="sincronizacion" />
+							</h:column>
+						</p:panelGrid>
+						<p:panel>
+							<p:dataTable var="user" value="#{healthCheckController.healthDTO.usuariosSincronizacion}" paginator="true" rows="10">
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="RFC corto"/>
+									</f:facet>
+									<h:outputText value="#{user.rfcCorto}"/>
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Está activo"/>
+									</f:facet>
+									<h:outputText value="#{user.activo}"/>
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Fecha"/>
+									</f:facet>
+									<h:outputText value="#{user.fecha}">
+										<f:convertDateTime pattern="dd/MM/yyyy"/>
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+					</p:tab>
+				</p:accordionPanel>
+			</h:form>
+		</p:panel>
+	</h:body>
+</ui:composition>

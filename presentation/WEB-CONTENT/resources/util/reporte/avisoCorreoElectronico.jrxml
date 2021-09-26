@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="avisoCorreoElectronico" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="92d833bf-df45-4437-a238-9549c9ec1213">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="idSolicitud" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="tipoNotificacion" class="java.lang.String"/>
+	<parameter name="FILE_SEPARATOR" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT DISTINCT unidadAdmin.NOMBRE AS unidadAdmin,
+  personaSol.NOMBRE                AS nombreProm,
+  personaSol.APELLIDOPATERNO       AS apellidoPatProm,
+  personaSol.APELLIDOMATERNO       AS apellidoMatProm,
+  personaSol.IDETIPOPERSONASOL,
+  personaSol.RFC,
+  TO_CHAR(notificacion.FECENVIONOTIFICACION, 'dd "de " fmmonth " de " yyyy') AS fechaNotificacion,
+  unidadAdmin.ACRONIMO,
+  tramite.IDTRAMITE,
+  personaSol.CORREOELECTRONICO
+FROM RVCT_SOLICITUD sol
+LEFT JOIN RVCT_TRAMITE tramite
+ON sol.IDSOLICITUD = tramite.IDSOLICITUD
+LEFT JOIN RVCT_RESOLUCION resolucion
+ON tramite.IDTRAMITE = resolucion.IDTRAMITE
+LEFT JOIN RVCC_UNIADMIN unidadAdmin
+ON unidadAdmin.IDUNIADMIN = sol.IDUNIADMIN
+LEFT JOIN RVCT_SOLPERSONA personaSol
+ON sol.IDSOLICITUD = personaSol.IDSOLICITUD
+LEFT JOIN RVCT_NOTIFICACION notificacion
+ON resolucion.IDRESOLUCION = notificacion.IDRESOLUCION
+WHERE sol.IDSOLICITUD      = $P{idSolicitud}
+AND resolucion.FECBAJA    IS NULL
+--AND personaSol.IDETIPOPERSONASOL = 'TIPERS.SL']]>
+	</queryString>
+	<field name="UNIDADADMIN" class="java.lang.String"/>
+	<field name="NOMBREPROM" class="java.lang.String"/>
+	<field name="APELLIDOPATPROM" class="java.lang.String"/>
+	<field name="APELLIDOMATPROM" class="java.lang.String"/>
+	<field name="IDETIPOPERSONASOL" class="java.lang.String"/>
+	<field name="RFC" class="java.lang.String"/>
+	<field name="FECHANOTIFICACION" class="java.lang.String"/>
+	<field name="ACRONIMO" class="java.lang.String"/>
+	<field name="IDTRAMITE" class="java.lang.String"/>
+	<field name="CORREOELECTRONICO" class="java.lang.String"/>
+	<variable name="nombreFirmante" class="java.lang.String"/>
+	<detail>
+		<band splitType="Stretch">
+			<subreport>
+				<reportElement uuid="c58c56ad-68a9-4ba9-bc58-276ff348ee47" x="0" y="0" width="200" height="0"/>
+				<subreportParameter name="idTramite">
+					<subreportParameterExpression><![CDATA[$F{IDTRAMITE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<returnValue subreportVariable="nombreFirmante" toVariable="nombreFirmante"/>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} +$P{FILE_SEPARATOR}+ ($P{tipoNotificacion}.equals("resolucion")?"datosFirmaResolucion.jasper":($P{tipoNotificacion}.equals("requerimiento")?"datosFirmaRequerimiento.jasper":"datosFirmaRemision.jasper"))]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="346">
+			<staticText>
+				<reportElement uuid="2f515abe-7f07-4a37-893f-2f40fad1041e" x="59" y="18" width="462" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[AVISO (CORREO ELECTRÓNICO)]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="d842ad05-3cac-4ef2-b524-56d303fbe016" positionType="Float" x="59" y="147" width="462" height="36"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Servicio de Administración Tributaria<br>"+
+"Administración General Jurídica<br>"+
+$F{UNIDADADMIN}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="d842ad05-3cac-4ef2-b524-56d303fbe016" positionType="Float" x="59" y="55" width="462" height="44"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<b>De:</b> notificaciones@recursoderevocaciónenlinea.sat.gob.mx <br>"+
+"<b>Enviado el:</b> PENDIENTE <br>"+
+"<b>Para:</b> "+$F{NOMBREPROM}+" "+$F{APELLIDOPATPROM}+" "+$F{APELLIDOMATPROM}+"<br>"+
+"<b>Asunto:</b> Servicio de Notificaciones de SAT <br>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="51116ed0-50f1-4e9b-ad0c-5ca9fef7cd45" positionType="Float" x="59" y="113" width="462" height="29"/>
+				<textElement textAlignment="Justified">
+					<font size="18" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["El  contenido  de  Notificación  se  muestra  a  continuación:"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="71c5025b-013d-457d-aa78-98284693647e" positionType="Float" x="59" y="183" width="462" height="1"/>
+			</line>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="d842ad05-3cac-4ef2-b524-56d303fbe016" positionType="Float" x="59" y="264" width="462" height="67"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<b>"+$F{NOMBREPROM}+" "+$F{APELLIDOPATPROM}+" "+$F{APELLIDOMATPROM}+"</b><br><br>"+
+"En términos de lo dispuesto en los artículos 17-K y 134 del Código Fiscal de la Federación, le envío el AVISO DE CORREO ELECTRÓNICO, informándole a usted que dentro del recurso de revocación número "+
+$F{IDTRAMITE}+", controlado en la "+$F{UNIDADADMIN}+", se emitió un oficio "
++($P{tipoNotificacion}.equals( "requerimiento" )?"de requerimiento de información y/o documentación":($P{tipoNotificacion}.equals( "resolucion" )?"de resolución":($P{tipoNotificacion}.equals( "remision" )?"de remisión":"")))+
+" que está disponible a partir de esta fecha y por el término de TRES DÍAS en el Sistema de Recurso de Revocación en Línea, para que ingrese al expediente electrónico respectivo, a efecto de notificarse. Destacando que si a su vencimiento esto no hubiere ocurrido, se tendrá por realizada su notificación al cuarto día hábil siguiente de que le fue enviado este aviso, acorde a lo dispuesto en el mencionado numeral 134 del ordenamiento legal en comento."]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="d842ad05-3cac-4ef2-b524-56d303fbe016" positionType="Float" x="59" y="199" width="462" height="44"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<b>De:</b> "+$V{nombreFirmante}+"<br>"+
+"<b>Para:</b> "+$F{NOMBREPROM}+" "+$F{APELLIDOPATPROM}+" "+$F{APELLIDOMATPROM}+"<br>"+
+"<b>Dirección de correo electrónico:</b> "+($F{CORREOELECTRONICO}!=null?$F{CORREOELECTRONICO}:"")+"<br>"+
+"<b>Fecha de envío del Aviso:</b> "+$F{FECHANOTIFICACION}+"<br>"+
+"<b>Asunto:</b> AVISO DE CORREO ELECTRÓNICO"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

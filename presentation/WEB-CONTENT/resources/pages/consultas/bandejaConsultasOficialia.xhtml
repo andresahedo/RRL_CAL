@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<f:event listener="#{bandejaConsultasOficialia.validaAccesoOficialia}" type="preRenderView" />
+<h:head>
+</h:head>
+<h:body>
+    <style type="text/css">
+.ui-panel {
+    border-style: none !important;
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+</style>
+
+    <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" />
+    <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" />
+    <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+        draggable="false" closable="false">
+        <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+    </p:dialog>
+
+    <h:form id="formBandeja">
+
+        <p:panel style="border:none;" id="panelMensajes">
+            <p:messages showDetail="true" autoUpdate="true" />
+        </p:panel>
+
+        <p:panel id="panelFuncionario">
+            <table>
+                <tr>
+                    <td><h:outputText value="#{msg['vuj.resol.funcionario']}" /></td>
+                    <td><h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" /></td>
+                </tr>
+                <tr>
+                    <td><p:inputText value="#{bandejaConsultasOficialia.userProfile.nombreCompleto}" /></td>
+                    <td><p:inputText value="#{bandejaConsultasOficialia.userProfile.rfc}" /></td>
+                </tr>
+                <tr>
+                </tr>
+            </table>
+        </p:panel>
+        <p:panel id="bandejaPanel" header="#{msg['oficialia.bandeja.consulta.rechazos']}">
+            <table cellpadding="1">
+                <tr>
+                    <td><h:outputText value="#{msg['rrl.buscarPromocion.numeroAsunto']} " /> <!-- <h:graphicImage id="ayudaIdNumero" url="/resources/css/images/ayuda.png"/> -->
+                    </td>
+                    <td><h:outputText value="#{msg['oficialia.bandeja.consulta.rfc']} " /> <!-- <h:graphicImage id="ayudaIdRFC" url="/resources/css/images/ayuda.png"/> -->
+                    </td>
+                    <td><h:outputText value="#{msg['rrl.buscarPromocion.fechaInicio']} " /> <!-- <h:graphicImage id="ayudaIdFecInicio" url="/resources/css/images/ayuda.png"/> -->
+                    </td>
+                    <td><h:outputText value="#{msg['rrl.buscarPromocion.fechaFin']} " /> <!-- <h:graphicImage id="ayudaIdFecFin" url="/resources/css/images/ayuda.png"/> -->
+                    </td>
+                </tr>
+                <tr>
+                    <td><p:inputText value="#{bandejaConsultasOficialia.filtroBandejaTareaDTO.numeroAsunto}"
+                            id="numeroAsunto" maxlength="13" /></td>
+                    <td><p:inputText value="#{bandejaConsultasOficialia.filtroBandejaTareaDTO.rfcFuncionario}"
+                            id="rfcFuncionario" maxlength="13">
+                            <f:attribute name="msgRFC" value="#{msg['oficialia.rechazo.asunto.rfcIncorrecto']}" />
+                        </p:inputText></td>
+                    <td><p:calendar pattern="dd/MM/yyyy" locale="es" navigator="true" id="fechaInicio"
+                            value="#{bandejaConsultasOficialia.filtroBandejaTareaDTO.fechaInicio}"
+                            onchange="limpiarFechaFinCalendar();" widgetVar="fechaInicioCalendar"
+                            maxdate="#{bandejaConsultasOficialia.maxFechaInicio}" readonlyInput="true">
+                            <p:ajax event="dateSelect" listener="#{bandejaConsultasOficialia.rangoMaxFechas}"
+                                update="fechaFin" />
+                        </p:calendar></td>
+                    <td><p:calendar pattern="dd/MM/yyyy" locale="es" navigator="true" widgetVar="fechaFinCalendar"
+                            id="fechaFin" mindate="#{bandejaConsultasOficialia.minFechaFin}"
+                            maxdate="#{bandejaConsultasOficialia.maxFechaFin}"
+                            value="#{bandejaConsultasOficialia.filtroBandejaTareaDTO.fechaFin}" readonlyInput="true">
+
+                        </p:calendar></td>
+                    <td></td>
+                    <td colspan="4" align="right"><p:commandButton value="#{msg['vuj.boton.limpiar']}"
+                            actionListener="#{bandejaConsultasOficialia.limpiarBandeja}" process="@this"
+                            partialSubmit="true" update="@form">
+                            <!--                             <p:resetInput target="@form" /> -->
+                        </p:commandButton></td>
+                    <td><p:commandButton value="#{msg['oficialia.botonBuscar.title']}" update="@form"
+                            actionListener="#{bandejaConsultasOficialia.buscarTareaBandejaRechazo}" /></td>
+                    <td><p:commandButton value="#{msg['oficialia.botonDocumentos.title']}" update="@form"
+                            actionListener="#{bandejaConsultasOficialia.buscarDoctosBandejaRechazo}" /></td>
+                </tr>
+            </table>
+        </p:panel>
+        <p:panel id="bandejaTablePanel">
+            <p:dataTable paginator="true" rows="10" selection="#{bandejaConsultasOficialia.bandejaTareaDTO}"
+                var="bandeja" value="#{bandejaConsultasOficialia.listDatosBandeja}" id="bandejaTable"
+                emptyMessage="#{bandejaConsultasOficialia.mensajeBandejaVacia}" resizableColumns="true">
+
+                <p:column headerText="#{msg['oficialia.bandeja.consulta.numeroAsunto']}" resizable="false"
+                    style="width:12%;white-space:pre-line;">
+                    <h:outputText value="#{bandeja.numAsunto}" id="numeroAsuntoTable" />
+                </p:column>
+
+                <p:column headerText="#{msg['oficialia.bandeja.consulta.tipoTramite']}" resizable="false"
+                    style="width:12%;white-space:pre-line;">
+                    <h:outputText value="#{bandeja.descripcionTipoTramite}" id="tipoTramite" />
+                </p:column>
+
+                <p:column headerText="#{msg['oficialia.bandeja.consulta.rfcPromovente']}" resizable="false"
+                    style="width:12%;white-space:pre-line;">
+                    <h:outputText value="#{bandeja.rfcPromovente}" id="user" />
+                </p:column>
+
+                <p:column headerText="#{msg['oficialia.bandeja.consulta.motivoRechazo']}" resizable="false"
+                    style="width:12%;white-space:pre-line;">
+                    <h:outputText value="#{bandeja.descripcionRechazo}" id="idMotivo" />
+                </p:column>
+
+                <p:column headerText="#{msg['oficialia.bandeja.consulta.fechaRechazo']}" resizable="false"
+                    style="width:12%;white-space:pre-line;">
+                    <h:outputText value="#{bandeja.fechaCreacion}" id="tipoFechaInicio">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="#{msg['oficialia.bandeja.consulta.funcionarioRechazo']}" resizable="false"
+                    style="width:12%;white-space:pre-line;">
+                    <h:outputText value="#{bandeja.idUsuario}" id="rfc" />
+                </p:column>
+
+                <p:column headerText="#{msg['oficialia.bandeja.consulta.tipoDocumento']}" resizable="false"
+                    style="width:12%;white-space:pre-line;">
+                    <h:outputText value="#{bandeja.tipoDoc}" id="tDoc" />
+                </p:column>
+
+                <p:column headerText="#{msg['oficialia.bandeja.consulta.estadoOficialia']}" resizable="false"
+                    style="width:12%;white-space:pre-line;">
+                    <h:outputText value="#{bandeja.estadoProcesal.descripcion}" id="idEstadoProcesal" />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+    </h:form>
+
+    <script type="text/javascript">
+		function limpiarFechaFinCalendar() {
+    	
+		}
+		function limpiarFechaInicioCalendar() {
+    		fechaInicioCalendar.setDate(null);
+		}
+		
+		function limpiarRangoFechasCalendar() {
+			limpiarFechaFinCalendar();
+			limpiarFechaInicioCalendar();
+		}
+		
+	</script>
+    <h:outputScript name='/js/calendar_es.js' target="head" />
+</h:body>
+
+</html>
+

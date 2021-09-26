@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+    <style type="text/css">
+.ui-selectonemenu-panel {
+    width: 50px
+}
+
+.ui-panel {
+    width: #{sessionScope.tamanioApp}px;
+    border-style:none !important;
+}
+.ui-panelgrid td {
+    border-style: none;
+}
+
+.ui-panelgrid tr {
+    border-style: none;
+}
+
+.ui-widget {
+    font-family: Arial, sans-serif !important;
+    font-size: 11px !important;
+}
+</style>
+</h:head>
+
+<ui:decorate template="../encabezado.xhtml">
+</ui:decorate>
+
+<h:body>
+    <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" />
+
+    <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+        draggable="false" closable="false">
+        <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+    </p:dialog>
+    <h:form id="form">
+        <p:panel id="msgPanel" style="width:#{sessionScope.tamanioApp}px;">
+            <p:messages showDetail="true" autoUpdate="true" id="messages" globalOnly="true" />
+        </p:panel>
+        <p:panel id="panelBitacora">
+            <p:panel header="#{msg['administracion.usuarios.bitacora.titulo']}" style="text-align:center" />
+            <p:panelGrid>
+
+                <p:row>
+                    <p:column>
+                        <h:outputLabel value="* Datos requeridos" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column id="requiredLabel">
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.unidadAdmin']}" />
+                        <p:outputLabel value="* " id="req" style="color:red" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.fechaInicial']}" />
+                        <p:outputLabel value="* " style="color:red" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.fechaFinal']}" />
+                        <p:outputLabel value="* " style="color:red" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <c:choose>
+                            <c:when test="#{!bitacoraController.adminUsuariosDTO.blnIsAdminGlobal}">
+                                <p:selectOneMenu id="unidadAdmin"
+                                    value="#{bitacoraController.filtroBitacora.idUniAdmin}" filter="true"
+                                    filterMatchMode="contains" widgetVar="comboUnidad" style="width:350px"
+                                    disabled="#{!bitacoraController.adminUsuariosDTO.blnIsAdminGlobal}">
+                                    <f:selectItem
+                                        itemLabel="#{bitacoraController.adminUsuariosDTO.unidadAdministrativa}"
+                                        itemValue="#{bitacoraController.adminUsuariosDTO.idUnidadAmin}" />
+                                    <f:selectItems value="#{bitacoraController.listaUnidadesAdministrativas}"
+                                        var="unidades" itemLabel="#{unidades.descripcion}" itemValue="#{unidades.clave}" />
+                                    <p:ajax event="valueChange" immediate="true" process="@this" />
+                                </p:selectOneMenu>
+                                <p:message for="unidadAdmin" display="text" />
+                            </c:when>
+                            <c:otherwise>
+                                <p:selectOneMenu id="unidadAdmin"
+                                    value="#{bitacoraController.filtroBitacora.idUniAdmin}" filter="true"
+                                    filterMatchMode="contains" required="#{bitacoraController.requerido}"
+                                    widgetVar="comboUnidad" style="width:350px">
+                                    <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                                    <f:selectItems value="#{bitacoraController.listaUnidadesAdministrativas}"
+                                        var="unidades" itemLabel="#{unidades.descripcion}" itemValue="#{unidades.clave}" />
+                                    <p:ajax event="valueChange" immediate="true" process="@this" />
+                                </p:selectOneMenu>
+                                <p:message for="unidadAdmin" display="text" />
+                            </c:otherwise>
+                        </c:choose>
+                    </p:column>
+
+                    <p:column>
+                        <p:calendar id="fechaInicio" pattern="dd/MM/yyyy" locale="es" required="true" navigator="true"
+                            readonlyInput="true" value="#{bitacoraController.filtroBitacora.fechaInicial}"
+                            maxdate="#{bitacoraController.maxDate}">
+                            <p:ajax event="dateSelect" listener="#{bitacoraController.rangoMaxFechas}" update="fechaFin" />
+                        </p:calendar>
+                        <p:message for="fechaInicio" display="text"></p:message>
+                    </p:column>
+
+                    <p:column>
+                        <p:calendar id="fechaFin" pattern="dd/MM/yyyy" locale="es" required="true" navigator="true"
+                            readonlyInput="true" value="#{bitacoraController.filtroBitacora.fechaFinal}"
+                            maxdate="#{bitacoraController.maxDate}">
+                            <f:attribute name="startDate" value="#{bitacoraController.filtroBitacora.fechaInicial}" />
+                            <f:attribute name="msgFechaFin" value="#{bitacoraController.mensageFechaFin}" />
+                            <f:attribute name="msgObligatorio" value="#{bitacoraController.mensageFechas}" />
+                            <f:validator validatorId="calendarioValidator" />
+                        </p:calendar>
+                        <p:message for="fechaFin" display="text"></p:message>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.realizadoPor']}" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.aplicadoA']}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:selectOneMenu id="listSelectRealiza"
+                            value="#{bitacoraController.filtroBitacora.realizadoPor}" filter="true"
+                            filterMatchMode="contains" widgetVar="comboRealizadoPor" onchange="renderRequerido()"
+                            valueChangeListener="#{bitacoraController.handleChange}">
+                            <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                            <f:selectItems value="#{bitacoraController.tipoSeleccionRealiza}" var="tipo"
+                                itemLabel="#{tipo.descripcion}" itemValue="#{tipo.clave}" />
+                            <p:ajax event="valueChange" immediate="true" process="@this"
+                                update=":form:inputNumEmpRealiza,:form:inputrfcRealiza" />
+                        </p:selectOneMenu>
+                    </p:column>
+
+                    <p:column>
+                        <p:selectOneMenu id="listSelectAplica" value="#{bitacoraController.filtroBitacora.aplicadoA}"
+                            filter="true" filterMatchMode="contains" widgetVar="comboAplicadoA"
+                            valueChangeListener="#{bitacoraController.handleChange2}">
+                            <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                            <f:selectItems value="#{bitacoraController.tipoSeleccionAplica}" var="tipoAplica"
+                                itemLabel="#{tipoAplica.descripcion}" itemValue="#{tipoAplica.clave}" />
+                            <p:ajax event="valueChange" immediate="true"
+                                process="@this,:form:inputNumAplica,:form:inputrfcAplica"
+                                update="@form,:form:inputNumAplica,:form:inputrfcAplica" />
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.numeroEmpleado']}" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.numeroEmpleado']}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:inputMask mask="9?9999999999" value="#{bitacoraController.filtroBitacora.numeroEmpRealiza}"
+                            maxlength="11" disabled="#{!bitacoraController.activaCampos}" id="inputNumEmpRealiza" />
+                    </p:column>
+                    <p:column>
+                        <p:inputMask mask="9?9999999999" value="#{bitacoraController.filtroBitacora.numeroEmpAplicado}"
+                            maxlength="11" disabled="#{!bitacoraController.activaCampos2}" id="inputNumAplica" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.rfcEmpleado']}" id="rfcRealiza" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.rfcEmpleado']}" id="rfcAplica" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:inputText value="#{bitacoraController.filtroBitacora.rfcRealizaPor}" maxlength="13"
+                            disabled="#{!bitacoraController.activaCampos}" id="inputrfcRealiza" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText value="#{bitacoraController.filtroBitacora.rfcAplicadoA}" maxlength="13"
+                            disabled="#{!bitacoraController.activaCampos2}" id="inputrfcAplica" />
+                    </p:column>
+                    <p:column>
+                        <p:commandButton value="#{msg['vuj.boton.limpiar']}"
+                            actionListener="#{bitacoraController.limpiarBandeja}" process="@this" update="@form">
+                            <p:resetInput target="panelBitacora" />
+                        </p:commandButton>
+
+                        <p:commandButton value="#{msg['vuj.boton.consultar']}"
+                            actionListener="#{bitacoraController.consultarBitacora}" update="@form,:form:bitacoraPanel" />
+                        <p:commandButton value="#{msg['vuj.boton.cancelar']}"
+                            actionListener="#{bitacoraController.back}" process="@this" update="@form" />
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+
+            <p:panel>
+                <p:scrollPanel style="width:100%;height:#{bitacoraController.tamanioPanel}px;" id="bitacoraPanel">
+                    <p:dataTable var="bitacora" value="#{bitacoraController.listaBitacora}" id="bitacoraTable"
+                        emptyMessage="#{bitacoraController.mensajeBandejaVacia}">
+
+                        <p:column headerText="#{msg['administracion.usuarios.bitacora.unidadAdmin']}">
+                            <p:outputLabel value="#{bitacora.nomUniAdmin}" id="numeroAsuntoTable"
+                                style="white-space:pre-line;" />
+                        </p:column>
+
+                        <p:column headerText="#{msg['administracion.usuarios.bitacora.fechaHora']}">
+                            <h:outputText value="#{bitacora.fechaAccion}" id="fechaInicio">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" locale="es" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="#{msg['administracion.usuarios.bitacora.realizadoPor']}">
+                            <p:outputLabel value="#{bitacora.numEmpRealiza}" />
+                            <p:outputLabel value="  " />
+                            <p:outputLabel value="#{bitacora.rfcEmpleadoRealiza}" />
+                            <p:outputLabel value="  " />
+                            <p:outputLabel value="#{bitacora.nomEmpRealiza}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg['administracion.usuarios.bitacora.accion']}">
+                            <p:outputLabel value="#{bitacora.accion}" id="idAccion" style="white-space:pre-line;" />
+                        </p:column>
+
+                        <p:column headerText="#{msg['administracion.usuarios.bitacora.descripcion']}">
+                            <p:outputLabel value="#{bitacora.descripcion}" id="idDescripcion"
+                                style="white-space:pre-line;" />
+                        </p:column>
+
+                        <p:column headerText="#{msg['administracion.usuarios.bitacora.aplicadoA']}">
+                            <p:outputLabel
+                                value="#{bitacora.numEmpAplicadoA} #{bitacora.rfcAplicadoA} #{bitacora.nomEmpAplicadoA}"
+                                style="white-space:pre-line;" />
+                        </p:column>
+                    </p:dataTable>
+                </p:scrollPanel>
+            </p:panel>
+        </p:panel>
+    </h:form>
+
+
+    <script type="text/javascript">
+		function renderRequerido (){
+		var valorCombo = $('#form\\:listSelectRealiza_input').val();
+			if ( valorCombo == 'EACBIT.SIS'){
+				$('#form\\:req').hide();
+			} else {
+				$('#form\\:req').show();
+			}
+		}
+	
+	</script>
+</h:body>
+</html>

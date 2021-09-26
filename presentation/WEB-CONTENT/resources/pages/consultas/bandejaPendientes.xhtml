@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+        <f:event listener="#{bandejaPendientesController.validaAccesoProcesoMenu}" type="preRenderView" />
+        <style type="text/css">
+.noBorder td {
+    border-style: hidden !important;
+}
+
+.ui-panel {
+    border-style: hidden !important;
+    width: #{sessionScope.tamanioBuzon}#{sessionScope.tipoTamanioBuzon};
+}
+.ui-datatable tbody td {
+    white-space: pre-line;
+    word-break: break-all;
+}
+</style>
+
+        <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" />
+
+        <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+            draggable="false" closable="false">
+            <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+        </p:dialog>
+
+
+        <h:form id="formBandejaPendientes" onkeypress="if (event.keyCode == 13) { return false; }">
+
+            <p:panel id="panelMensajes" style="border-style: hidden !important;">
+                <p:messages showDetail="true" showSummary="false" />
+            </p:panel>
+            <p:panel id="bandejaPanelPromovente">
+                <p:panelGrid columns="2" styleClass="noBorder">
+                    <h:outputText value="#{msg['vuj.promovente']}" />
+                    <h:outputText value="#{msg['vuj.solicitante.rfc']}" />
+                    <p:inputText id="promovente" readonly="true"
+                        value="#{bandejaPendientesController.userProfile.nombreCompleto}" />
+                    <p:inputText id="rfcPromovente" readonly="true"
+                        value="#{bandejaPendientesController.userProfile.rfc}">
+                    </p:inputText>
+                </p:panelGrid>
+            </p:panel>
+            <p:panel id="bandejaPanel" header="#{msg['vuj.bandejaPendientes.promocionesPorEnviar']}">
+                <p:panelGrid columns="1" styleClass="noBorder">
+                    <h:outputText value="#{msg['vuj.bandejaPendientes.busquedaPromocion']}" />
+                    <p:column>
+                        <h:outputText value="#{msg['vuj.bandejaPendientes.numeroPromocion']} " />
+                        <h:graphicImage id="ayudaIdProm" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdProm" value="#{msg['atender.requerimiento.numeroAsunto']}" adjustX="20"
+                            adjustY="20" mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                    <p:inputText value="#{bandejaPendientesController.filtroBandejaPendientesDTO.idSolicitud}"
+                        widgetVar="numeroPromocion" id="idSolicitud" maxlength="13"
+                        converterMessage="#{errmsg['vuj.bandejaPendientes.numeroPromocionError']}">
+                        <f:convertNumber integerOnly="true" type="number" groupingUsed="false" />
+                    </p:inputText>
+
+                </p:panelGrid>
+                <p:panelGrid columns="2" styleClass="noBorder">
+                    <h:outputText value="#{msg['vuj.bandejaPendientes.rangoFechas']} " />
+
+                    <p:spacer />
+                    <p:column>
+                        <h:outputText value="#{msg['vuj.bandejaPendientes.fechaInicial']} " />
+                        <h:graphicImage id="ayudaIdInicial" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdInicial" value="#{msg['atender.requerimiento.fechaInicio']}"
+                            adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{msg['vuj.bandejaPendientes.fechaFinal']} " />
+                        <h:graphicImage id="ayudaIdFinal" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdFinal" value="#{msg['atender.requerimiento.fechaFin']}" adjustX="20"
+                            adjustY="20" mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                    <p:calendar pattern="dd/MM/yyyy" locale="es" navigator="true" id="fechaInicio"
+                        value="#{bandejaPendientesController.filtroBandejaPendientesDTO.fechaInicio}"
+                        widgetVar="fechaInicioCalendar" readonlyInput="true"
+                        mindate="#{bandejaPendientesController.minFechaFin}"
+                        maxdate="#{bandejaPendientesController.maxFechaFin}" onchange="limpiarFechaFinCalendar();">
+                        <p:ajax event="dateSelect" listener="#{bandejaPendientesController.rangoMaxFechas}"
+                            update="fechaFin" />
+                    </p:calendar>
+                    <p:calendar pattern="dd/MM/yyyy" locale="es" navigator="true"
+                        mindate="#{bandejaPendientesController.minFechaFinFin}"
+                        maxdate="#{bandejaPendientesController.maxFechaFin}" widgetVar="fechaFinCalendar" id="fechaFin"
+                        value="#{bandejaPendientesController.filtroBandejaPendientesDTO.fechaFin}" readonlyInput="true">
+                        <f:attribute name="startDate"
+                            value="#{bandejaPendientesController.filtroBandejaPendientesDTO.fechaInicio}" />
+                        <f:attribute name="msgFechaFin" value="#{bandejaPendientesController.mensajeFechaFin}" />
+                        <f:attribute name="msgObligatorio" value="#{bandejaPendientesController.mensajeFechas}" />
+
+                    </p:calendar>
+                </p:panelGrid>
+                <table width="100%">
+                    <tr>
+                        <td colspan="4" align="right"><p:commandButton value="#{msg['vuj.boton.limpiar']}"
+                                actionListener="#{bandejaPendientesController.limpiarBandejaPendientes}"
+                                process="@this,panelMensajes,bandejaTable,fechaInicio"
+                                update="@form,:formBandejaPendientes:bandejaTablePanel,:formBandejaPendientes:bandejaPanel,:formBandejaPendientes:panelMensajes">
+
+                            </p:commandButton> <p:commandButton value="Buscar"
+                                actionListener="#{bandejaPendientesController.buscarPendientes}"
+                                update=":formBandejaPendientes,:formBandejaPendientes:panelMensajes, :formBandejaPendientes:bandejaPanel, formBandejaPendientes:bandejaTablePanel" />
+                        </td>
+                    </tr>
+                </table>
+
+
+            </p:panel>
+            <p:panel id="bandejaTablePanel">
+                <p:dataTable paginator="true" rows="10"
+                    selection="#{bandejaPendientesController.datosBandejaPendientesDTO}" widgetVar="bandejaSelection"
+                    selectionMode="single" var="bandeja"
+                    value="#{bandejaPendientesController.datosBandejaPendientesDataModel}" id="bandejaTable"
+                    emptyMessage="#{bandejaPendientesController.mensajeBandejaVacia}" style="word-break:break-all;"
+                    resizableColumns="true">
+                    <p:ajax event="rowDblselect" listener="#{bandejaPendientesController.onRowDblClckSelect}" />
+                    <p:column headerText="#{msg['vuj.bandejaPendientes.numeroPromocion']}"
+                        style="width:20%;white-space:pre-line;word-break:break-all;">
+                        <h:outputText value="#{bandeja.idSolicitud}" id="numeroPromocion" />
+                    </p:column>
+                    <p:column headerText="#{msg['vuj.bandejaPendientes.tipoPromocion']}"
+                        style="width:40%;white-space:pre-line;word-break:break-all;">
+                        <h:outputText value="#{bandeja.tipoTramite}" id="tipoTramite" />
+                    </p:column>
+                    <p:column headerText="#{msg['vuj.fechaCreacionPromocion']}"
+                        style="width:20%;white-space:pre-line;word-break:break-all;">
+                        <h:outputText value="#{bandeja.fechaCreacionStr}" id="fechaCreacion" />
+                    </p:column>
+                    <p:column headerText="#{msg['vuj.bandejaPendientes.habilesTranscurridos']}"
+                        style="width:20%;white-space:pre-line;word-break:break-all;">
+                        <h:outputText value="#{bandeja.diasHabilesTranscurridos}" id="diasHabilesTranscurridos" />
+                    </p:column>
+                </p:dataTable>
+                <pe:tooltip for="bandejaTable" value="#{msg['atender.requerimiento.listaBandejaPendientes']}"
+                    adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" />
+            </p:panel>
+        </h:form>
+        <script type="text/javascript">
+		
+		function limpiarFechaFinCalendar() {
+    	
+		}
+		function limpiarFechaInicioCalendar() {
+    		fechaInicioCalendar.setDate(null);
+		}
+		
+		function limpiarRangoFechas() {
+    		fechaInicioCalendar.setDate(null);
+    		fechaFinCalendar.setDate(null);
+    		numeroPromocion.setText(null);
+		}
+		
+
+		
+		
+	</script>
+        <h:outputScript name='/js/calendar_es.js' target="head" />
+
+    </ui:define>
+</ui:composition>
+
+</html>

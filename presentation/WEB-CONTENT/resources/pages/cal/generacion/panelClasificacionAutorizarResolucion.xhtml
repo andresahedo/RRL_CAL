@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+
+        <style type="text/css">
+.centered {
+    position: relative;
+    height: 100px;
+    margin: 0 auto;
+    padding: 10% 0;
+}
+
+.noBorder td {
+    border-style: hidden !important;
+}
+</style>
+        <p:panel id="panelDatosCalsificacion" header="Datos de la clasificación">
+            <p:panelGrid columnClasses="2" styleClass="noBorder">
+                <p:row>
+                    <p:column>
+                        <h:outputLabel value="#{msg['cal.resol.fraccionArancelaria']}" />
+                        <p:outputLabel value=" * " style="color:red" />
+                        <h:graphicImage id="fraccionArancelariaC" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="fraccionArancelariaC" value="#{msg['cal.autorizacion.fraccionArancelaria']}"
+                            adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                    <p:column>
+                        <h:outputLabel value="#{msg['cal.resol.confirmaArancelaria']}" />
+                        <p:outputLabel value=" * " style="color:red" />
+                        <h:graphicImage id="confirmaArancelaria" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="confirmaArancelaria" value="#{msg['cal.autorizacion.confirmaArancelaria']}"
+                            adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:inputMask id="fraccion" disabled="false"
+                            value="#{generarResolucionAutorizacionController.fraccionArancel}" mask="9999.99.99"
+                            size="30" maxlength="10">
+                        </p:inputMask>
+                    </p:column>
+                    <p:column>
+                        <p:selectOneMenu effect="fade" id="confirmacionFraccion" filter="true"
+                            filterMatchMode="contains" value="#{generarResolucionAutorizacionController.fraccion}">
+                            <f:selectItem itemLabel="SI" itemValue="1"></f:selectItem>
+                            <f:selectItem itemLabel="NO" itemValue="0"></f:selectItem>
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <h:outputLabel value="#{msg['cal.resol.numeroMinuta']}" />
+                        <p:outputLabel value=" * " style="color:red" />
+                        <h:graphicImage id="numeroMinuta" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="numeroMinuta" value="#{msg['cal.autorizacion.numeroMinuta']}" adjustX="20"
+                            adjustY="20" mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                    <p:column>
+                        <h:outputLabel value="#{msg['cal.resol.fechaSesion']}" />
+                        <p:outputLabel value=" * " style="color:red" />
+                        <h:graphicImage id="fechaSesionImg" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="fechaSesion" value="#{msg['cal.autorizacion.fechaSesion']}" adjustX="20"
+                            adjustY="20" mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:inputText id="minuta" disabled="false"
+                            value="#{generarResolucionAutorizacionController.minuta}" size="30" maxlength="8">
+                        </p:inputText>
+                    </p:column>
+                    <p:column>
+                        <p:calendar id="fechaSesion" pattern="dd/MM/yyyy" locale="es" navigator="true"
+                            maxdate="#{generarResolucionAutorizacionController.fechaMaxima}"
+                            value="#{generarResolucionAutorizacionController.fechaSesion}" readonlyInput="true">
+                        </p:calendar>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </p:panel>
+        <h:outputScript name='/js/calendar_es.js' target="head" />
+    </ui:define>
+</ui:composition>
+</html>

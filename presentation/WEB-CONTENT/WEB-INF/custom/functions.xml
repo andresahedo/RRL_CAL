@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE facelet-taglib PUBLIC
+  "-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN"
+  "http://java.sun.com/dtd/facelet-taglib_1_0.dtd">
+<facelet-taglib>
+   <namespace>http://pe.siat.sat.gob.mx/taglib</namespace>
+   <function>
+		<function-name>isNumber</function-name>
+		<function-class>mx.gob.sat.siat.juridica.base.web.util.ElFunctions</function-class>
+		<function-signature>java.lang.Boolean isNumber(java.lang.String)</function-signature>   
+   </function>
+</facelet-taglib>

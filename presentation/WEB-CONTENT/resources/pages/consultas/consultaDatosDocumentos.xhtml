@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:form enctype="multipart/form-data" id="formaDocumentos">
+        <p:panel header="Documentos de la Promoción" style="width:100%;margin-bottom:10px;">
+            <p:dataTable id="tablaDoc" var="documento" value="#{consultasController.listaDocumentos}"
+                emptyMessage="#{msg['vuj.grid.vacio']}" rowIndexVar="rowIndex" resizableColumns="true"
+                paginator="true" rows="10">
+                <p:column headerText="Tipo de Documento" style="width:25%" resizable="false">
+                    <h:outputText value="#{documento.tipoDocumento}" id="tipoDoc" />
+                    <pe:tooltip for="tipoDoc" value="#{documento.tipoDocumento}" mouseTracking="true" adjustX="20"
+                        adjustY="20" />
+                </p:column>
+                <p:column headerText="Nombre del Archivo" style="width:34%" resizable="false">
+                    <h:outputText value="#{documento.nombre}" id="nomDoc" />
+                    <pe:tooltip for="nomDoc" mouseTracking="true" adjustX="20" adjustY="20">
+                        <p:outputLabel escape="true" value="#{documento.nombre}"></p:outputLabel>
+                    </pe:tooltip>
+                </p:column>
+                <p:column headerText="#{msg['vuj.documento.tamanioDocumento']}" style="width:11%;white-space:pre-line;"
+                    resizable="false">
+                    <h:outputText value="#{documento.cadenaTamanioArchivo}">
+                    </h:outputText>
+                </p:column>
+                <p:column style="width:6%" resizable="false">
+                    <p:commandButton value="#{msg['vuj.boton.ver']}" id="generarRuta" update=":tabSolicitud:dialogVisor"
+                        oncomplete="visorDialog.show()">
+                        <f:setPropertyActionListener value="#{documento}"
+                            target="#{consultasController.documentoDTOSelected}" />
+                        <p:ajax event="click" listener="#{consultasController.activaBanderaDocumentoPromocion}" />
+                    </p:commandButton>
+                </p:column>
+                <c:if test="#{consultasController.datosBandejaTareaDTO.oficialia}">
+                    <p:column style="width:40px" resizable="false" rendered="#{consultasController.datosBandejaTareaDTO.esAbogado}">
+                        <p:commandButton value="#{msg['vuj.boton.rechazar']}"
+                            actionListener="#{consultasController.rechazarButton}">
+                            <f:attribute name="doc" value="#{documento}" />
+                        </p:commandButton>
+                    </p:column>
+                </c:if>
+            </p:dataTable>
+        </p:panel>
+
+        <p:panel header="Acuses y Oficios" style="width:100%;margin-bottom:10px;">
+            <p:dataTable id="tablaDocumentos" var="documento" value="#{consultasController.documentoOficialDataModel}"
+                emptyMessage="#{msg['vuj.grid.vacio']}" rowIndexVar="rowIndex" resizableColumns="true"
+                paginator="true" rows="10">
+                <p:column headerText="Tipo de Documento" style="width:15%" resizable="false">
+                    <h:outputText value="#{documento.descripcionTipoDocumento}" id="tipoDoc" />
+                    <pe:tooltip for="tipoDoc" value="#{documento.descripcionTipoDocumento}" mouseTracking="true"
+                        adjustX="20" adjustY="20" />
+                </p:column>
+                <p:column headerText="Nombre del Archivo" style="width:25%" resizable="false">
+                    <h:outputText value="#{documento.nombreArchivo}" id="nomDocumento" />
+                    <pe:tooltip for="nomDocumento" mouseTracking="true" adjustX="20" adjustY="20">
+                        <p:outputLabel escape="true" value="#{documento.nombreArchivo}"></p:outputLabel>
+                    </pe:tooltip>
+                </p:column>
+                <p:column headerText="#{msg['vuj.documento.tamanioDocumento']}" style="width:9%;white-space:pre-line;"
+                    resizable="false">
+                    <h:outputText value="#{documento.cadenaTamanioArchivo}">
+                    </h:outputText>
+                </p:column>
+                <p:column style="width:4%;text-align:center;" resizable="false">
+                    <p:commandButton value="#{msg['vuj.boton.ver']}" id="generarRuta" update=":tabSolicitud:dialogVisor"
+                        oncomplete="visorDialog.show()" style="width:auto;">
+                        <f:setPropertyActionListener value="#{documento}"
+                            target="#{consultasController.documentoOficialSelected}" />
+                        <p:ajax event="click" listener="#{consultasController.activaBanderaDocumentoOficial}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+
+
+    </h:form>
+    <p:dialog id="dialogVisor" widgetVar="visorDialog" header="PDF" dynamic="true" modal="true" styleClass="dialogVisor"
+        position="left top" closeOnEscape="true" draggable="false" resizable="false">
+        <c:if test="#{not empty consultasController.urlDescargaSelected}">
+            <p:media player="pdf" value="#{consultasController.urlDescargaSelected}" width="780px" height="480px"
+                styleClass="dialogMedia">
+	       			Su navegador no es compatible con la vista previa de pdfs. Para descargar el documento de click en esta
+		       		<a href="#{consultasController.urlDescargaSelected}" target="_blank"> liga </a>
+            </p:media>
+        </c:if>
+    </p:dialog>
+
+</ui:composition>

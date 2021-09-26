@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <h:body>
+        <h:outputScript name='/js/calendar_es.js' target="head" />
+
+        <h:outputText escape="false" value="&lt;!--[if !IE 8]&gt; --&gt;" />
+        <style type="text/css">
+.noBorder tr {
+    border-style: hidden !important;
+}
+</style>
+        <h:outputText escape="false" value="&lt;!-- &lt;![endif]--&gt;" />
+
+        <style type="text/css">
+.noBorder td {
+    border-style: hidden !important;
+}
+
+.ui-chkbox-all {
+    visibility: hidden;
+}
+</style>
+
+        <style type="text/css">
+.noResize {
+    resize: none;
+}
+</style>
+
+        <p:panel id="panelProm5" header="#{msg['vuj.tab.promocion']}" style="width:100%">
+            <pe:tooltip for="panelProm5" value="#{msg['cal.reg.promocion.datos.promocion']}" atPosition="topCenter"></pe:tooltip>
+        </p:panel>
+
+        <p:panel id="panelPromocion5" style="width:100%">
+            <p:panelGrid id="datosPromocionGrid" columns="2" styleClass="noBorder">
+                <p:spacer></p:spacer>
+                <p:row>
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.montoOperacion']}" />
+                    <p:outputLabel value=" *" style="color:red">
+                        <h:graphicImage id="ayudaMontoOp" url="/resources/css/images/ayuda.png" />
+                    </p:outputLabel>
+                    <pe:tooltip for="ayudaMontoOp" value="#{msg['cal.reg.promocion.monto']}"></pe:tooltip>
+                </p:row>
+
+                <p:spacer></p:spacer>
+                <p:row>
+
+                    <pe:inputNumber symbol="$" id="montoOperacion" validatorMessage="#{errmsg['vuj.resol.importe']}"
+                        requiredMessage="#{errmsg['ca.solicitud.promocion.required.montoOperacion']}"
+                        required="#{registroSolicitudCALController.requeridoPrincipal}"
+                        value="#{registroSolicitudCALController.solicitud.montoOperacion}" maxlength="16"
+                        decimalPlaces="2" maxValue="99999999999999.99">
+
+                    </pe:inputNumber>
+                </p:row>
+                <p:spacer></p:spacer>
+                <p:row>
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.hechosCircunstancias']}" />
+                    <p:outputLabel value=" *" style="color:red">
+                        <h:graphicImage id="ayudaHechos" url="/resources/css/images/ayuda.png" />
+                    </p:outputLabel>
+                    <pe:tooltip for="ayudaHechos" value="#{msg['cal.reg.promocion.hechos']}"></pe:tooltip>
+
+                </p:row>
+                <p:spacer></p:spacer>
+
+                <p:row>
+
+
+                    <p:inputTextarea autoResize="false" id="hechosText"
+                        value="#{registroSolicitudCALController.solicitud.hechosCircunstancias}" cols="100" rows="3"
+                        maxlength="3800" size="3800" required="#{registroSolicitudCALController.requeridoPrincipal}"
+                        style='height:50px;'
+                        requiredMessage="#{errmsg['ca.solicitud.promocion.required.hechosCircunstancias']}"
+                        styleClass="noResize">
+                        <f:attribute name="msgValidacion"
+                            value="#{errmsg['cal.solicitud.promocion.validation.actividadesHechosRazones']}" />
+                        <f:validator validatorId="caracteresEspecialesValidator" />
+                        <p:scrollPanel id="areaText" mode="native" style="border-style: hidden !important; "></p:scrollPanel>
+
+                    </p:inputTextarea>
+                </p:row>
+                <p:spacer></p:spacer>
+                <p:row>
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.razonNegocio']}" />
+                    <p:outputLabel value=" *" style="color:red">
+                        <h:graphicImage id="ayudaRazonNegocio" url="/resources/css/images/ayuda.png" />
+                    </p:outputLabel>
+                    <pe:tooltip for="ayudaRazonNegocio" value="#{msg['cal.reg.promocion.razones']}"></pe:tooltip>
+                </p:row>
+                <p:spacer></p:spacer>
+                <p:scrollPanel mode="native" style="border-style: hidden !important;">
+                    <p:inputTextarea value="#{registroSolicitudCALController.solicitud.razonesNegocio}" cols="100"
+                        styleClass="noResize" rows="3" maxlength="3800" size="3800" style='height:50px;'
+                        required="#{registroSolicitudCALController.requeridoPrincipal}" 
+                        autoResize="false" id="razonesText"
+                        requiredMessage="#{errmsg['ca.solicitud.promocion.required.razonNegocio']}">
+                        <f:attribute name="msgValidacion"
+                            value="#{errmsg['cal.solicitud.promocion.validation.actividadesHechosRazones']}" />
+                        <f:validator validatorId="caracteresEspecialesValidator" />
+                    </p:inputTextarea>
+                </p:scrollPanel>
+            </p:panelGrid>
+        </p:panel>
+
+    </h:body>
+</ui:composition>

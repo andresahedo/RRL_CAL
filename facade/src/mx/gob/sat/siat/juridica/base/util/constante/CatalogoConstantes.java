@@ -1,0 +1,27 @@
+package mx.gob.sat.siat.juridica.base.util.constante;
+
+import java.math.BigDecimal;
+
+public interface CatalogoConstantes {
+
+    String CATALOGO_CONCEPTO = "RRCONC";
+    String CATALOGO_PROCESO = "RRPROC";
+    String CATALOGO_CARACTERISTICAS = "RRCART";
+    String CATALOGO_AGRAVIO = "RRAGRA";
+    String CATALOGO_SENTIDO = "RRSENT";
+
+    String ENU_ESTADO_TRAMITE = "ENU_EST_TRAMITE";
+    String CATALOGO_RECHAZO = "MOTRCZ";
+
+    String ENU_CATALOGO_DESCRIPCION_DOCUMENTO = "DESC.DOC";
+    String ENU_CATALOGO_DESCRIPCION_MODALIDAD = "DESC.MOD";
+
+    String ENU_ACTOR_BITACORA = "ENU_ACTOR_BITACORA";
+    String ENU_ACTOR_BITACORA1 = "ENU_ACTOR_BITACORA1";
+    String DIAS_CONSULTA_BITACORA = "DIAS_CONSULTA_BITACORA";
+   
+    String CAT_EXCLUSIVO_FONDO="RRCARTO002";
+    Integer ID_TIPO_DOC_SOL_CAM_FEC_AUD=407;
+
+    BigDecimal MAX_RESOLUCION_MONTO_VALUE = new BigDecimal("99999999999999.99");
+}

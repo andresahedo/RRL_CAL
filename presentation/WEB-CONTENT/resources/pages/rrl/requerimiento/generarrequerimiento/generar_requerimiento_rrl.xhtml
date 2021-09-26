@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+        <style type="text/css">
+.ui-panel {
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+</style>
+
+        <p:ajaxStatus onstart="statusDialog.show();" oncomplete="statusDialog.hide();" />
+        <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+            draggable="false" closable="false">
+            <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+        </p:dialog>
+
+        <p:panel id="msgPanel">
+            <p:messages id="messages" globalOnly="true" autoUpdate="true" />
+        </p:panel>
+
+        <h:form id="idAutorizadorForm">
+
+            <p:panel id="panelRevisarDocumentos">
+                <p:confirmDialog closable="false" message="#{msg['rrl.mensaje.documento.complementario']}"
+                    visible="#{generarRequerimientoRRLController.nuevoDocumento}" id="confirmarDialog"
+                    widgetVar="confirmarAccion" showEffect="fade">
+                    <table align="right">
+                        <tr>
+                            <td><p:commandButton oncomplete="confirmarAccion.hide()" value="Si" ajax="false"
+                                    action="#{generarRequerimientoRRLController.guardarRequerimiento}"
+                                    styleClass="ui-confirmdialog-yes" icon="ui-icon-check" /> <p:commandButton
+                                    value="No" oncomplete="confirmarAccion.hide()" process="@this,confirmarDialog"
+                                    action="#{generarRequerimientoRRLController.regresarPagina}"
+                                    styleClass="ui-confirmdialog-no" icon="ui-icon-close" /></td>
+                        </tr>
+                    </table>
+                </p:confirmDialog>
+            </p:panel>
+            <p:panel id="navegationPanel">
+                <table width="100%">
+                    <tr>
+                        <td align="right" colspan="4"><p:commandButton value="#{msg['vuj.boton.anterior']}"
+                                action="#{generarRequerimientoRRLController.cargaDatos}" immediate="true" ajax="true"
+                                process="@this" update="@form" /> <p:commandButton id="guaradarRequerimientoButton"
+                                value="#{msg['vuj.boton.enviarParaAutorizacion']}"
+                                update=":requerimientoForm,:msgPanel,:idAutorizadorForm"
+                                process="@this,:requerimientoForm:autorizadoresSelect,:requerimientoForm:autorizadoresSelect1"
+                                partialSubmit="true" ajax="true"
+                                actionListener="#{generarRequerimientoRRLController.siguienteValidador}"
+                                oncomplete="ocultarMsgPanel();" /></td>
+                    </tr>
+                </table>
+            </p:panel>
+        </h:form>
+        <h:form id="requerimientoForm">
+            <p:panel id="funcionarioPanel">
+                <table>
+                    <tr>
+                        <td><h:outputText value="#{msg['rrl.requerimiento.nombreAbogado']} " /></td>
+                        <td><h:outputText value="#{msg['rrl.requerimiento.rfcAbogado']} " /></td>
+                        <td colspan="2"><h:outputText value="#{msg['rrl.requerimiento.estadoProcesal']} " /></td>
+                    </tr>
+                    <tr>
+                        <td><p:inputText maxlength="500" readonly="true"
+                                value="#{generarRequerimientoRRLController.requerimiento.nombrePersona}" /></td>
+                        <td><p:inputText maxlength="20" readonly="true"
+                                value="#{generarRequerimientoRRLController.requerimiento.rfc}" /></td>
+                        <td colspan="2"><p:inputText maxlength="20" readonly="true"
+                                value="#{generarRequerimientoRRLController.requerimiento.tramite.estadoProcesal}" /></td>
+                    </tr>
+
+                    <tr>
+                        <td><h:outputText value="#{msg['rrl.requerimiento.numeroAsunto']} " /></td>
+                        <td><h:outputText value="#{msg['vuj.fechaRecepcion']}" /></td>
+                        <td><h:outputText value="#{msg['rrl.requerimiento.fechaVencimiento']} " /></td>
+                    </tr>
+                    <tr>
+                        <td><p:inputText maxlength="500" readonly="true"
+                                value="#{generarRequerimientoRRLController.requerimiento.tramite.numeroAsunto}" /></td>
+                        <td><p:inputText readonly="true"
+                                value="#{generarRequerimientoRRLController.requerimiento.tramite.fechaRecepcion}"
+                                id="fechaRecepcionInput">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText></td>
+                        <td><p:inputText maxlength="20" readonly="true"
+                                value="#{generarRequerimientoRRLController.requerimiento.tramite.fechaVencimiento}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText></td>
+                    </tr>
+
+                    <tr>
+                        <td><p:outputLabel value="#{msg['vuj.camposObligatorios']} " style="color:red"></p:outputLabel></td>
+                        <td></td>
+                        <td colspan="2"></td>
+                    </tr>
+                </table>
+                <table>
+
+                    <tr>
+                        <td width="25%"><h:outputText value="#{msg['rrl.emitir.reemitir.administrador']} " /> <p:outputLabel
+                                style="color:red">*</p:outputLabel></td>
+                    </tr>
+                    <tr>
+                        <td><p:selectOneMenu id="autorizadoresSelect" widgetVar="comboAutorizadores"
+                                requiredMessage="#{msg['generar.req.datoReq']}" filter="true" filterMatchMode="contains"
+                                value="#{generarRequerimientoRRLController.requerimiento.rfcAutorizador}"
+                                onchange="inicializarErrores();" required="true">
+                                <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                                <f:selectItems value="#{generarRequerimientoRRLController.listaAutorizadores}"
+                                    var="autorizadorReq" itemLabel="#{autorizadorReq.descripcion}"
+                                    itemValue="#{autorizadorReq.clave}" />
+                            </p:selectOneMenu> <p:message display="text" id="autorizadoresSelect1" for="autorizadoresSelect" /></td>
+                    </tr>
+                    <tr>
+                        <td><h:outputText value="#{msg['rrl.requerimiento.tipoRequerimiento']} " /> <p:outputLabel
+                                style="color:red"> * </p:outputLabel> <h:graphicImage id="ayudaIdTipoReq"
+                                url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdTipoReq"
+                                value="#{msg['generar.requerimiento.tipo']}" adjustX="20" adjustY="20"
+                                mouseTracking="true" /></td>
+                        <td><div id="divAutoridadSelectLabel">
+                                <h:outputText value="#{msg['rrl.requerimiento.autoridadesSolicitadas']} " />
+                                <p:outputLabel style="color:red"> * </p:outputLabel>
+                                <h:graphicImage id="ayudaIdAutSol" url="/resources/css/images/ayuda.png" />
+                                <pe:tooltip for="ayudaIdAutSol"
+                                    value="#{msg['generar.requerimiento.autoridad.solicita']}" mouseTracking="true"
+                                    adjustX="20" adjustY="20" />
+                            </div></td>
+                    </tr>
+                    <tr>
+                        <td><p:selectOneMenu id="tipoRequerimientoSelect" binding="#{tipoRequerimientoSelect}"
+                                requiredMessage="#{msg['rrl.requerimiento.required.tipoRequerimiento']}"
+                                widgetVar="comboTipoRequerimiento" filter="true" filterMatchMode="contains"
+                                value="#{generarRequerimientoRRLController.requerimiento.claveTipoRequerimiento}"
+                                onchange="inicializarComboAutorizades(this, '#{generarRequerimientoRRLController.claveRequerimientoAutoridad}');"
+                                style="width:100%;" required="true">
+                                <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                                <f:selectItems value="#{generarRequerimientoRRLController.listaTiposRequerimiento}"
+                                    var="tipoReq" itemLabel="#{tipoReq.descripcion}" itemValue="#{tipoReq.clave}" />
+                            </p:selectOneMenu> <p:message display="text" id="tipoRequerimientoSelect1" for="tipoRequerimientoSelect" /></td>
+                        <td><div id="divAutoridadSelect">
+                                <p:selectOneMenu id="autoridadSelect"
+                                    requiredMessage="El campo Autoridad a la que se solicita es requerido"
+                                    value="#{generarRequerimientoRRLController.requerimiento.claveUnidadAdministrativa}"
+                                    filter="true" filterMatchMode="contains" widgetVar="comboAutoridades"
+                                    onchange="inicializarErrores();" style="width:100%;" binding="#{autoridadSelect}">
+                                    <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                                    <f:selectItems value="#{generarRequerimientoRRLController.listaAutoridades}"
+                                        var="autoridad" itemLabel="#{autoridad.descripcion}"
+                                        itemValue="#{autoridad.clave}" />
+                                    <f:validator validatorId="generarRequerimientoValidator" />
+                                    <f:attribute name="tipoRequerimientoSelect" value="#{tipoRequerimientoSelect}" />
+                                </p:selectOneMenu>
+                                <p:message display="text" id="autoridadSelect1" for="autoridadSelect" />
+                            </div></td>
+                    </tr>
+                </table>
+                <table width="100%">
+                    <tr>
+                        <td align="right" width="30%"><p:commandButton id="agregarRequerimiento"
+                                value="#{msg['vuj.boton.agregar']}" ajax="true"
+                                update=":requerimientoForm:tipoRequerimientoSelect,:requerimientoForm:tipoRequerimientoSelect1,:requerimientoForm:autoridadSelect,:requerimientoForm:autoridadSelect1,:requerimientoForm:tablaRequerimientos"
+                                process="@this,:requerimientoForm:tipoRequerimientoSelect,:requerimientoForm:autoridadSelect"
+                                actionListener="#{generarRequerimientoRRLController.agregarRequerimiento}"
+                                oncomplete="deshabilitarCombo();" /></td>
+                    </tr>
+                </table>
+            </p:panel>
+
+            <script type="text/javascript">
+			function inicializarComboAutorizades(val, claveTipoRequerimiento) {
+				inicializarErrores();
+				comboAutoridades.selectValue("");
+				if (val.value == claveTipoRequerimiento) {
+					comboAutoridades.enable();
+					$('#divAutoridadSelectLabel').show();
+					$('#divAutoridadSelect').show();
+					comboAutoridades.selectValue("");
+				} else {
+					comboAutoridades.disable();
+					comboAutoridades.selectValue("");
+				}
+			}
+
+			function inicializarErrores() {
+				$('#messages').hide();
+			}
+
+			function deshabilitarCombo() {
+				comboAutoridades.selectValue("");
+				
+				var valAutoridades = comboAutoridades.value
+				if(comboTipoRequerimiento.value == 'TIREQ.RIA'){
+					if (valAutoridades == null || valAutoridades == "undefined" || valAutoridades == ""){
+					comboAutoridades.disable();
+					comboAutoridades.selectValue("");
+
+					}else{
+						comboAutoridades.disable();
+						comboAutoridades.selectValue("");
+					}
+				}else{
+					comboAutoridades.disable();
+					comboAutoridades.selectValue("");
+
+				}
+				comboTipoRequerimiento.selectValue("");
+			}
+
+			function ocultarMsgPanel() {
+				var valAutorizadores = comboAutorizadores.value
+				if (valAutorizadores == null || valAutorizadores == "undefined" || valAutorizadores == "")
+					$('#messages').hide();
+			}
+						
+			$(document).ready(function() {			
+				comboAutoridades.disable();
+				comboAutoridades.selectValue("");
+			});
+		</script>
+
+            <p:panel id="solicitantePanel">
+                <h:panelGrid>
+                    <p:dataTable id="tablaRequerimientos" var="req"
+                        value="#{generarRequerimientoRRLController.requerimientoDataModel}" rowIndexVar="rowIndex"
+                        resizableColumns="false" style="width:100%"
+                        selection="#{generarRequerimientoRRLController.registrosEliminar}" rowKey="#{req.id}"
+                        emptyMessage="#{msg['vuj.grid.vacio']}">
+                        <p:ajax event="rowSelectCheckbox" update=":requerimientoForm:buttonPanel"
+                            listener="#{generarRequerimientoRRLController.rowSelectCheckbox}" />
+                        <p:ajax event="rowUnselectCheckbox" update=":requerimientoForm:buttonPanel"
+                            listener="#{generarRequerimientoRRLController.rowUnselectCheckbox}" />
+                        <p:ajax event="rowSelect" update=":requerimientoForm:buttonPanel"
+                            listener="#{generarRequerimientoRRLController.rowSelectCheckbox}" />
+
+                        <p:column selectionMode="multiple" style="width:2%" disabledSelection="#{false}" />
+
+                        <h:inputHidden value="#{req.claveTipoRequerimiento}" />
+                        <h:inputHidden value="#{req.claveUnidadAdministrativa}" />
+                        <p:column headerText="#{msg['rrl.requerimiento.tipoRequerimiento']} " style="width:280px">
+                            <h:outputText value="#{req.tipoRequerimiento}" />
+                        </p:column>
+                        <p:column headerText="#{msg['rrl.requerimiento.autoridadesSolicitadas']} " style="width:280px">
+                            <p style="word-wrap: break-word; white-space: pre-line;">
+                                <h:outputText value="#{req.unidadAdministrativa}" />
+                            </p>
+                        </p:column>
+
+                    </p:dataTable>
+                </h:panelGrid>
+                <h:panelGrid id="buttonPanel" columns="1" styleClass="panelMontoStyle" style="float:right;">
+                    <p:commandButton id="eliminarRegButton" value="#{msg['vuj.boton.eliminar']}"
+                        update=":requerimientoForm:tablaRequerimientos,:requerimientoForm:buttonPanel"
+                        disabled="#{!generarRequerimientoRRLController.eliminarVisible}" process="@this"
+                        actionListener="#{generarRequerimientoRRLController.eliminarDocumentos}" />
+                </h:panelGrid>
+            </p:panel>
+        </h:form>
+        <p:panel id="solicitantePanel">
+            <ui:decorate template="../../../consultas/consulta.xhtml">
+            </ui:decorate>
+        </p:panel>
+        <style type="text/css">
+.ui-chkbox-all {
+    visibility: hidden;
+}
+</style>
+    </ui:define>
+</ui:composition>
+
+
+</html>

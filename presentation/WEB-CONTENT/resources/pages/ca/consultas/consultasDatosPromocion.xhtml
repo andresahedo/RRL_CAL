@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</h:head>
+<h:body>
+    <p:panel id="panelPromocion1">
+        <table cellpadding="5">
+            <tr>
+                <td><h:outputLabel value="#{msg['vuj.autoridadEmisora']}" /> <p:outputLabel value=" *"
+                        style="color:red" /></td>
+            </tr>
+            <tr>
+                <td><p:inputText value="#{consultasAutorizacionesController.solicitud.nombreUnidadEmisora}"
+                        size="50" readonly="true" /></td>
+            </tr>
+        </table>
+    </p:panel>
+
+    <p:panel id="panelPromocion2" header="#{msg['ca.tabCaptura.personasOir.recibir.notificaciones']}">
+        <table cellpadding="5">
+            <tr>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.paorn.rfc']}" /></td>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.paorn.email']}" /></td>
+            </tr>
+            <tr>
+                <td><p:inputText value="#{consultasAutorizacionesController.solicitud.rfcPAORN}" maxlength="15"
+                        size="30" readonly="true" /></td>
+                <td><p:inputText value="#{consultasAutorizacionesController.solicitud.mailPAORN}" maxlength="320"
+                        size="100" readonly="true" /></td>
+            </tr>
+        </table>
+    </p:panel>
+
+    <p:panel id="panelPromocion3" header="#{msg['ca.captura.solicitud.residenteExtranjero']}">
+        <table cellpadding="5">
+            <tr>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.residenteExtranjero.nombre']}" /></td>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.residenteExtranjero.apellidoPaterno']}" /></td>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.residenteExtranjero.apellidoMaterno']}" /></td>
+            </tr>
+            <tr>
+                <td><p:inputText value="#{consultasAutorizacionesController.solicitud.nombreResidente}"
+                        maxlength="200" size="30" readonly="true" /></td>
+                <td><p:inputText value="#{consultasAutorizacionesController.solicitud.apellidoPaternoResidente}"
+                        maxlength="200" size="30" readonly="true" /></td>
+                <td><p:inputText value="#{consultasAutorizacionesController.solicitud.apellidoMaternoResidente}"
+                        maxlength="200" size="30" readonly="true" /></td>
+            </tr>
+        </table>
+        <table cellpadding="5">
+            <tr>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.residenteExtranjero.rfc.nif']}" /></td>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.residenteExtranjero.direccion']}" /></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><p:inputText value="#{consultasAutorizacionesController.solicitud.rfcResidente}" maxlength="20"
+                        size="30" readonly="true" /></td>
+                <td><p:inputText value="#{consultasAutorizacionesController.solicitud.direccion}" maxlength="1000"
+                        size="100" readonly="true" /></td>
+                <td></td>
+            </tr>
+        </table>
+    </p:panel>
+
+    <p:panel id="panelPromocion4" header="#{msg['vuj.tab.promocion']}">
+        <table cellpadding="5">
+            <tr>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.granContribuyente']}" /> <p:outputLabel
+                        value=" *" style="color:red" /></td>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.montoOperacion']}" /> ($) <p:outputLabel
+                        value=" *" style="color:red" /></td>
+            </tr>
+            <tr>
+                <td><p:inputText value="#{consultasAutorizacionesController.solicitud.granContribuyete}"
+                        maxlength="16" size="20" readonly="true" /></td>
+                <td><p:inputText value="#{consultasAutorizacionesController.solicitud.monto}" maxlength="16"
+                        size="20" readonly="true" /></td>
+            </tr>
+        </table>
+
+        <table cellpadding="5">
+            <tr>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.actividadInteresado']}" /> <p:outputLabel
+                        value=" *" style="color:red" /></td>
+            </tr>
+            <tr>
+                <td><p:inputTextarea value="#{consultasAutorizacionesController.solicitud.actividadInteresado}"
+                        cols="100" rows="3" maxlength="500" size="500" style='height:50px;' readonly="true" /></td>
+            </tr>
+            <tr>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.hechosCircunstancias']}" /> <p:outputLabel
+                        value=" *" style="color:red" /></td>
+            </tr>
+            <tr>
+                <td><p:inputTextarea value="#{consultasAutorizacionesController.solicitud.hechosCircunstancias}"
+                        cols="100" rows="3" maxlength="3800" size="3800" style='height:50px;' readonly="true" /></td>
+            </tr>
+            <tr>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.razonNegocio']}" /> <p:outputLabel
+                        value=" *" style="color:red" /></td>
+            </tr>
+            <tr>
+                <td><p:inputTextarea value="#{consultasAutorizacionesController.solicitud.razonNegocio}" cols="100"
+                        rows="3" maxlength="3800" size="3800" style='height:50px;' readonly="true" /></td>
+            </tr>
+        </table>
+
+        <table cellpadding="1">
+            <tr>
+                <td colspan="4"><p:selectBooleanCheckbox id="blnManifiesto1" binding="#{blnManifiesto1}"
+                        widgetVar="varBlnManifiesto1" disabled="true"
+                        value="#{consultasAutorizacionesController.solicitud.manifiesto1}" /></td>
+                <td><p:outputLabel value="#{msg['ca.captura.solicitud.promocion.manifiesto1']}" /></td>
+            </tr>
+        </table>
+        <div id="divMediosDefensa">
+            <table cellpadding="5">
+                <tr>
+                    <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.mediosDefensa']}" /> <p:outputLabel
+                            value=" *" style="color:red" /></td>
+                    <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.numeroAsunto']}" /> <p:outputLabel
+                            value=" *" style="color:red" /></td>
+                    <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.sentidoResolucion']}" /> <p:outputLabel
+                            value=" *" style="color:red" /></td>
+                    <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.autoridad']}" /> <p:outputLabel
+                            value=" *" style="color:red" /></td>
+                </tr>
+                <tr>
+                    <td><p:inputText value="#{consultasAutorizacionesController.solicitud.descripcionMedioDefensa}"
+                            id="descripcionMedioDefensa" maxlength="30" size="35" readonly="true" /></td>
+                    <td><p:inputText value="#{consultasAutorizacionesController.solicitud.numeroAsunto}"
+                            id="numeroAsuntoText" maxlength="30" size="35" readonly="true" /></td>
+                    <td><p:inputText
+                            value="#{consultasAutorizacionesController.solicitud.descripcionSentidoResolucion}"
+                            id="descripcionSentidoResolucion" maxlength="30" size="35" readonly="true" /></td>
+                    <td><p:inputText value="#{consultasAutorizacionesController.solicitud.descripcionAutoridad}"
+                            id="descripcionAutoridad" maxlength="30" size="35" readonly="true" /></td>
+                </tr>
+            </table>
+        </div>
+
+        <table cellpadding="1">
+            <tr>
+                <td><p:selectBooleanCheckbox id="blnManifiesto2" binding="#{blnManifiesto2}"
+                        widgetVar="varBlnManifiesto2" disabled="true"
+                        value="#{consultasAutorizacionesController.solicitud.manifiesto2}" /></td>
+                <td><p:outputLabel value="#{msg['ca.captura.solicitud.promocion.manifiesto2']}" /></td>
+            </tr>
+        </table>
+        <div id="divEjercicioFisca">
+            <table cellpadding="5">
+                <tr>
+                    <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.periodosContribuciones']}" />
+                        <p:outputLabel value=" *" style="color:red" /></td>
+                </tr>
+                <tr>
+                    <td><p:inputTextarea
+                            value="#{consultasAutorizacionesController.solicitud.periodosContribuciones}"
+                            id="testAreaPeriodosContribuciones" cols="100" rows="3" maxlength="3800" size="3800"
+                            style='height:50px;' readonly="true" /></td>
+                </tr>
+                <tr>
+                    <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.plazo']}" /> <p:outputLabel
+                            value=" *" style="color:red" /></td>
+                </tr>
+                <tr>
+                    <td><p:inputText value="#{consultasAutorizacionesController.solicitud.plazo}" id="plazo"
+                            maxlength="30" size="35" readonly="true" /></td>
+                </tr>
+            </table>
+        </div>
+    </p:panel>
+
+    <script type="text/javascript">
+				
+				$(document).ready(function() {
+					validarMediosDefensa();
+					validarEjercicio();					
+				});
+				
+				function validarMediosDefensa(){
+					if($('#consultaForm\\:tabSolicitud\\:numeroAsuntoText').val().length==0)
+						$('#divMediosDefensa').hide();
+				}
+				
+				function validarEjercicio(){
+					if($('#consultaForm\\:tabSolicitud\\:testAreaPeriodosContribuciones').val().length==0)
+						$('#divEjercicioFisca').hide();
+						
+				}
+				
+			</script>
+</h:body>
+</html>

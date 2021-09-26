@@ -1,0 +1,389 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>mx.gob.sat.siat.juridica</groupId>
+        <artifactId>juridica</artifactId>
+        <version>-SNAPSHOT</version>
+    </parent>
+    <artifactId>juridica-infrastructure</artifactId>
+    <packaging>jar</packaging>
+    <name>VUJ - RRL - infrastructure</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF8</project.build.sourceEncoding>
+
+    </properties>
+
+    <dependencies>
+
+        <!-- SIAT deps -->
+        <dependency>
+            <groupId>mx.gob.sat</groupId>
+            <artifactId>siatbitacora</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mx.gob.sat.sgi</groupId>
+            <artifactId>ClienteSelladora</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mx.gob.sat</groupId>
+            <artifactId>rolproceso</artifactId>
+            <version>1.5.7</version>
+        </dependency>
+
+        <!-- Spring deps -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+
+        <!-- Spring ws-core deps -->
+        <dependency>
+            <groupId>org.springframework.ws</groupId>
+            <artifactId>spring-ws-core</artifactId>
+            <version>2.2.0.RELEASE</version>
+        </dependency>
+
+        <!-- http client para spring ws -->
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+        </dependency>
+
+        <!-- AscpectJ deps -->
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>aspectj-aspectjweaver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>aspectj-aspectjrt</artifactId>
+        </dependency>
+
+        <!-- ORM deps -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>hibernate-ehcache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.0-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>oscache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>ehcache-core</artifactId>
+        </dependency>
+
+        <!-- Logging deps -->
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+        <!-- Faces deps -->
+
+
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>${primefaces.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.primefaces.extensions</groupId>
+            <artifactId>primefaces-extensions</artifactId>
+            <version>${primefaces.extensions.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi-ooxml</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+            <version>${jsf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.faces</groupId>
+            <artifactId>jsf-impl</artifactId>
+            <version>${jsf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+        </dependency>
+
+        <!-- Test deps -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+
+        <!-- Oracle -->
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>oracle</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>xtream</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.spec.javax.jms</groupId>
+            <artifactId>jboss-jms-api_1.1_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Mail deps -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+        <!-- Apache deps -->
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.1</version>
+        </dependency>
+
+        <!-- Enc deps -->
+        <dependency>
+            <groupId>org.jasypt</groupId>
+            <artifactId>jasypt</artifactId>
+        </dependency>
+
+
+        <!-- JSON -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20140107</version>
+        </dependency>
+
+        <!-- RESTLET -->
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>org.restlet</artifactId>
+            <version>2.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>org.restlet.ext.json</artifactId>
+            <version>2.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>org.restlet.ext.net</artifactId>
+            <version>2.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>org.restlet.ext.ssl</artifactId>
+            <version>2.0.7</version>
+        </dependency>
+
+
+        <!-- Azure deps -->
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>microsoft-windowsazure-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>mx.gob.sat.vucem</groupId>
+            <artifactId>pkSAT</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk16</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>ca.juliusdavies</groupId>
+            <artifactId>not-yet-commons-ssl</artifactId>
+        </dependency>
+
+        <!-- Azure deps -->
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+        <!--efirma-->
+        <dependency>
+            <groupId>mx.gob.sat</groupId>
+            <artifactId>SgiCripto</artifactId>
+			<version>1.0</version>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+        <outputDirectory>${project.build.directory}/classes</outputDirectory>
+        <testOutputDirectory>${project.build.directory}/test-classes</testOutputDirectory>
+        <sourceDirectory>${project.basedir}/src</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/test</testSourceDirectory>
+        <finalName>juridica-infrastructure</finalName>
+
+        <resources>
+            <resource>
+                <directory>${project.basedir}/support</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${resources.dir}</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${config.dir}</directory>
+                <targetPath>applicationContext/</targetPath>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/test</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>${testResources.dir}</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </testResource>
+        </testResources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <version>1.3.1</version>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <complianceLevel>1.6</complianceLevel>
+                            <verbose>false</verbose>
+                            <showWeaveInfo>false</showWeaveInfo>
+                            <aspectLibraries>
+                                <aspectLibrary>
+                                    <groupId>softtek</groupId>
+                                    <artifactId>aspectj-aspectjweaver</artifactId>
+                                </aspectLibrary>
+                                <aspectLibrary>
+                                    <groupId>softtek</groupId>
+                                    <artifactId>aspectj-aspectjrt</artifactId>
+                                </aspectLibrary>
+                            </aspectLibraries>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+    </build>
+</project>

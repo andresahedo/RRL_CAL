@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+        <f:event listener="#{bandejaController.iniciarBandejaReasignacion}" type="preRenderView" />
+        <style type="text/css">
+.ui-panel {
+    border-style: hidden !important;
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+</style>
+        <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" onerror="statusDialog.hide();" />
+
+        <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+            draggable="false" closable="false">
+            <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+        </p:dialog>
+
+        <h:form id="formBandeja" onkeypress="if (event.keyCode == 13) { return false; }">
+            <p:panel id="panelMensajes" style="border-style: hidden !important;"
+                visible="#{bandejaReasignarRecursoRevocacionController.showMessages}">
+                <p:messages showDetail="true" />
+            </p:panel>
+
+            <p:panel id="bandejaPanel" header="Reasignar Asunto">
+                <table cellpadding="1">
+                    <tr>
+                        <td><h:outputText value="Número de Asunto " /> <h:graphicImage style="display:none;"
+                                id="ayudaIdNasunto" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+                                for="ayudaIdNasunto" value="#{msg['atender.requerimiento.numeroAsunto']}" adjustX="20"
+                                adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+                        <td><h:outputText value="RFC Funcionario" /> <h:graphicImage style="display:none;"
+                                id="ayudaIdFuncionario" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+                                for="ayudaIdFuncionario" value="#{msg['atender.requerimiento.rfcPromovente']}"
+                                adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+
+                    </tr>
+                    <tr>
+                        <td><p:inputText
+                                value="#{bandejaReasignarRecursoRevocacionController.filtroBandejaTareaDTO.numeroAsunto}"
+                                id="numeroAsunto" maxlength="30" /></td>
+                        <td><p:inputText
+                                value="#{bandejaReasignarRecursoRevocacionController.filtroBandejaTareaDTO.rfcFuncionario}"
+                                id="idrfcPromovente" maxlength="13" /></td>
+                    </tr>
+                </table>
+                <table width="100%">
+                    <tr>
+                        <td colspan="4" align="right"><p:commandButton
+                                actionListener="#{bandejaReasignarRecursoRevocacionController.limpiarBandeja}"
+                                update=":formBandeja:bandejaPanel,:formBandeja:bandejaTablePanel,formBandeja:panelMensajes"
+                                value="Limpiar" /> <p:commandButton value="Buscar"
+                                update=":formBandeja:bandejaTablePanel,:formBandeja:bandejaPanel,formBandeja:panelMensajes"
+                                actionListener="#{bandejaReasignarRecursoRevocacionController.buscarTareaBandeja}" /></td>
+                    </tr>
+                </table>
+            </p:panel>
+            <p:panel id="bandejaTablePanel">
+                <p:dataTable paginator="true" rows="10" lazy="true"
+                    selection="#{bandejaReasignarRecursoRevocacionController.bandejaTareaDTO}" selectionMode="single"
+                    var="bandeja" value="#{bandejaReasignarRecursoRevocacionController.bandejaReasignacionLazyList}"
+                    id="bandejaTable" resizableColumns="false"
+                    emptyMessage="#{bandejaReasignarRecursoRevocacionController.mensajeBandeja}"
+                    binding="#{bandejaReasignarRecursoRevocacionController.dataTableFil}">
+
+                    <p:ajax event="rowDblselect"
+                        listener="#{bandejaReasignarRecursoRevocacionController.onRowDblClckSelect}" />
+				
+				#{bandeja.idSolicitud}
+				#{bandeja.idTarea}
+				#{bandeja.idTareaUsuario}	
+				#{bandeja.tipoTramite}			
+				<p:column headerText="Funcionario" sortBy="#{bandeja.rfcUsuarioAsignado}" style="width:8%;white-space:pre-line;">
+                        <h:outputText value="#{bandeja.rfcUsuarioAsignado}" id="asignadoA" />
+                    </p:column>
+                    <p:column headerText="N&uacute;mero de Asunto" sortBy="#{bandeja.numeroAsunto}"
+                        style="width:8%;white-space:pre-line;">
+                        <h:outputText value="#{bandeja.numeroAsunto}" id="numeroAsuntoTable" />
+                    </p:column>
+                    <p:column headerText="Tipo de Tr&aacute;mite " sortBy="#{bandeja.descripcionTipoTramite}"
+                        style="width:25%;white-space:pre-line;">
+                        <h:outputText value="#{bandeja.descripcionTipoTramite}" id="tipoTramiteTable" />
+
+                    </p:column>
+                    <p:column headerText="Estado Procesal" sortBy="#{bandeja.estadoProcesal}"
+                        style="width:8%;white-space:pre-line;">
+                        <h:outputText value="#{bandeja.estadoProcesal}" id="estadoProcesalTable" />
+                    </p:column>
+                </p:dataTable>
+                <pe:tooltip for="bandejaTable" value="#{msg['atender.requerimiento.archivosReasignar']}"
+                    mouseTracking="true" showEffect="fade" atPosition="right" adjustX="20" adjustY="20" />
+            </p:panel>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+
+</html>
+

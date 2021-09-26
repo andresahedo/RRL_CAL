@@ -1,0 +1,99 @@
+@CHARSET "ISO-8859-1";
+
+.tPaso1 {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_1_default.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso2 {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_2_default.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso3 {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_3_default.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso4 {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_4_default.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso5 {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_5_default.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso6 {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_6_default.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso7 {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_7_default.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso1.ui-state-highlight {
+    background: url(#{request.contextPath}/resources/css/images/Paso_1_activo.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso2.ui-state-highlight {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_2_activo.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso3.ui-state-highlight {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_3_activo.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso4.ui-state-highlight {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_4_activo.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso5.ui-state-highlight {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_5_activo.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso6.ui-state-highlight {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_6_activo.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso7.ui-state-highlight {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_7_activo.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}

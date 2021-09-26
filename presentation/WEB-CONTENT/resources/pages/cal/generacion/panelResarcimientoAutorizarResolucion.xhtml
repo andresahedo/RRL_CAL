@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+
+        <style type="text/css">
+.centered {
+    position: relative;
+    height: 100px;
+    margin: 0 auto;
+    padding: 10% 0;
+}
+
+.ui-panel {
+    border-style: hidden !important;
+}
+
+.noBorder td {
+    border-style: hidden !important;
+}
+</style>
+        <h:form id="formResarcimientoResolucion">
+            <p:panel id="panelDatosResarcimiento" header="Datos del resarcimiento">
+                <p:panel id="panelFirtData">
+                    <p:panelGrid columnClasses="3" styleClass="noBorder" id="pnlres">
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="#{msg['cal.resol.descriBien']}" />
+                                <p:outputLabel value=" * " style="color:red">
+                                    <h:graphicImage id="ayudaDescBien" url="/resources/css/images/ayuda.png" />
+                                </p:outputLabel>
+                                <pe:tooltip for="ayudaDescBien" value="#{msg['cal.resarcimiento.desc.bien']}"></pe:tooltip>
+                            </p:column>
+                            <p:column>
+                                <h:outputLabel value="#{msg['cal.resol.valorBien']}" />
+                                <p:outputLabel value=" * " style="color:red">
+                                    <h:graphicImage id="ayudaValorBien" url="/resources/css/images/ayuda.png" />
+                                </p:outputLabel>
+                                <pe:tooltip for="ayudaValorBien" value="#{msg['cal.resarcimiento.valor.bien']}"></pe:tooltip>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:inputText id="descripcion" disabled="false"
+                                    value="#{generarResolucionAutorizacionController.descripcionBien}" size="70"
+                                    maxlength="100" required="true" />
+                                <p:message display="text" for="descripcion" id="descBien" />
+                            </p:column>
+                            <p:column>
+                                <pe:inputNumber maxValue="99999999999999" maxlength="16" decimalPlaces="0"
+                                    id="valorBien" required="true" disabled="false" 
+                                    value="#{generarResolucionAutorizacionController.valorBien}"></pe:inputNumber>
+                                <p:message display="text" for="valorBien" id="valbien" />
+
+                            </p:column>
+
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="#{msg['cal.resol.medioTrans']}" />
+                            </p:column>
+
+
+                        </p:row>
+                        <p:row>
+
+
+                            <p:column>
+                                <p:selectOneMenu effect="fade" id="medioTransporte" filter="true"
+                                    filterMatchMode="contains"
+                                    value="#{generarResolucionAutorizacionController.medioTransporte}"
+                                    style="width:160px" panelStyle="width:150px">
+                                    <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                    <f:selectItems value="#{generarResolucionAutorizacionController.mediosTransporte}"
+                                        var="medios" itemValue="#{medios.clave}" itemLabel="#{medios.descripcion}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <p:commandButton id="agregar" value="#{msg['vuj.boton.agregar']}" oncomplete="marcarRequerido();" 
+                                    update=":formResolucion:formResarcimientoResolucion:panelTableResarcimiento,:formResolucion:formResarcimientoResolucion:pnlres,:formResolucion:formResarcimientoResolucion:montototal"
+                                    process=":formResolucion:formResarcimientoResolucion:panelTableResarcimiento,:formResolucion:formResarcimientoResolucion:pnlres"
+                                    actionListener="#{generarResolucionAutorizacionController.addResarcimientoBien}"
+                                    disabled="#{generarResolucionAutorizacionController.agregarVisible}" />
+                            </p:column>
+
+                        </p:row>
+                    </p:panelGrid>
+
+                    <p:panel id="panelTableResarcimiento" style="width:90%;" header="Bienes del resarcimiento">
+                        <p:dataTable rowIndexVar="rowId" id="tableResarcimientoData" style="width:100%;"
+                            resizableColumns="false" paginator="false" var="bienResarcimiento"
+                            value="#{generarResolucionAutorizacionController.bienResarcimientoDataModel}"
+                            selection="#{generarResolucionAutorizacionController.selectedBienResarcimiento}"
+                            emptyMessage="#{msg['vuj.grid.vacio']}" rowKey="#{bienResarcimiento.idTableBien}">
+
+                            <p:ajax event="rowSelectCheckbox"
+                                update=":formResolucion:formResarcimientoResolucion:panelDatosResarcimiento,
+                							:formResolucion:formResarcimientoResolucion:tableResarcimientoData"
+                                listener="#{generarResolucionAutorizacionController.rowSelectCheckbox}" />
+                            <p:ajax event="rowUnselectCheckbox"
+                                update=":formResolucion:formResarcimientoResolucion:panelDatosResarcimiento,
+                							:formResolucion:formResarcimientoResolucion:tableResarcimientoData"
+                                listener="#{generarResolucionAutorizacionController.rowUnselectCheckbox}" />
+                            <p:ajax event="rowSelect"
+                                update=":formResolucion:formResarcimientoResolucion:panelDatosResarcimiento,
+                							:formResolucion:formResarcimientoResolucion:tableResarcimientoData"
+                                listener="#{generarResolucionAutorizacionController.rowSelectCheckbox}" />
+
+                            <p:column headerText="#{msg['cal.resol.descriBien']}" style="width:10%" filterBy="bien">
+                                <p style="word-break: break-all;">
+                                    <h:outputText value="#{bienResarcimiento.descripcionBien}"
+                                        style="white-space:pre-line;" />
+                                </p>
+                            </p:column>
+                            <p:column headerText="#{msg['cal.resol.valorBien']}" style="width:5%" filterBy="valor">
+                                <pe:inputNumber maxValue="99999999999999" maxlength="16" decimalPlaces="0"
+                                    id="tablaValorBien" required="true" disabled="true"
+                                    value="#{bienResarcimiento.valor}"></pe:inputNumber>
+                            </p:column>
+                            <p:column headerText="#{msg['cal.resol.medioTrans']}" style="width:5%" filterBy="medio">
+                                <h:outputText value="#{bienResarcimiento.medioTransporte}" />
+                            </p:column>
+                            <p:column selectionMode="multiple" style="width:2%" headerText="Eliminar" />
+                        </p:dataTable>
+                        <style type="text/css">
+.ui-chkbox-all {
+    visibility: hidden;
+    height: 21px !important;
+}
+
+.ui-column-filter {
+    visibility: hidden;
+}
+</style>
+                    </p:panel>
+
+                    <p:panelGrid columnClasses="3" style="width:95%" styleClass="noBorder">
+                        <p:row>
+                            <p:column>
+                                <p:panel id="sumatoria" header="#{msg['vuj.resol.monto']}" style="width:33%">
+                                    <p:inputText id="montototal" disabled="true"
+                                        value="#{generarResolucionAutorizacionController.montoCalculado}"
+                                        onchange="separarMilesBien(this);">
+                                        <f:convertNumber locale="es_MX" groupingUsed="true" maxFractionDigits="0"
+                                            minFractionDigits="0" />
+                                    </p:inputText>
+                                </p:panel>
+                            </p:column>
+                            <p:column>
+                                <p:commandButton id="eliminarButton" value="#{msg['vuj.boton.eliminar']}"
+                                    style="float:right;"
+                                    disabled="#{!generarResolucionAutorizacionController.eliminarVisible}"
+                                    actionListener="#{generarResolucionAutorizacionController.validaEliminar}"
+                                    process="@this"
+                                    update=":formResolucion:formResarcimientoResolucion:panelDatosResarcimiento,:formResolucion:formResarcimientoResolucion:tableResarcimientoData"
+                                    oncomplete="cdConfirmaEliminar.show();" />
+                                <p:confirmDialog message="#{generarResolucionAutorizacionController.msgValidaEliminar}"
+                                    showEffect="fade" hideEffect="explode" header="Confirmación" severity="alert"
+                                    widgetVar="cdConfirmaEliminar">
+                                    <table align="right">
+                                        <tr>
+                                            <td><p:commandButton value="Si"
+                                                    actionListener="#{generarResolucionAutorizacionController.eliminarAction}"
+                                                    styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                                    process="@this"
+                                                    update=":formResolucion:formResarcimientoResolucion:panelDatosResarcimiento,:formResolucion:formResarcimientoResolucion:tableResarcimientoData"
+                                                    oncomplete="cdConfirmaEliminar.hide();" /> <p:commandButton
+                                                    value="No" onclick="cdConfirmaEliminar.hide();" type="button"
+                                                    styleClass="ui-confirmdialog-no" icon="ui-icon-close" /></td>
+                                        </tr>
+                                    </table>
+                                </p:confirmDialog>
+                            </p:column>
+
+                        </p:row>
+                    </p:panelGrid>
+                    <p:panelGrid columnClasses="3" styleClass="noBorder">
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:panelGrid id="resarcimientoData" styleClass="noBorder" columnClasses="3">
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputLabel value="#{msg['cal.resol.fechaEmbargo']}" />
+                                            <p:outputLabel value=" * " style="color:red">
+                                                <h:graphicImage id="ayudaFechaEmbargo"
+                                                    url="/resources/css/images/ayuda.png" />
+                                            </p:outputLabel>
+                                            <pe:tooltip for="ayudaFechaEmbargo"
+                                                value="#{msg['cal.resarcimiento.fecha.embargo']}"></pe:tooltip>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputLabel value="#{msg['cal.resol.autorEmbargo']}" />
+                                            <p:outputLabel value=" * " style="color:red">
+                                                <h:graphicImage id="ayudaAutoridadEmbargo"
+                                                    url="/resources/css/images/ayuda.png" />
+                                            </p:outputLabel>
+                                            <pe:tooltip for="ayudaAutoridadEmbargo"
+                                                value="#{msg['cal.resarcimiento.autoridad.embargo']}"></pe:tooltip>
+                                        </p:column>
+                                        <p:column></p:column>
+
+                                    </p:row>
+                                    <p:row>
+                                        <p:column>
+                                            <p:calendar id="fechaEmbargo" pattern="dd/MM/yyyy" locale="es"
+                                                required="true" navigator="true" readonlyInput="true"
+                                                value="#{generarResolucionAutorizacionController.fechaEmbargo}">
+                                            </p:calendar>
+                                            <p:message display="text" for="fechaEmbargo" />
+                                        </p:column>
+                                        <p:column>
+                                            <p:selectOneMenu id="autoridadEmbarga" effect="fade" filter="true"
+                                                required="true" filterMatchMode="contains" style="width:160px"
+                                                value="#{generarResolucionAutorizacionController.autoridadEmbarga}">
+                                                <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                                <f:selectItems
+                                                    value="#{generarResolucionAutorizacionController.autoridadesEmbargo}"
+                                                    var="autoridades" itemValue="#{autoridades.clave}"
+                                                    itemLabel="#{autoridades.nombre}" />
+                                            </p:selectOneMenu>
+                                            <p:message display="text" for="autoridadEmbarga" />
+                                        </p:column>
+                                        <p:column></p:column>
+                                    </p:row>
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputLabel value="#{msg['cal.resol.montoTotOrd']}" />
+                                            <p:outputLabel value=" * " style="color:red">
+                                                <h:graphicImage id="ayudaMontoTotAut"
+                                                    url="/resources/css/images/ayuda.png" />
+                                            </p:outputLabel>
+                                            <pe:tooltip for="ayudaMontoTotAut"
+                                                value="#{msg['cal.resarcimiento.monto.total']}"></pe:tooltip>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputLabel value="#{msg['cal.resol.medioDefensa']}" />
+                                            <p:outputLabel value=" * " style="color:red">
+                                                <h:graphicImage id="ayudaMedioDefensa"
+                                                    url="/resources/css/images/ayuda.png" />
+                                            </p:outputLabel>
+                                            <pe:tooltip for="ayudaMedioDefensa"
+                                                value="#{msg['cal.resarcimiento.medio.defensa']}"></pe:tooltip>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputLabel value="#{msg['cal.resol.numAsuntoRes']}" />
+                                            <p:outputLabel value=" * " style="color:red">
+                                                <h:graphicImage id="ayudaNumAsunto"
+                                                    url="/resources/css/images/ayuda.png" />
+                                            </p:outputLabel>
+                                            <pe:tooltip for="ayudaNumAsunto"
+                                                value="#{msg['cal.resarcimiento.numero.asunto']}"></pe:tooltip>
+                                        </p:column>
+                                    </p:row>
+                                    <p:row>
+                                        <p:column>
+
+                                            <pe:inputNumber maxValue="99999999999999" maxlength="16" decimalPlaces="0"
+                                                emptyValue="0" required="true" id="montoTotalOrdenado" disabled="false"
+                                                value="#{generarResolucionAutorizacionController.montoTotalOrdenado}"></pe:inputNumber>
+                                            <p:message display="text" for="montoTotalOrdenado" id="montBien" />
+
+                                        </p:column>
+                                        <p:column>
+                                            <p:selectOneMenu id="medioDefensa" effect="fade" required="true"
+                                                filter="true" filterMatchMode="contains" style="width:160px"
+                                                panelStyle="width:150px"
+                                                value="#{generarResolucionAutorizacionController.medioDefensa}">
+                                                <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                                <f:selectItems
+                                                    value="#{generarResolucionAutorizacionController.mediosDefensa}"
+                                                    var="medios" itemValue="#{medios.clave}"
+                                                    itemLabel="#{medios.descripcion}" />
+                                            </p:selectOneMenu>
+                                            <p:message display="text" for="medioDefensa" />
+                                        </p:column>
+                                        <p:column>
+                                            <p:inputText id="numeroAsuntoResarcimiento" required="true" disabled="false"
+                                                value="#{generarResolucionAutorizacionController.numeroAsuntoResarcimiento}"
+                                                maxlength="30"></p:inputText>
+                                            <p:message display="text" for="numeroAsuntoResarcimiento" />
+                                        </p:column>
+                                    </p:row>
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputLabel value="#{msg['cal.resol.cumpliSent']}" />
+                                            <p:outputLabel value=" * " style="color:red" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputLabel value="#{msg['cal.resol.montoSetencia']}">
+                                                <h:graphicImage id="ayudaMontoSentencia"
+                                                    url="/resources/css/images/ayuda.png" />
+                                            </h:outputLabel>
+                                            <pe:tooltip for="ayudaMontoSentencia"
+                                                value="#{msg['cal.resarcimiento.monto.cumpliment']}"></pe:tooltip>
+                                        </p:column>
+                                        <p:column></p:column>
+                                    </p:row>
+                                    <p:row>
+                                        <p:column>
+                                            <p:selectOneMenu id="cumplimientoSentencia" required="true" effect="fade"
+                                                filter="true" filterMatchMode="contains" style="width:160px"
+                                                panelStyle="width:150px"
+                                                value="#{generarResolucionAutorizacionController.cumplimientoSentencia}">
+                                                <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                                <f:selectItem itemLabel="SI" itemValue="1"></f:selectItem>
+                                                <f:selectItem itemLabel="NO" itemValue="0"></f:selectItem>
+                                            </p:selectOneMenu>
+                                            <p:message display="text" for="cumplimientoSentencia" />
+                                        </p:column>
+                                        <p:column>
+
+
+                                            <pe:inputNumber maxValue="99999999999999" emptyValue="0" maxlength="16"
+                                                decimalPlaces="0" id="montoSentencia" disabled="false"
+                                                value="#{generarResolucionAutorizacionController.montoSentencia}"></pe:inputNumber>
+                                            <p:message display="text" for="montoSentencia" id="montbien" />
+                                        </p:column>
+                                        <p:column></p:column>
+                                    </p:row>
+                                </p:panelGrid>
+                            </p:column>
+                            <p:column></p:column>
+                            <p:column></p:column>
+                            <p:column></p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:panel>
+            </p:panel>
+        </h:form>
+        <script type="text/javascript">
+        function marcarRequerido(){
+                        $('#formResolucion\\:formResarcimientoResolucion\\:valbien').addClass('s');
+            if ($('#formResolucion\\:formResarcimientoResolucion\\:valbien').attr('class').contains('ui-message-error')){
+                $('#formResolucion\\:formResarcimientoResolucion\\:valorBien_input').addClass('ui-state-error');
+            }else{
+                $('#formResolucion\\:formResarcimientoResolucion\\:valorBien_input').removeClass('ui-state-error')
+            }
+        }
+        </script>
+        <h:outputScript name='/js/calendar_es.js' target="head" />
+
+    </ui:define>
+</ui:composition>
+</html>

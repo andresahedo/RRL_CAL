@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core">
+
+    <p:panelGrid id="panelSolicitante1">
+        <p:row>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.rfc']}" />
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.rfcContribuyente}" disabled="true" />
+            </p:column>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.estadoContribuyente']}" />
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.estadoContribuyente}" disabled="true" />
+            </p:column>
+        </p:row>
+        <p:row>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.nombre']}">
+                </p:outputLabel>
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.nombre}" disabled="true" />
+            </p:column>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.apellidoPaterno']}">
+                </p:outputLabel>
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.apellidoPaterno}" disabled="true" />
+            </p:column>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.apellidoMaterno']}">
+                </p:outputLabel>
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.apellidoMaterno}" disabled="true" />
+            </p:column>
+        </p:row>
+    </p:panelGrid>
+
+    <p:panelGrid id="panelSolicitante2">
+        <p:row>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.domicilio.calle']}">
+                </p:outputLabel>
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.calle}" disabled="true" />
+            </p:column>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.domicilio.numeroExterior']}"></p:outputLabel>
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.numeroExterior}" disabled="true" />
+            </p:column>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.domicilio.numeroInterior']}"></p:outputLabel>
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.numeroInterior}" disabled="true" />
+            </p:column>
+        </p:row>
+        <p:row>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.domicilio.colonia']}">
+                </p:outputLabel>
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.colonia}" disabled="true" />
+            </p:column>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.domicilio.delegacionMunicipio']}">
+                </p:outputLabel>
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.delegacionMunicipio}"
+                    disabled="true" />
+            </p:column>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.domicilio.estado']}">
+                </p:outputLabel>
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.estado}" disabled="true" />
+            </p:column>
+        </p:row>
+        <p:row>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.domicilio.codigoPostal']}">
+                </p:outputLabel>
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.codigoPostal}" disabled="true" />
+            </p:column>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.domicilio.telefono']}"></p:outputLabel>
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.telefono}" disabled="true" />
+            </p:column>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.domicilio.correoElectronico']}"></p:outputLabel>
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.correoElectronico}"
+                    disabled="true" />
+            </p:column>
+        </p:row>
+        <p:row>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.representanteLegal']}">
+                </p:outputLabel>
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.representanteLegal}"
+                    disabled="true" />
+            </p:column>
+            <p:column>
+                <p:outputLabel value="#{msg['vuj.solicitante.administracionLocal']}">
+                </p:outputLabel>
+                <p:inputText value="#{consultasAutorizacionesController.datosSolicitud.administracionLocal}"
+                    disabled="true" />
+            </p:column>
+
+        </p:row>
+    </p:panelGrid>
+
+</ui:composition>

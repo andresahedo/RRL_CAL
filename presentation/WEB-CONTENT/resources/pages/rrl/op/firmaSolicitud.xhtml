@@ -1,0 +1,108 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+
+    <div id="appletContainer"></div>
+    <p:panel id="msgPanelFirma" style="border-style: none !important">
+        <p:messages id="messagesFirma" showDetail="true" />
+    </p:panel>
+    <table border="0" align="center">
+
+        <tr>
+            <td width="auto"></td>
+            <td><br /> <br />
+                <div align="center">
+                    <table class="unico" width="500" bgcolor="dbdbdb" cellpadding="0" cellspacing="3" border="0">
+
+                        <tr>
+                            <td align="center" colspan="3">
+                                <table class="contrasena" width="100%" border="0">
+                                    <tr>
+
+                                        <td width="69%"><div align="center"></div></td>
+                                        <td width="20%"></td>
+                                        <td width="2%">|</td>
+                                        <td width="9%"><div align="left">
+                                                <b>FIEL</b>
+                                            </div></td>
+
+                                        <td width="69%"></td>
+                                        <td width="20%"></td>
+                                        <td width="2%"></td>
+                                        <td width="9%"><div align="left"></div></td>
+                                    </tr>
+                                </table>
+                                <div>
+                                    <b> <span>Acceso a los servicios <br /> electrónicos del SAT
+                                    </span>
+                                    </b> <br /> <br />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="224" align="right"><b>Certificado (cer)</b></td>
+                            <td width="158" align="left"><input type="file" name="certificate" id="certificate" accept=".cer"/></td>
+                        </tr>
+                        <tr>
+                            <td align="right" class="normalFont"><b>Clave privada (key)</b></td>
+                            <td align="left"><input type="file" name="privateKey" id="privateKey" accept=".key"/></td>
+                        </tr>
+                        <tr>
+                            <td align="right" class="normalFont"><b>Contraseña de clave privada</b></td>
+                            <td colspan="2" align="left"><input type="password" name="privateKeyPassword"
+                                id="privateKeyPassword" size="25" class="cajatexto"
+                                title="#{msg['firma.clavePrivadaPassword']}" /></td>
+                        </tr>
+                        <tr>
+                            <td align="right"><b>RFC</b></td>
+                            <td colspan="2" align="left"><input type="text" name="userID" id="RFC" size="25"
+                                class="deshabilitado" readonly="readonly" value="#{header['userRFC']}" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" align="center"></td>
+                        </tr>
+                        <tr>
+                            <td align="center" height="33" colspan="3"><input type="button" id="btnSubmit"
+                                value="Firmar" onclick="ejecutarProcesoFirma('FIELForm:procesa')" /> <input type="hidden"
+                                id="mode" name="mode" value="#{sessionScope.fielMode}" /> <input type="hidden"
+                                id="firmaDigital" name="firmaDigital" /> <input type="hidden" id="numeroSerie"
+                                name="numeroSerie" /><input type="hidden" id="cadenaOriginal" name="cadenaOriginal"
+                                value="#{solicitudControllerOficialia.firma.cadenaOriginal}" /></td>
+                        </tr>
+                    </table>
+                </div></td>
+            <td width="auto"></td>
+            <td></td>
+        </tr>
+    </table>
+    <h:commandButton action="#{solicitudControllerOficialia.firmar}" id="procesa" style="display:none;" ajax="false" />
+    <p:defaultCommand target="procesa" />
+    <h:outputStylesheet library="css" name="fiel.css" />
+
+    <script>
+    
+	if(submitFirmaAsociado==false){
+		submitFirmaAsociado = true;
+		$( "#FIELForm" ).submit(function( event ) {
+			procesarFirmaFormulario(event);
+		});
+	}
+
+	$('form input').keydown(function (e) {
+	    if (e.keyCode == 13) {
+	        var inputs = $(this).parents("form").eq(0).find(":input");
+	        if (inputs[inputs.index(this) + 1] != null) {                    
+	            inputs[inputs.index(this) + 1].focus();
+	        }
+	        e.preventDefault();
+	        return false;
+	    }
+	});
+
+	</script>
+
+</h:body>
+
+
+</html>

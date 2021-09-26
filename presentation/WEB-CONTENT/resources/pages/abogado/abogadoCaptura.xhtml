@@ -1,0 +1,1456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:h="http://java.sun.com/jsf/html"
+   xmlns:f="http://java.sun.com/jsf/core"
+   xmlns:ui="http://java.sun.com/jsf/facelets"
+   xmlns:p="http://primefaces.org/ui"
+   xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+   xmlns:pe="http://primefaces.org/ui/extensions"
+   xmlns:c="http://java.sun.com/jsp/jstl/core">
+   <ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+      <ui:define name="content">
+         <style type="text/css">
+            .ui-panel {
+            border-style: none !important;
+            word-wrap: break-word;
+            }
+            .resolucionImportante {
+            background: yellow !important;
+            }
+            .panelMontoStyle td {
+            border-style: hidden !important;
+            }
+            .ui-selectonemenu-panel {
+            width: 60%;
+            }
+            .table-no-select-all .ui-chkbox-all {
+            visibility: hidden;
+            }
+            .noResize {
+            resize: none;
+            }
+            .noBorder td {
+            border-style: hidden !important;
+            }
+            .ui-button-icon-only {
+            display: none;
+            }
+         </style>
+         <f:event type="preRenderView"
+            listener="#{abogadoController.validaAcceso}" />
+         <p:panel
+            style="width:#{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};">
+            <p:ajaxStatus onstart="statusDialog.show();"
+               oncomplete="statusDialog.hide();" />
+            <p:dialog modal="true" widgetVar="statusDialog" resizable="false"
+               header="#{msg['vuj.estatus.procesando']}" draggable="false"
+               closable="false">
+               <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+            </p:dialog>
+            <p:panel id="navegationPanel" style="float:left;width: 100%">
+               <br />
+               <br />
+               <table align="right">
+                  <tr>
+                     <td>
+                        <p:commandButton id="guardarButton"
+                           value="#{msg['vuj.resol.guardar']}"
+                           onclick="cdGuardar.show()"
+                           disabled="#{abogadoController.inhabilitarGuardar}" />
+                        <p:confirmDialog
+                           message="#{msg['vuj.confirmacion']}" showEffect="fade"
+                           hideEffect="explode" header="Confirmación" severity="alert"
+                           widgetVar="cdGuardar">
+                           <table align="right">
+                              <tr>
+                                 <td>
+                                    <p:commandButton value="Si"
+                                       actionListener="#{abogadoController.guardarResolucionesImpugnadas}"
+                                       styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                       update=":navegationPanel,:msgPanelRes,:remitirForm,:infoAdicionalForm:infoAdicionalPanel, resolucionForm:resolucionTablePanel"
+                                       oncomplete="cdGuardar.hide();unselectCheckResol();" />
+                                    <p:commandButton
+                                       value="No" onclick="cdGuardar.hide();" type="button"
+                                       styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                 </td>
+                              </tr>
+                           </table>
+                        </p:confirmDialog>
+                     </td>
+                     <td>
+                        <p:panel style="float:left;"
+                           visible="#{abogadoController.banderaGuardar}">
+                           <p:commandButton id="siguienteButton"
+                              actionListener="#{abogadoController.siguienteEmitir}"
+                              update=":navegationPanel,:msgPanelRes,:remitirForm,:infoAdicionalForm:infoAdicionalPanel"
+                              ajax="true" value="#{msg['vuj.autorizar.capturaResolucion']}" />
+                        </p:panel>
+                     </td>
+                  </tr>
+               </table>
+               <p:commandButton id="actualizarTableButton" style="display:none"
+                  partialSubmit="true" process="@this"
+                  actionListener="#{abogadoController.actualizarBanderaResolucionImpugnada}"
+                  update=":resolucionForm" ajax="true" value="actualizar">
+               </p:commandButton>
+               <p:inputText style="display:none"
+                  value="#{abogadoController.banderaResolucionImpugnada}"
+                  id="idBanderaResolucionImpugnada" />
+                  
+               <p:panel id="msgPanelRes" style="float:left;width: 100%">
+                  <h:outputText id="errorMsg"
+                     value="#{abogadoController.errorMessage}" />
+                  <h:outputText id="msg" value="#{abogadoController.msg}" />
+                  <p:messages id="messagesRes" showDetail="true" globalOnly="true">
+                     <p:message showDetail="true" rendered=""></p:message>
+                  </p:messages>
+                  <p:panel style="float:left;width: 100%;"
+                     rendered="#{abogadoController.blnMensajeDefensa}">
+                     <div class="ui-messages ui-widget" id="mensajeMedioDefensa">
+                        <div class="ui-messages-info ui-corner-all">
+                           <span class="ui-messages-info-icon"></span>
+                           <ul>
+                              <li>
+                                 <span class="ui-messages-info-detail" /> 
+                                 <h:outputText
+                                    value="#{msg['rrl.resol.impugnada.aviso']}" />
+                              </li>
+                           </ul>
+                        </div>
+                     </div>
+                  </p:panel>
+               </p:panel>
+               
+               <h:form id="remitirForm">
+                  <p:panel style="float:left;width: 100%;" id="funcionarioPanel">
+                     <br />
+                     <p:panelGrid styleClass="panelMontoStyle" columns="3"
+                        style="float:left;" id="navegationPanel">
+                        <h:outputText value="#{msg['vuj.resol.funcionario']}" />
+                        <h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" />
+                        <h:outputText value="#{msg['vuj.resol.estadoProcesal']}" />
+                        <p:inputText disabled="true" maxlength="500" readonly="true"
+                           id="funcionarioInput"
+                           value="#{abogadoController.userProfile.nombreCompleto}" />
+                        <p:inputText disabled="true" maxlength="13"
+                           value="#{abogadoController.userProfile.rfc}" readonly="true"
+                           id="rfcFuncionarioInput" />
+                        <p:inputText maxlength="32" readonly="true"
+                           value="#{abogadoController.abogadoDTO.tramiteDTO.estadoProcesal}"
+                           id="estadoProcesalInput" />
+                        <h:outputText value="#{msg['vuj.resol.numAsunto']}" />
+                        <h:outputText value="#{msg['vuj.fechaRecepcion']}" />
+                        <h:outputText value="#{msg['vuj.resol.fechaVenc']}" />
+                        <p:inputText readonly="true" maxlength="13"
+                           value="#{abogadoController.abogadoDTO.tramiteDTO.numeroAsunto}"
+                           id="numAsuntoInput" />
+                        <p:inputText readonly="true"
+                           value="#{abogadoController.abogadoDTO.tramiteDTO.fechaRecepcion}"
+                           id="fechaRecepcionInput">
+                           <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:inputText>
+                        <p:inputText readonly="true"
+                           value="#{abogadoController.abogadoDTO.tramiteDTO.fechaVencimiento}"
+                           id="fechaVencimientoInput">
+                           <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:inputText>
+                     </p:panelGrid>
+                  </p:panel>
+                  <table align="right">
+                     <tr>
+                        <td>
+                           <p:panel style="float:right;">
+                              <p:commandButton id="remitirButton"
+                                 value="#{msg['vuj.resol.remitir']}"
+                                 action="#{abogadoController.remitir}" update=":msgPanelRes" />
+                           </p:panel>
+                        </td>
+                        <td>
+                           <p:panel style="float:right;"
+                              visible="#{abogadoController.datosBandejaTareaDTO.oficialia}">
+                              <p:commandButton id="observarButton"
+                                 value="#{msg['vuj.resol.generarObservacion']}"
+                                 action="#{abogadoController.observar}" />
+                           </p:panel>
+                        </td>
+                        <td>
+                           <p:panel style="float:right;"
+                              visible="#{abogadoController.banderaGuardar}">
+                              <p:commandButton id="generarReqButton"
+                                 value="#{msg['vuj.resol.generarRequerimiento']}"
+                                 actionListener="#{abogadoController.generarRequerimiento}" />
+                           </p:panel>
+                        </td>
+                     </tr>
+                  </table>
+               </h:form>
+            </p:panel>
+            <br />
+            <p:panel
+               header="#{msg['comunes.observacion.descObservacionTurnado']}"
+               style="float:left;width: 100%;"
+               visible="#{abogadoController.panelTurnadoVisible}">
+               <p:scrollPanel mode="native"
+                  style="border-style: hidden !important;">
+                  <p:inputTextarea value="#{abogadoController.observacionTurnado}"
+                     id="descripcionObservacion" autoResize="false" cols="100" rows="3"
+                     maxlength="2000" size="500" style='height:50px;resize:none'
+                     styleClass="noResize" readonly="true" />
+               </p:scrollPanel>
+            </p:panel>
+            <h:form id="resolucionForm">
+               <p:panel style="float:left;width: 100%;" id="panelForm"
+                  header="  Resoluciones Impugnadas ">
+                  <table style="float: left;">
+                     <tr>
+                        <td>&nbsp;</td>
+                     </tr>
+                     <tr>
+                        <td>
+                           <p:outputLabel value="#{msg['vuj.camposObligatorios']}"
+                              style="color:red" />
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>&nbsp;</td>
+                     </tr>
+                     <tr>
+                        <td colspan="1">
+                           <h:outputText
+                              value="#{msg['vuj.resol.resImpugnada']}" />
+                           <p:outputLabel
+                              style="color:red"> * </p:outputLabel>
+                           <h:graphicImage
+                              id="ayudaIdres" url="/resources/css/images/ayuda.png"
+                              title="#{msg['atender.requerimiento.resolucionImpugnada']}" />
+                           <pe:tooltip for="ayudaIdres"
+                              value="#{msg['atender.requerimiento.resolucionImpugnada']}"
+                              adjustX="20" adjustY="20" mouseTracking="true"
+                              showEffect="fade" />
+                        </td>
+                        <td align="left">
+                           <h:outputText
+                              value="#{msg['vuj.autoridadEmisora']}" />
+                           <p:outputLabel
+                              style="color:red"> * </p:outputLabel>
+                           <h:graphicImage
+                              id="ayudaIdaut" url="/resources/css/images/ayuda.png" />
+                           <pe:tooltip
+                              for="ayudaIdaut"
+                              value="#{msg['atender.requerimiento.autoridadEmisora']}"
+                              adjustX="20" adjustY="20" mouseTracking="true"
+                              showEffect="fade" />
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>
+                           <p:inputText
+                              value="#{abogadoController.resol.resImpugnada}"
+                              id="resImpugnadaInput" required="true" maxlength="35"
+                              validatorMessage="#{errmsg['vuj.resolucion.resolInvalida']}">
+                              <f:validator for="resImpugnadaInput"
+                                 validatorId="validatorAbogado"></f:validator>
+                           </p:inputText>
+                           <p:message display="text" for="resImpugnadaInput" />
+                        </td>
+                        <td>
+                           <p:selectOneMenu effect="fade"
+                              id="autoridadEmisoraSelect" style="width:500px;"
+                              value="#{abogadoController.resol.autoridadEmisora}"
+                              required="true" converter="#{autoridadConverter}" filter="true"
+                              filterMatchMode="contains">
+                              <f:selectItem itemValue=""
+                                 itemLabel="#{msg['vuj.combo.seleccione']}" />
+                              <f:selectItems value="#{abogadoController.autoridadEmisoras}"
+                                 var="autoridad" itemValue="#{autoridad}"
+                                 itemLabel="#{autoridad.nombre}" />
+                           </p:selectOneMenu>
+                           <p:message display="text" for="autoridadEmisoraSelect" />
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>
+                           <h:outputText value="#{msg['vuj.resol.fechaEmision']}" />
+                           <p:outputLabel style="color:red"> * </p:outputLabel>
+                           <h:graphicImage
+                              id="ayudaIdFec" url="/resources/css/images/ayuda.png" />
+                           <pe:tooltip
+                              for="ayudaIdFec"
+                              value="#{msg['atender.requerimiento.fechaEmision']}"
+                              adjustX="20" adjustY="20" mouseTracking="true"
+                              showEffect="fade" />
+                        </td>
+                        <td>
+                           <h:outputText value="#{msg['vuj.resol.procedimiento']}" />
+                           <p:outputLabel style="color:red"> * </p:outputLabel>
+                           <h:graphicImage
+                              id="ayudaIdproc" url="/resources/css/images/ayuda.png" />
+                           <pe:tooltip
+                              for="ayudaIdproc"
+                              value="#{msg['atender.requerimiento.procedimientoDeriva']}"
+                              adjustX="20" adjustY="20" mouseTracking="true"
+                              showEffect="fade" />
+                        </td>
+                     </tr>
+                     <tr>
+                        <td colspan="1" rowspan="1">
+                           <p:calendar pattern="dd/MM/yyyy"
+                              locale="es" readonlyInput="true" navigator="true"
+                              value="#{abogadoController.resol.fechaEmision}"
+                              id="fechaEmisionInput" required="true"
+                              maxdate="#{abogadoController.fechaMaxima}" />
+                           <p:message
+                              for="fechaEmisionInput" display="text" />
+                        </td>
+                        <td>
+                           <p:selectOneMenu effect="fade" id="procedimientoSelect"
+                              converter="#{procedimientoConverter}" style="width:60%;"
+                              value="#{abogadoController.resol.procedimiento}"
+                              required="true" filter="true" filterMatchMode="contains">
+                              <f:selectItem itemValue=""
+                                 itemLabel="#{msg['vuj.combo.seleccione']}" />
+                              <f:selectItems value="#{abogadoController.listaProcedimientos}"
+                                 var="procedimiento" itemValue="#{procedimiento}"
+                                 itemLabel="#{procedimiento.descripcion}" />
+                           </p:selectOneMenu>
+                           <p:message display="text" for="procedimientoSelect" />
+                        </td>
+                     </tr>
+                     <tr>
+                        <td></td>
+                        <td>
+                           <h:outputText value="#{msg['vuj.resol.monto']}" />
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>
+                           <p:selectBooleanCheckbox id="determinanteCred"
+                              value="#{abogadoController.determinanteCred}">
+                              <p:ajax event="valueChange" update=":resolucionForm:montoInput"
+                                 oncomplete="resetearMonto();deshabilitaMontoImput();"
+                                 listener="#{abogadoController.determinanteChangeEvent}"></p:ajax>
+                           </p:selectBooleanCheckbox>
+                           <h:outputText value="#{msg['vuj.resol.determinanteCred']}" />
+                           <h:graphicImage id="ayudaIdDetCred"
+                              url="/resources/css/images/ayuda.png" />
+                           <pe:tooltip
+                              for="ayudaIdDetCred"
+                              value="#{msg['atender.requerimiento.determinanteCredito']}"
+                              adjustX="20" adjustY="20" mouseTracking="true"
+                              showEffect="fade" />
+                        </td>
+                        <td>
+                           <p:outputLabel>&#36;</p:outputLabel>
+                           <pe:inputNumber
+                              id="montoInput" emptyValue="0.00" required="true"
+                              disabled="#{abogadoController.banderaMonto}"
+                              validatorMessage="#{errmsg['vuj.resol.importe']}"
+                              minValue="0.00" maxValue="99999999999999.99" maxlength="16"
+                              decimalPlaces="2" value="#{abogadoController.montoValor}">
+                           </pe:inputNumber>
+                           <p:message for="montoInput" display="text"></p:message>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td colspan="6">
+                           <p:panel style="float:right;">
+                              <p:commandButton id="agregarResolucion" value="Agregar"
+                                 update="resolucionTablePanel,panelForm,:infoAdicionalForm,montoInput,:navegationPanel"
+                                 actionListener="#{abogadoController.agregarResolucion}"
+                                 oncomplete="ocultarMessages();deshabilitaMontoImput();" />
+                           </p:panel>
+                        </td>
+                     </tr>
+                  </table>
+               </p:panel>
+               <p:panel style="float:left;width: 100%;" id="resolucionTablePanel"
+                  header="  Resoluciones Impugnadas Agregadas ">
+                  <p:remoteCommand name="restoreMaxResolValueCommand"
+                     actionListener="#{abogadoController.restoreMaxResolValue}"
+                     oncomplete="alert('executed restoreMaxResolValueCommand')" />
+                  <p:remoteCommand name="deleteMaxResolValueCommand"
+                     actionListener="#{abogadoController.deleteMaxResolValue}"
+                     oncomplete="alert('executed deleteMaxResolValueCommand')" />
+                  <table style="float: left;" cellpadding="1" width="100%"
+                     id="resolucionTable">
+                     <tr>
+                        <td colspan="2">
+                           <p:scrollPanel style="height:200px;"
+                              id="usuariosPanel" mode="native">
+                              <p:dataTable rowIndexVar="rowId" resizableColumns="true"
+                                 style="width:100%;border: 1px solid #848484;"
+                                 rowStyleClass="#{resol.importante == true ? 'resolucionImportante' : null }"
+                                 editMode="row" id="resolucionTable"
+                                 widgetVar="resolucionTableVar" var="resol"
+                                 selection="#{abogadoController.selectedResol}" editable="true"
+                                 value="#{abogadoController.resolDataModel}"
+                                 emptyMessage="#{msg['vuj.grid.vacio']}">
+                                 <f:attribute name="tableResolutions"
+                                    value="#{abogadoController.resolDataModel}"></f:attribute>
+                                 <p:ajax event="rowEditInit"
+                                    listener="#{abogadoController.onRowEditInit}"
+                                    update=":navegationPanel, :exFondoForm:buttonPanel"
+                                 />
+                                 <p:ajax event="rowSelect"
+                                    update=":infoAdicionalForm:conceptoPanel, :navegationPanel, :exFondoForm:buttonPanel"
+                                    listener="#{abogadoController.onRowSelect}">
+                                 </p:ajax>
+                                 <p:ajax event="rowEdit"
+                                    listener="#{abogadoController.editarResolucion}"
+                                    update=":resolucionForm:montoTotalControvertidoInput, :resolucionForm:montoInput, :infoAdicionalForm:conceptoPanel, :idBanderaResolucionImpugnada, :msgPanelRes, :navegationPanel, :exFondoForm:buttonPanel"
+                                    oncomplete="actualizarDataTable();"
+                                    onstart="habilitatableMontoInput();" resetValues="true" />
+                                 <p:ajax event="rowEditCancel"
+                                    listener="#{abogadoController.resetResol}"
+                                    update=":resolucionForm:montoTotalControvertidoInput, :resolucionForm:montoInput, :infoAdicionalForm:conceptoPanel, :resolucionForm:elimRes,:navegationPanel, :exFondoForm:buttonPanel"
+                                    resetValues="true" />
+                                 <p:ajax event="rowUnselect"
+                                    listener="#{abogadoController.onRowUnselect}"
+                                    update=":infoAdicionalForm:infoAdicionalPanel, :navegationPanel, :exFondoForm:buttonPanel" />
+                                 <p:ajax event="rowSelectRadio"
+                                    oncomplete="borrarInputConcepto();"
+                                    update=":infoAdicionalForm:conceptoPanel,@this, :resolucionForm:elimRes, :navegationPanel, :exFondoForm:buttonPanel"
+                                    listener="#{abogadoController.onRowSelect}" />
+                                 <p:column selectionMode="single" style="width:5%;"
+                                    resizable="false" />
+                                 <p:column headerText="#{msg['vuj.resol.resImpugnada']}"
+                                    resizable="false" style="width:15%;white-space:pre-line;">
+                                    <p:cellEditor>
+                                       <f:facet name="output">
+                                          <h:outputText value="#{resol.resImpugnada}" id="resImp" />
+                                       </f:facet>
+                                       <f:facet name="input">
+                                          <p:inputText id="tableResolucionInput"
+                                             value="#{resol.resImpugnada}" style="width:90px;"
+                                             required="true" maxlength="35">
+                                             <f:attribute name="msgFormato"
+                                                value="#{errmsg['vuj.resolucion.resolInvalida']}"></f:attribute>
+                                             <f:validator for="tableResolucionInput"
+                                                validatorId="validatorAbogado"></f:validator>
+                                          </p:inputText>
+                                          <p:message for="tableResolucionInput" display="text" />
+                                       </f:facet>
+                                    </p:cellEditor>
+                                 </p:column>
+                                 <p:column headerText="#{msg['vuj.resol.procedimiento']}"
+                                    resizable="false" style="width:15%;white-space:pre-line;">
+                                    <p:cellEditor>
+                                       <f:facet name="output">
+                                          <h:outputText value="#{resol.procedimiento.descripcion}" />
+                                       </f:facet>
+                                       <f:facet name="input">
+                                          <p:selectOneMenu converter="#{procedimientoConverter}"
+                                             style="width:130px;" id="tableProcedimientoSelect"
+                                             value="#{resol.procedimiento}" required="true"
+                                             filter="true" filterMatchMode="contains">
+                                             <f:selectItem itemValue=""
+                                                itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                             <f:selectItems
+                                                value="#{abogadoController.listaProcedimientos}"
+                                                var="procedimiento" itemValue="#{procedimiento}"
+                                                itemLabel="#{procedimiento.descripcion}" />
+                                          </p:selectOneMenu>
+                                          <p:message for="tableProcedimientoSelect" display="text" />
+                                       </f:facet>
+                                    </p:cellEditor>
+                                 </p:column>
+                                 <p:column headerText="#{msg['vuj.autoridadEmisora']}"
+                                    resizable="false" style="width:15%;white-space:pre-line;">
+                                    <p:cellEditor>
+                                       <f:facet name="output">
+                                          <h:outputText value="#{resol.autoridadEmisora.nombre}" />
+                                       </f:facet>
+                                       <f:facet name="input">
+                                          <p:selectOneMenu effect="fade" id="tableAutoridadSelect"
+                                             style="width:120px;" converter="#{autoridadConverter}"
+                                             value="#{resol.autoridadEmisora}" required="true"
+                                             filter="true" filterMatchMode="contains">
+                                             <f:selectItem itemValue=""
+                                                itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                             <f:selectItems
+                                                value="#{abogadoController.autoridadEmisoras}"
+                                                var="autoridad" itemValue="#{autoridad}"
+                                                itemLabel="#{autoridad.nombre}" />
+                                          </p:selectOneMenu>
+                                          <p:message for="tableAutoridadSelect" display="text" />
+                                       </f:facet>
+                                    </p:cellEditor>
+                                 </p:column>
+                                 <p:column headerText="#{msg['vuj.resol.fechaEmision']}"
+                                    resizable="false" style="width:15%;white-space:pre-line;">
+                                    <p:cellEditor>
+                                       <f:facet name="output">
+                                          <h:outputText value="#{resol.fechaEmision}">
+                                             <f:convertDateTime pattern="dd/MM/yyyy" />
+                                          </h:outputText>
+                                       </f:facet>
+                                       <f:facet name="input">
+                                          <p:calendar pattern="dd/MM/yyyy" navigator="true"
+                                             locale="es" value="#{resol.fechaEmision}"
+                                             readonlyInput="true"
+                                             maxdate="#{abogadoController.fechaMaxima}"
+                                             id="tableFechaCalendar" />
+                                          <p:message for="tableFechaCalendar" display="text" />
+                                       </f:facet>
+                                    </p:cellEditor>
+                                 </p:column>
+                                 <p:column
+                                    headerText="#{msg['vuj.resol.determinanteCredColumn']}"
+                                    resizable="false" style="width:13%;white-space:pre-line;">
+                                    <p:cellEditor>
+                                       <f:facet name="output">
+                                          <h:outputText id="determinanteCred"
+                                             value="#{resol.determinanteCred le false ? 'Si' : 'No'}" />
+                                       </f:facet>
+                                       <f:facet name="input">
+                                          <p:selectBooleanCheckbox id="determinanteCredId"
+                                             itemLabel=" #{msg['vuj.resol.determinanteCred']}"
+                                             value="#{resol.determinanteCred}" style="width:10%;">
+                                             <p:ajax event="valueChange"
+                                                onsuccess="reloadMontoResol(this)"
+                                                listener="#{abogadoController.montoResolCheckChangeEvent}" />
+                                          </p:selectBooleanCheckbox>
+                                       </f:facet>
+                                    </p:cellEditor>
+                                 </p:column>
+                                 <p:column headerText="#{msg['vuj.resol.monto']}"
+                                    resizable="false" style="width:19%;white-space:pre-line;">
+                                    <p:cellEditor id="panelMontoId">
+                                       <f:facet name="output">
+                                          <h:outputText value="#{resol.monto}"
+                                             converter="bigDecimalConverter">
+                                             <f:convertNumber type="currency" currencySymbol="$"/>
+                                          </h:outputText>
+                                       </f:facet>
+                                       <f:facet name="input">
+                                          <pe:inputNumber minValue="0" emptyValue="0.00"
+                                             required="true" maxValue="#{resol.maxMontoValue}"
+                                             maxlength="16" disabled="#{!resol.determinanteCred}"
+                                             id="tableMontoInput" value="#{resol.monto}"
+                                             requiredMessage="#{msg['vuj.resol.camposObligatorios']}"
+                                             decimalPlaces="2">
+                                             <p:ajax event="blur" update="@this"
+                                                listener="#{abogadoController.montoResolChangeEvent}" />
+                                          </pe:inputNumber>
+                                          <p:message for="tableMontoInput" display="text" />
+                                       </f:facet>
+                                    </p:cellEditor>
+                                 </p:column>
+                                 <p:column headerText="Editar" style="width:4%"
+                                    resizable="false">
+                                    <p:rowEditor rendered="#{resol.editarResolSelected}" />
+                                 </p:column>
+                                 <p:ajax event="rowEditInit"
+                                    update=":resolucionForm:montoInput, :resolucionForm:resolucionTable:panelMontoId" />
+                              </p:dataTable>
+                           </p:scrollPanel>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>
+                           <h:outputText id="montoTotalID"
+                              value="#{msg['vuj.resol.montoTotal']} " />
+                           <h:graphicImage
+                              id="ayudaIdMonto" url="/resources/css/images/ayuda.png" />
+                           <pe:tooltip
+                              for="ayudaIdMonto"
+                              value="#{msg['atender.requerimiento.montoTotalControvertido']}"
+                              adjustX="20" adjustY="20" mouseTracking="true"
+                              showEffect="fade" />
+                        </td>
+                        <td align="right">
+                           <p:commandButton id="elimRes"
+                              process="@this"
+                              disabled="#{abogadoController.disableElimResol}"
+                              value="Eliminar" oncomplete="cdEliminarRow.show()">
+                           </p:commandButton>
+                           <p:confirmDialog
+                              message="#{msg['vuj.resolucion.confirmarElimnarResolucion']}"
+                              showEffect="fade" hideEffect="explode" header="Confirmación"
+                              severity="alert" widgetVar="cdEliminarRow">
+                              <table align="right">
+                                 <tr>
+                                    <td>
+                                       <p:commandButton value="Si"
+                                          actionListener="#{abogadoController.removeRow}"
+                                          process="@this" styleClass="ui-confirmdialog-yes"
+                                          icon="ui-icon-check"
+                                          update=":resolucionForm,:infoAdicionalForm:infoAdicionalPanel,:navegationPanel, :exFondoForm:buttonPanel"
+                                          oncomplete="cdEliminarRow.hide();" />
+                                       <p:commandButton
+                                          value="No" onclick="cdEliminarRow.hide();" type="button"
+                                          styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                    </td>
+                                 </tr>
+                              </table>
+                           </p:confirmDialog>
+                        </td>
+                     </tr>
+                     <tr></tr>
+                     <tr>
+                        <td>
+                           <p:inputText converter="bigDecimalConverter"
+                              readonly="true" id="montoTotalControvertidoInput"
+                              value="#{abogadoController.montoTotalControvertido}">
+                              <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"
+                                 maxFractionDigits="2" />
+                           </p:inputText>
+                        </td>
+                     </tr>
+                  </table>
+                  <table></table>
+                  <p:panel style="float:left;width: 100%;" id="panelEliminarResImp">
+                     <p:confirmDialog closable="false"
+                        message="#{msg['vuj.resolucion.eliminarResolucion']}"
+                        visible="#{abogadoController.banderaRemove}" id="confirmarDialog"
+                        widgetVar="confirmarAccion" showEffect="fade">
+                        <p:commandButton oncomplete="confirmarAccion.hide()" value="Si"
+                           process="@this,confirmarDialog"
+                           update="@this,:resolucionForm:resolucionTablePanel,:navegationPanel"
+                           actionListener="#{abogadoController.removeConcepto}"
+                           styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" oncomplete="confirmarAccion.hide()"
+                           process="@this,confirmarDialog"
+                           update="@this,:resolucionForm:resolucionTablePanel"
+                           styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                     </p:confirmDialog>
+                  </p:panel>
+                  <pe:tooltip for="resolucionTable"
+                     value="#{msg['atender.requerimiento.resolucionesImpugnadas']}"
+                     mouseTracking="true" adjustX="20" adjustY="20"
+                     atPosition="top left" showEffect="fade" />
+               </p:panel>
+            </h:form>
+            <h:form id="infoAdicionalForm">
+               <p:panel style="float:left;width: 100%;"
+                  widgetVar="infoAdicionalPanel" id="infoAdicionalPanel">
+                  <p:panel style="float:left;width: 100%;"
+                     visible="#{abogadoController.visibleConceptoPanel}"
+                     id="conceptoPanel" header="#{msg['vuj.resol.conceptoTit']}">
+                     <p:panel style="float:left;width: 100%;" id="msgConepto">
+                        <div class="ui-messages ui-widget" style="display: none"
+                           id="errorConcepto">
+                           <div class="ui-messages-error ui-corner-all">
+                              <span class="ui-messages-error-icon"></span>
+                              <ul>
+                                 <li>
+                                    <span class="ui-messages-error-detail" /> 
+                                    <h:outputText
+                                       value="#{msg['vuj.resol.camposObligatorios']}"
+                                       style="color:red" />
+                                 </li>
+                              </ul>
+                           </div>
+                        </div>
+                     </p:panel>
+                     <p:panel style="float:left;width: 100%;" id="resConcepto">
+                        <table style="float: left; width: 100%;">
+                           <tr>
+                              <td colspan="3">
+                                 <h:outputText
+                                    value="#{msg['vuj.resol.concepto']} " />
+                                 <h:graphicImage
+                                    id="ayudaConcepto" url="/resources/css/images/ayuda.png" />
+                                 <pe:tooltip for="ayudaConcepto"
+                                    value="#{msg['atender.requerimiento.concepto']}" adjustX="20"
+                                    adjustY="20" mouseTracking="true" showEffect="fade" />
+                              </td>
+                           </tr>
+                           <tr>
+                              <td colspan="3">
+                                 <p:selectOneMenu effect="fade"
+                                    converter="#{conceptoConverter}" id="conceptoSelect"
+                                    value="#{abogadoController.conceptosDTO.conceptoValor}"
+                                    required="true" filter="true" filterMatchMode="contains">
+                                    <f:selectItem itemValue=""
+                                       itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                    <f:selectItems value="#{abogadoController.conceptoCats}"
+                                       var="concepto" itemValue="#{concepto}"
+                                       itemLabel="#{concepto.descripcion}" />
+                                 </p:selectOneMenu>
+                                 <p:message for="conceptoSelect" display="text" />
+                              </td>
+                           </tr>
+                           <tr>
+                              <td colspan="4">
+                                 <h:outputText
+                                    value="#{msg['vuj.resol.importe']} " id="conceptoId" />
+                                 <h:graphicImage
+                                    id="ayudaIdImporte" url="/resources/css/images/ayuda.png" />
+                                 <pe:tooltip for="ayudaIdImporte"
+                                    value="#{msg['atender.requerimiento.importe']}" adjustX="20"
+                                    adjustY="20" mouseTracking="true" showEffect="fade" />
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>
+                                 <pe:inputNumber id="conceptoImporteInput" symbol="$"
+                                    minValue="0.00" maxValue="99999999999999.99" maxlength="16"
+                                    decimalPlaces="2" required="true"
+                                    value="#{abogadoController.importeValor}">
+                                 </pe:inputNumber>
+                                 <p:message for="conceptoImporteInput" display="text" />
+                                 <pe:remoteCommand
+                                    id="applyDataCommand" name="applyData" process="@this"
+                                    update=":infoAdicionalForm:resConcepto,:resolucionForm:resolucionTablePanel,:navegationPanel"
+                                    actionListener="#{abogadoController.resetCamposConcepto}" />
+                              </td>
+                           </tr>
+                           <tr>
+                              <td align="right" colspan="4">
+                                 <p:commandButton
+                                    id="agregarConcepto" value="Agregar"
+                                    update=":infoAdicionalForm:resConcepto,:navegationPanel, :exFondoForm:buttonPanel"
+                                    oncomplete="if(!args.validationFailed){cdAgregarConcepto.show()}else{marcarRequeridoConceptoInput()}">
+                                 </p:commandButton>
+                                 <p:confirmDialog
+                                    message="#{msg['vuj.resolucion.agregarConcepto']}"
+                                    showEffect="fade" hideEffect="explode" header="Confirmación"
+                                    severity="alert" widgetVar="cdAgregarConcepto">
+                                    <table align="right">
+                                       <tr>
+                                          <td>
+                                             <p:commandButton value="Si"
+                                                actionListener="#{abogadoController.guardarConcepto}"
+                                                styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                                onclick="validMensaje();"
+                                                update=":infoAdicionalForm:resConcepto,:resolucionForm:resolucionTablePanel,:navegationPanel, :exFondoForm:buttonPanel"
+                                                oncomplete="cdAgregarConcepto.hide();unselectCheckConceptos();" />
+                                             <p:commandButton value="No" type="button"
+                                                styleClass="ui-confirmdialog-no" process="@this"
+                                                icon="ui-icon-close"
+                                                onclick="cdAgregarConcepto.hide();applyData();" />
+                                          </td>
+                                       </tr>
+                                    </table>
+                                 </p:confirmDialog>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td colspan="3">
+                                 <p:dataTable paginator="true" rows="5"
+                                    rowKey="#{concepto.id}"
+                                    selection="#{abogadoController.selectedConceptos}"
+                                    style="float:left;width: 100%;" editMode="row"
+                                    id="conceptoDataTable" editable="true"
+                                    resizableColumns="false" var="concepto"
+                                    value="#{abogadoController.conceptoDataModel}"
+                                    widgetVar="conceptosDataTable"
+                                    emptyMessage="#{msg['vuj.grid.vacio']}"
+                                    styleClass="table-no-select-all">
+                                    <p:ajax event="rowEdit"
+                                       oncomplete="unselectCheckConceptos();"
+                                       listener="#{abogadoController.editarConcepto}"
+                                       update="conceptoDataTable,:resolucionForm:resolucionTablePanel,:navegationPanel, :exFondoForm:buttonPanel" />
+                                    <p:ajax event="rowEditCancel"
+                                       listener="#{abogadoController.cancelConcepto}"
+                                       update="conceptoDataTable,:infoAdicionalForm:elimCon,:navegationPanel, :exFondoForm:buttonPanel"
+                                       oncomplete="unselectCheckConceptos();" />
+                                    <p:ajax event="rowEditInit"
+                                       listener="#{abogadoController.respaldoConcepto}"
+                                       update=":infoAdicionalForm:elimCon" />
+                                    <p:ajax event="rowUnselect"
+                                       listener="#{abogadoController.rowUnselectCheckbox}"
+                                       update=":infoAdicionalForm:resConcepto"></p:ajax>
+                                    <p:ajax event="rowSelectCheckbox"
+                                       listener="#{abogadoController.rowSelectCheckbox}"
+                                       update=":infoAdicionalForm:resConcepto"></p:ajax>
+                                    <p:ajax event="rowUnselectCheckbox"
+                                       listener="#{abogadoController.rowUnselectCheckbox}"
+                                       update=":infoAdicionalForm:resConcepto"></p:ajax>
+                                    <p:column headerText="#{msg['vuj.resol.concepto']}"
+                                       style="width:230px;white-space:pre-line;" resizable="false">
+                                       <p:cellEditor>
+                                          <f:facet name="input">
+                                             <p:selectOneMenu effect="fade"
+                                                converter="#{conceptoConverter}" style="width:230px"
+                                                id="conceptoSelect" value="#{concepto.conceptoValor}"
+                                                required="true"
+                                                requiredMessage="#{msg['vuj.resol.camposObligatorios']}">
+                                                <f:selectItem itemValue=""
+                                                   itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                                <f:selectItems value="#{abogadoController.conceptoCats}"
+                                                   var="conceptoi" itemValue="#{conceptoi}"
+                                                   itemLabel="#{conceptoi.descripcion}" />
+                                             </p:selectOneMenu>
+                                             <p:message for="conceptoSelect" display="text" />
+                                          </f:facet>
+                                          <f:facet name="output">
+                                             <h:outputText
+                                                value="#{concepto.conceptoValor.descripcion}" />
+                                          </f:facet>
+                                       </p:cellEditor>
+                                    </p:column>
+                                    <p:column headerText="#{msg['vuj.resol.importe']}"
+                                       style="width:200px;height:2%;white-space:pre-line;"
+                                       resizable="false">
+                                       <p:cellEditor>
+                                          <f:facet name="input">
+                                             <pe:inputNumber minValue="0" maxValue="99999999999999.99"
+                                                maxlength="16" id="tableImporteInput"
+                                                value="#{abogadoController.importeValor}"
+                                                emptyValue="0.00" converterMessage="dasa"
+                                                decimalPlaces="2">
+                                             </pe:inputNumber>
+                                             <p:message display="text" for="tableImporteInput" />
+                                          </f:facet>
+                                          <f:facet name="output">
+                                             <h:outputText value="#{concepto.importe}"
+                                                converter="bigDecimalConverter">
+                                                <f:convertNumber type="currency" currencySymbol="$"/>
+                                             </h:outputText>
+                                          </f:facet>
+                                       </p:cellEditor>
+                                    </p:column>
+                                    <p:column selectionMode="multiple" id="selecMultiple"
+                                       style="width:2%" resizable="false" />
+                                    <p:column style="width:3%" headerText="Editar"
+                                       resizable="false">
+                                       <p:rowEditor />
+                                    </p:column>
+                                 </p:dataTable>
+                              </td>
+                              <h:outputText id="conceptoRequerido" style="color:red"
+                                 value="#{abogadoController.errorConceptoMessage}" />
+                           </tr>
+                           <tr>
+                              <td align="right" colspan="3">
+                                 <p:commandButton
+                                    widgetVar="eliminarConceptosBtn"
+                                    process="conceptoDataTable, @this,conceptoRequerido"
+                                    id="elimCon" update=":infoAdicionalForm:panelConfirmar"
+                                    disabled="#{abogadoController.disableEliminar}"
+                                    actionListener="#{abogadoController.validRemoveConcepto}"
+                                    value="Eliminar" oncomplete="ocultarMessages();">
+                                 </p:commandButton>
+                              </td>
+                           </tr>
+                        </table>
+                     </p:panel>
+                  </p:panel>
+                  <p:panel style="float:left;width: 100%;" id="panelConfirmar">
+                     <p:confirmDialog closable="false"
+                        message="#{msg['vuj.resolucion.confirmarElimnarConceptos']}"
+                        visible="#{abogadoController.banderaRemove}" id="confirmarDialog"
+                        widgetVar="confirmarAccion" showEffect="fade">
+                        <table align="right">
+                           <tr>
+                              <td>
+                                 <p:commandButton oncomplete="confirmarAccion.hide()"
+                                    value="Si" process="@this,confirmarDialog"
+                                    update="@this,:infoAdicionalForm:conceptoDataTable, :infoAdicionalForm:elimCon,confirmarDialog,:resolucionForm:resolucionTablePanel,:navegationPanel, :exFondoForm:buttonPanel"
+                                    actionListener="#{abogadoController.removeConcepto}"
+                                    styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                 <p:commandButton
+                                    value="No" oncomplete="confirmarAccion.hide()"
+                                    process="@this"
+                                    update="@this,:infoAdicionalForm:conceptoDataTable,confirmarDialog"
+                                    actionListener="#{abogadoController.banderaFalse}"
+                                    styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                              </td>
+                           </tr>
+                        </table>
+                     </p:confirmDialog>
+                  </p:panel>
+                  
+               </p:panel>
+            </h:form>
+            <h:form id="recursoPanelForm">
+		            <p:panel style="float:left;width: 100%;" id="recursoPanel"
+                     header="#{msg['vuj.resolucion.caracteristicasRecurso']}">
+	                    <p:pickList converter="#{recursoConverter}" id="recursoPickList"
+	                       value="#{abogadoController.recursoDual}" var="recurso"
+	                       itemLabel="#{recurso.descripcion}" itemValue="#{recurso}">
+	                       <p:ajax event="transfer"
+	                          listener="#{abogadoController.actualizarRecursos}"
+	                          update=":exFondoForm:panelExclusivoFondo,:navegationPanel,:msgPanelRes" />
+	                       <f:facet name="targetCaption">#{msg['vuj.resolucion.agregadas']}</f:facet>
+	                       <f:facet name="sourceCaption">#{msg['vuj.resolucion.caracteristicas']}</f:facet>
+	                    </p:pickList>
+	                    <p:message display="text" for="recursoPickList" />
+                  </p:panel>
+                  <pe:tooltip for="recursoPanel"
+                     value="#{msg['atender.requerimiento.caractAdicionales']}"
+                     adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" />
+            </h:form>
+            <h:form id="exFondoForm">
+               <p:growl id="msgsExFondo" showDetail="true" />
+               <p:panel style="float:left;width: 100%;"
+                  header="#{msg['exclusivo.informacion.recurso']}"
+                  id="panelExclusivoFondo"
+                  visible="#{abogadoController.mostrarPanelExclusivoFondo}">
+                  <table>
+                     <tr>
+                        <td>
+                           <h:outputText
+                              value="#{msg['vuj.documento.anexar.tipoDocumento']}" />
+                           <h:graphicImage
+                              id="tooltopTipoDocumento" url="/resources/css/images/ayuda.png" />
+                           <pe:tooltip for="tooltopTipoDocumento"
+                              value="#{msg['exclusivo.tooltip.documento']}" adjustX="20"
+                              adjustY="20" mouseTracking="true" showEffect="fade" />
+                        </td>
+                        <td>
+                           <h:outputText
+                              value="#{msg['rrl.requerimiento.fechaNotificacion']}" />
+                        </td>
+                        <td>
+                           <h:outputText
+                              value="#{msg['rrl.requerimiento.fechaAudiencia']}" />
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>
+                           <p:selectOneMenu id="docExcusivoFondo"
+                              value="#{abogadoController.id}" filter="true"
+                              filterMatchMode="contains" widgetVar="comboDocs"
+                              onchange="validarComboDocumentos(this);"
+                              valueChangeListener="#{abogadoController.comboExclusivoChanged}"
+                              disabled="#{!abogadoController.tablaExclusivoEditar}">
+                              <p:ajax event="change" update="@this" />
+                              <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}"
+                                 itemValue="" />
+                              <f:selectItems
+                                 value="#{abogadoController.documentosExclusivoFondo}"
+                                 var="documento" itemLabel="#{documento.descripcion}"
+                                 itemValue="#{documento.clave}" />
+                           </p:selectOneMenu>
+                        </td>
+                        <td>
+                           <p:calendar pattern="dd/MM/yyyy" navigator="true"
+                              locale="es"
+                              value="#{abogadoController.fechaNotifExclusivoFondo}"
+                              readonlyInput="true"
+                              mindate="#{abogadoController.fechaMinimaExFondo}"
+                              maxdate="#{abogadoController.fechaMaximaExcFondo}"
+                              id="tableFechaNotifExclusivoFondo" widgetVar="calNotif">
+                              <p:ajax event="dateSelect"
+                                 listener="#{abogadoController.fechaNotifExclusivoFondoChanged}"
+                                 update=":exFondoForm:msgsExFondo,:exFondoForm:anexarBtn" />
+                           </p:calendar>
+                           <p:message for="tableFechaNotifExclusivoFondo" display="text" />
+                        </td>
+                        <td>
+                           <p:calendar pattern="dd/MM/yyyy" navigator="true"
+                              locale="es"
+                              value="#{abogadoController.fechaAudienciaExclusivoFondo}"
+                              readonlyInput="true"
+                              mindate="#{abogadoController.fechaMinimaExFondo}"
+                              maxdate="#{abogadoController.fechaMaximaExcFondo}"
+                              id="tableFechaAudienciaExclusivoFondo" widgetVar="calAudi">
+                              <p:ajax event="dateSelect"
+                                 listener="#{abogadoController.fechaAudienciaExclusivoFondoChanged}"
+                                 update=":exFondoForm:msgsExFondo,:exFondoForm:anexarBtn,:exFondoForm:docExcusivoFondo" />
+                           </p:calendar>
+                           <p:message for="tableFechaAudienciaExclusivoFondo"
+                              display="text" />
+                        </td>
+                     </tr>
+                  </table>
+                  <!-- Tabla de documentos de exclusivo de fondo" -->
+                  <p:scrollPanel
+                     style="width:#{abogadoController.anchoGridDocumentosPx}%;height:200px"
+                     id="scrollExclusivoFondo">
+                     <p:dataTable id="tablaDocumentos" var="documento"
+                        value="#{abogadoController.documentoOficialDataModel}"
+                        emptyMessage="#{msg['vuj.grid.vacio']}"
+                        editable="#{abogadoController.tablaExclusivoEditar}"
+                        selection="#{abogadoController.registrosEliminar}"
+                        paginator="true" rows="5" widgetVar="docExFondoTableVar"
+                        rowKey="#{documento.rutaAzure}" style="width:900px;">
+                        <p:ajax event="rowUnselect"
+                           listener="#{abogadoController.rowUnselectCheckboxTablaDocumentos}"
+                           update=":exFondoForm:tablaDocumentos,:exFondoForm:eliminarRegButton" />
+                        <p:ajax event="rowSelectCheckbox"
+                           listener="#{abogadoController.rowSelectCheckboxTablaDocumentos}"
+                           update=":exFondoForm:tablaDocumentos,:exFondoForm:eliminarRegButton" />
+                        <p:ajax event="toggleSelect"
+                           listener="#{abogadoController.rowSelectAllCheckboxTablaDocumentos}"
+                           update=":exFondoForm:tablaDocumentos,:exFondoForm:eliminarRegButton" />
+                        <p:ajax event="rowUnselectCheckbox"
+                           listener="#{abogadoController.rowUnselectCheckboxTablaDocumentos}"
+                           update=":exFondoForm:tablaDocumentos,:exFondoForm:eliminarRegButton" />
+                        <p:ajax event="rowEdit"
+                           listener="#{abogadoController.onRowEditListaDocumentosExFondo}"
+                           update=":exFondoForm:msgsExFondo,:exFondoForm:eliminarRegButton" />
+                        <p:column selectionMode="multiple" width="20%" headerText="Todos"
+                           resizable="false" style="text-align:center" />
+                        <p:column
+                           headerText="#{msg['vuj.documento.anexar.tipoDocumento']}"
+                           style="width:30%" resizable="false">
+                           <h:outputText value="#{documento.descripcionTipoDocumento}"
+                              id="tipoDoc" />
+                        </p:column>
+                        <p:column
+                           headerText="#{msg['vuj.documento.anexar.fechaNotificacion']}"
+                           style="width:10%" resizable="false">
+                           <p:cellEditor>
+                              <f:facet name="output">
+                                 <h:outputText value="#{documento.fechaNotificacion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                 </h:outputText>
+                              </f:facet>
+                              <f:facet name="input">
+                                 <p:calendar pattern="dd/MM/yyyy" navigator="true" locale="es"
+                                    value="#{documento.fechaNotificacion}" readonlyInput="true"
+                                    mindate="#{abogadoController.fechaMinimaExFondo}"
+                                    maxdate="#{abogadoController.fechaMaximaExcFondo}"
+                                    id="tableFechaNotifExclusivoFondoEditor"
+                                    valueChangeListener="#{abogadoController.fechaNotifChanged}" />
+                                 <p:message for="tableFechaNotifExclusivoFondoEditor"
+                                    display="text" />
+                              </f:facet>
+                           </p:cellEditor>
+                        </p:column>
+                        <p:column
+                           headerText="#{msg['vuj.documento.anexar.fechaAudiencia']}"
+                           style="width:10%" resizable="false">
+                           <p:cellEditor>
+                              <f:facet name="output">
+                                 <h:outputText value="#{documento.fechaAudiencia}" id="fecAudi">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                 </h:outputText>
+                              </f:facet>
+                              <f:facet name="input">
+                                 <p:calendar pattern="dd/MM/yyyy" navigator="true" locale="es"
+                                    value="#{documento.fechaAudiencia}" readonlyInput="true"
+                                    mindate="#{abogadoController.fechaMinimaExFondo}"
+                                    maxdate="#{abogadoController.fechaMaximaExcFondo}"
+                                    id="tableFechaAudExclusivoFondo"
+                                    valueChangeListener="#{abogadoController.fechaAudiChanged}" />
+                                 <p:message for="tableFechaAudExclusivoFondo" display="text" />
+                              </f:facet>
+                           </p:cellEditor>
+                        </p:column>
+                        <p:column
+                           headerText="#{msg['vuj.documento.anexar.nombreArchivo']}"
+                           style="width:10%" resizable="false">
+                           <p style="word-break: break-all;">
+                              <h:outputText value="#{documento.nombreArchivo}"
+                                 id="nomDocumento" />
+                           </p>
+                           <pe:tooltip for="nomDocumento" mouseTracking="true" adjustX="20"
+                              adjustY="20">
+                              <p:outputLabel escape="true" value="#{documento.nombreArchivo}" />
+                           </pe:tooltip>
+                        </p:column>
+                        <p:column headerText="#{msg['vuj.documento.tamanioDocumento']}"
+                           style="width:6%;white-space:pre-line;" resizable="false">
+                           <h:outputText value="#{documento.cadenaTamanioArchivo}" />
+                        </p:column>
+                        <p:column style="width:6%;text-align:center;" resizable="false">
+                           <p:commandButton value="#{msg['vuj.boton.ver']}"
+                              id="generarRuta" update=":exFondoForm:dialogVisor"
+                              oncomplete="visorDialog.show()" style="width:auto;">
+                              <f:setPropertyActionListener value="#{documento}"
+                                 target="#{abogadoController.documentoOficialSelected}" />
+                              <p:ajax event="click"
+                                 listener="#{abogadoController.activaBanderaDocumentoPromocion}" />
+                           </p:commandButton>
+                           <pe:tooltip for="generarRuta" adjustX="10" adjustY="10"
+                              value="#{msg['contribuyente.ver.documento']}"
+                              mouseTracking="true" atPosition="top right" />
+                        </p:column>
+                        <p:column style="width:32px" headerText="Editar">
+                           <p:rowEditor rendered="#{documento.editarDocumSelect}" />
+                        </p:column>
+                     </p:dataTable>
+                  </p:scrollPanel>
+                  <!-- Fin tabla de documentos de exclusivo de fondo -->
+                  <p:panelGrid id="buttonPanel" columns="1"
+                     styleClass="noBorder btnPanelGrid" style="float:right;">
+                     <p:column>
+                        <p:commandButton id="eliminarRegButton"
+                           value="#{msg['vuj.boton.eliminar']}"
+                           update=":navegationPanel,:exFondoForm:panelExclusivoFondo"
+                           onclick="inicializarCombo();"
+                           disabled="#{!abogadoController.eliminarVisible}"
+                           process="@this,:exFondoForm:tablaDocumentos"
+                           oncomplete="cdEliminarExFon.show();" />
+                        <p:confirmDialog
+                           message="#{msg['vuj.confirmacion.eliminarExFon']}"
+                           showEffect="fade" hideEffect="explode" header="Confirmación"
+                           severity="alert" widgetVar="cdEliminarExFon">
+                           <table align="right">
+                              <tr>
+                                 <td>
+                                    <p:commandButton value="Si"
+                                       actionListener="#{abogadoController.eliminarDocumentos}"
+                                       styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                       update=":exFondoForm,:exFondoForm:msgsExFondo,:navegationPanel"
+                                       oncomplete="cdEliminarExFon.hide()" />
+                                    <p:commandButton
+                                       value="No" onclick="cdEliminarExFon.hide();" type="button"
+                                       styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                 </td>
+                              </tr>
+                           </table>
+                        </p:confirmDialog>
+                     </p:column>
+                     <p:column>
+                        <p:commandButton id="anexarBtn"
+                           update=":exFondoForm:display,:exFondoForm:dlgAnexar"
+                           widgetVar="anexarBtnW"
+                           disabled="#{!abogadoController.agregarVisible}"
+                           oncomplete="anexarDialogo.show()"
+                           value="#{msg['vuj.boton.adjuntar']}">
+                        </p:commandButton>
+                     </p:column>
+                     <p:column>
+                        <p:commandButton id="guardarBtn"
+                           value="#{msg['vuj.resol.guardar']}"
+                           oncomplete="cdGuardar.show()"
+                           disabled="#{abogadoController.inhabilitarGuardar}" />
+                     </p:column>
+                  </p:panelGrid>
+               </p:panel>
+               <p:dialog id="dialogVisor" widgetVar="visorDialog"
+                  styleClass="dialogVisor" header="PDF" dynamic="true" modal="true"
+                  position="left top" closeOnEscape="true" draggable="false"
+                  resizable="false">
+                  <c:if test="#{not empty abogadoController.urlDescargaSelected}">
+                     <p:media player="pdf"
+                        value="#{abogadoController.urlDescargaSelected}"
+                        styleClass="dialogMedia" width="780px" height="480px">
+                        Su navegador no es compatible con la vista previa de pdfs. Para descargar el documento de click en esta
+                        <a href="#{abogadoController.urlDescargaSelected}"
+                           target="_blank"> liga </a>
+                     </p:media>
+                  </c:if>
+               </p:dialog>
+               <p:dialog id="dlgAnexar" widgetVar="anexarDialogo"
+                  header="#{msg['vuj.documento.anexar.tituloDialogo']}" modal="true"
+                  resizable="false">
+                  <h:panelGrid id="display" columns="2" cellpadding="4"
+                     style="margin:0 auto;">
+                     <h:form enctype="multipart/form-data;charset=UTF-8" style="width:500px">
+                        <p:growl id="msgsUpload" showDetail="true"/>
+                        <h2>Adjuntar archivo</h2>
+                        <br />
+                        <p:fileUpload 
+                           value="#{abogadoController.archivo}"
+                           invalidSizeMessage="El tamaño máximo por archivo es 4 MB."
+                           invalidFileMessage="El tipo de documento que trata de anexar no cumple con los requisitos. No está en un formato válido de PDF."
+                           mode="advanced" multiple="false" fileLimit="1"
+                           allowTypes="/(\.|\/)(pdf|pd?f)$/"
+                           fileUploadListener="#{abogadoController.fileUploadListenerGrowl}"
+                           sizeLimit = "4194303"
+                           oncomplete="termina();" 
+                           showButtons="true"
+                           uploadLabel="Adjuntar"
+                           cancelLabel="Cancelar"
+                           label="Seleccionar"
+                           update="msgsUpload"
+                           >
+                        </p:fileUpload>
+                     </h:form>
+                  </h:panelGrid>
+                  <p:panelGrid columns="1" styleClass="noBorder" style="float:right;">
+                     <p:column>
+                        <p:commandButton onclick="anexarDialogo.hide();" value="Cerrar" />
+                     </p:column>
+                  </p:panelGrid>
+               </p:dialog>
+            </h:form>
+            <h:form id="pform">
+               <p:commandButton action="#{abogadoController.anexarDocumentoNube}"
+                  id="anexarNube" update=":exFondoForm:tablaDocumentos"
+                  style="display:none" />
+            </h:form>
+
+            <script type="text/javascript">
+               function termina(){
+               	$('#pform\\:anexarNube').click();
+               	inicializarCombo();
+                   anexarDialogo.hide();
+                			    anexarBtnW.disable();
+               }
+                        $(document).ready(function() {
+               	validarComboDocumentos(comboDocs);
+               });
+                        function validarComboDocumentos(val){
+                			if(val.value == null || val.value == ""
+                				|| comboDocs.getSelectedValue() == ""){
+                				comboDocs.selectValue("");
+                				calNotif.setDate(null);
+               		calAudi.setDate(null);
+               		anexarBtnW.disable();
+               		calNotif.disable();
+               		calAudi.disable();
+                			}else{
+               		if(val.value =="TIDOF.AACC" || val.value =="TIDOF.AASC" || val.value =='TIDOF.AUEP'|| val.value=='TIDOF.DIRR'
+               				|| val.value == 'TIDOF.DFRR' || val.value =='TIDOF.IRR' || val.value =='TIDOF.PAC' || val.value == 'TIDOF.PAP' 
+               				|| val.value =='TIDOF.OTROS' || val.value =='TIDOF.ANC' || val.value =='TIDOF.ANP'){
+               			calNotif.setDate(null);
+               			calAudi.setDate(null);
+               			calNotif.disable();
+               			calAudi.disable();
+               			anexarBtnW.enable();
+               		}else if(val.value=="TIDOF.OASA"){
+               			calNotif.setDate(null);
+               			calAudi.setDate(null);
+               			calNotif.enable();
+               			calAudi.disable();
+               			anexarBtnW.disable();
+               		}else{
+               			calNotif.setDate(null);
+               			calAudi.setDate(null);
+               			calNotif.enable();
+               			calAudi.enable();
+               			anexarBtnW.disable();
+               		}
+                			}
+               			}
+                function validarFechaNotif(){
+                	var comboSelec = comboDocs.getSelectedValue();
+                	if(comboSelec == 'TIDOF.OASA'){
+                		anexarBtnW.enable();
+                	}
+                }
+                function validarFechaAudiencia(){
+                	var comboSelec = comboDocs.getSelectedValue();
+                	alert("Fecha de notificacion:"+calNotif.getDate()+" Fecha audiencia:"+calAudi.getDate());
+                	if(comboSelec == 'TIDOF.OACA' || comboSelec == 'TIDOF.OAEP'){
+                		if(calAudi.getDate() > calNotif.getDate()){
+                			anexarBtnW.enable();	
+                		}else{
+                			anexarBtnW.disable();
+                			alert("La fecha de audiencia no puede ser menor que la fecha de notificación");
+                		}
+                		
+                	}
+                }
+               function iniciarEdicion() {
+               var row = $("#resolucionForm\\:resolucionTable")
+               }
+               
+               function modificaMontoValor() {
+               
+               var count = 0;
+               
+               var row = $("#resolucionForm\\:resolucionTable")
+               		.find("tbody:first").children("tr");
+               row
+               		.each(function() {
+               
+               			if ($("#resolucionForm\\:resolucionTable\\:" + count
+               					+ "\\:determinanteCredId_input").is(':checked')) {
+               				
+               				$("#resolucionForm\\:resolucionTable\\:"
+               					+ count + "\\:tableMontoInput_input").attr('disabled', false);
+               				
+               				$("#resolucionForm\\:resolucionTable\\:"
+               					+ count + "\\:tableMontoInput_input").attr('required', true);
+               				
+               				if($("#resolucionForm\\:resolucionTable\\:" + count + "\\:tableMontoInput_input")
+               						.attr('class').contains('ui-state-disabled')){
+               					
+               					$("#resolucionForm\\:resolucionTable\\:"
+               						+ count + "\\:tableMontoInput_input").toggleClass('ui-state-disabled');
+               					
+               				}
+               
+               			} else {
+               				$("#resolucionForm\\:resolucionTable\\:"
+               					+ count + "\\:tableMontoInput_input").attr('disabled', true);
+               				
+               				$("#resolucionForm\\:resolucionTable\\:"
+               					+ count + "\\:tableMontoInput_input").attr('required', false);
+               						
+               				if(!$("#resolucionForm\\:resolucionTable\\:" + count + "\\:tableMontoInput_input")
+               						.attr('class').contains('ui-state-disabled')){
+               					
+               					$("#resolucionForm\\:resolucionTable\\:"
+               							+ count + "\\:tableMontoInput_input").toggleClass('ui-state-disabled');
+               					
+               				}
+               				
+               			}
+               			
+               			
+               			count = count + 1;
+               
+               			/* $(this).find('td').each(function(){
+               			       alert('inside each cell');
+               			       count = count+1;
+               			}); */
+               		});
+               
+               }
+               
+               function dataTableChangeCheckbox(select) {
+               var id = select.name.substring(select.name
+               		.lastIndexOf('resolucionForm'));
+               var splitSelect1 = select.name
+               		.split("resolucionForm:resolucionTable:");
+               var splitSelect2 = splitSelect1[1]
+               		.split(":determinanteCredId_input");
+               var index = splitSelect2[0];
+               
+               $("#resolucionForm\\:resolucionTable\\:" + index
+               	+ "\\:tableMontoInput").val("0.00");
+               
+               $("#resolucionForm\\:resolucionTable\\:" + index
+               	+ "\\:tableMontoInput_input").val("0.00");
+               
+               if ($("#resolucionForm\\:resolucionTable\\:" + index
+               		+ "\\:determinanteCredId_input").is(':checked')) {
+               	
+               	$("#resolucionForm\\:resolucionTable\\:" + index
+               		+ "\\:tableMontoInput").attr('disabled', false);
+               	
+               	$("#resolucionForm\\:resolucionTable\\:" + index
+               					+ "\\:tableMontoInput_input").attr('disabled', false);
+               					
+               	if( $("#resolucionForm\\:resolucionTable\\:" + index + "\\:tableMontoInput_input")
+               			.attr('class').contains('ui-state-disabled')){
+               		
+               		$("#resolucionForm\\:resolucionTable\\:"
+               				+ index + "\\:tableMontoInput_input").toggleClass('ui-state-disabled');
+               	}
+               	
+               	//restablece el limite del monto de la resolicion capturable
+               // 				restoreMaxResolValueCommand();
+               					
+               } else {
+               	$("#resolucionForm\\:resolucionTable\\:" + index
+               		+ "\\:tableMontoInput").attr('disabled', true);
+               	
+               	$("#resolucionForm\\:resolucionTable\\:" + index
+               		+ "\\:tableMontoInput_input").attr('disabled', true);
+               					
+               	if(!$("#resolucionForm\\:resolucionTable\\:" + index + "\\:tableMontoInput_input")
+               			.attr('class').contains('ui-state-disabled')){
+               		
+               		$("#resolucionForm\\:resolucionTable\\:"
+               			+ index + "\\:tableMontoInput_input").toggleClass('ui-state-disabled');
+               	}
+               	
+               	//elimina la restriccion de tamaño del monto de la resolucion 
+               // 				deleteMaxResolValueCommand();
+               }
+               
+               }
+               
+               function habilitatableMontoInput() {
+               var count = 0;
+               
+               var row = $("#resolucionForm\\:resolucionTable")
+               		.find("tbody:first").children("tr");
+               row
+               		.each(function() {
+               
+               			$("#resolucionForm\\:resolucionTable\\:" + count
+               				+ "\\:tableMontoInput").attr('disabled', false);
+               			$("#resolucionForm\\:resolucionTable\\:" + count
+               				+ "\\:tableMontoInput_input").attr('disabled', false);
+               		
+               			if( $("#resolucionForm\\:resolucionTable\\:" + count + "\\:tableMontoInput_input")
+               					.attr('class').contains('ui-state-disabled')){
+               				
+               				$("#resolucionForm\\:resolucionTable\\:"
+               					+ count + "\\:tableMontoInput_input").toggleClass('ui-state-disabled');
+               			}
+               
+               			count = count + 1;
+               
+               		});
+               
+               }
+               
+               function ocultarMessages() {
+               $('#messages').hide();
+               }
+               
+               function actualizarDataTable() {
+               if ($('#idBanderaResolucionImpugnada').val() == 'true') {
+               	$('#actualizarTableButton').click();
+               }
+               
+               }
+               
+               function validMensaje() {
+               
+               if (($("#infoAdicionalForm\\:conceptoImporteInput_input").val().length == 0)
+               		|| ($("#infoAdicionalForm\\:conceptoSelect_input").val().length == 0)) {
+               
+               	$('#errorConcepto').show();
+               
+               } else {
+               	$('#errorConcepto').hide();
+               }
+               
+               }
+               
+               function resetearMonto() {
+               $('#resolucionForm\\:montoInput').val("0");
+               
+               }
+               
+               function deshabilitaMontoImput() {
+               document.getElementsByName('#resolucionForm\\:montoInput').disabled = true;
+               }
+               
+               function borrarInputConcepto() {
+               $('#infoAdicionalForm\\:conceptoImporteInput').val('');
+               }
+               
+               var globalMontoVar;
+               
+               function reloadMontoResol(inputMontoResol){
+               var rowIndex = inputMontoResol.source.split(":");
+               // 			$("#resolucionForm\\:resolucionTable\\:"+ rowIndex[2] +"\\:tableMontoInput")
+               var updateId = "resolucionForm:resolucionTable:"+ rowIndex[2] + ":tableMontoInput";
+               globalMontoVar = "resolucionForm\\:resolucionTable\\:"+ rowIndex[2] + "\\:tableMontoInput_input";
+               
+               PrimeFaces.ajax.AjaxRequest({
+               	 source:updateId,
+               	 update:updateId,
+               	 proccess:updateId,
+               	 execute:updateId,
+               
+               });
+               
+               }
+               
+               function unselectCheckConceptos(){
+                       conceptosDataTable.unselectAllRows();
+                       eliminarConceptosBtn.disable();
+               }
+               
+               function unselectCheckResol(){
+                   	    $( ".ui-state-active" ).removeClass( "ui-state-active" );
+               $( ".ui-icon-bullet" ).removeClass( "ui-icon-bullet ui-icon" );
+               resolucionTableVar.unselectAllRows();
+               }
+                    
+                    function marcarRequeridoConceptoInput(){
+                        if ($('#infoAdicionalForm\\:conceptoImporteInput_input').val().length == 0){
+                            $('#infoAdicionalForm\\:conceptoImporteInput_input').addClass('ui-state-error');
+                        }else{
+                            $('#infoAdicionalForm\\:conceptoImporteInput_input').removeClass('ui-state-error')
+                        }
+                    }
+                    function inicializarCombo() {
+               comboDocs.selectValue("");
+               calNotif.setDate(null);
+               calAudi.setDate(null);
+               calNotif.disable();
+               calAudi.disable();
+               }
+            </script>
+            <h:outputScript name='/js/calendar_es.js' target="head" />
+            <f:metadata>
+               <f:event type="preRenderView"
+                  listener="#{abogadoController.setDatosIniciales}" />
+            </f:metadata>
+         </p:panel>
+         <p:panel style="width:#{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};">
+	         <ui:decorate template="../consultas/consulta.xhtml">
+	         </ui:decorate>
+         </p:panel>
+      </ui:define>
+   </ui:composition>
+</html>

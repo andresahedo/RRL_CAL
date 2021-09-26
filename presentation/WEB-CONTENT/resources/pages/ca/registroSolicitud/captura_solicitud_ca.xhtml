@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Registro Solicitud</title>
+</h:head>
+<h:body>
+    <f:metadata>
+        <f:viewParam name="msgRedirect" value="#{registroSolicitudCALController.messagesRedirect}" />
+        <f:event type="preRenderView" listener="#{registroSolicitudCALController.mensajesRedirect}" />
+    </f:metadata>
+
+
+    <p:panel id="navegationPanel">
+        <table>
+            <tr>
+                <td><p:commandButton id="guaradarSolicitudButton" value="#{msg['vuj.boton.siguiente']}"
+                        update=":msgPanel" actionListener="#{registroSolicitudCALController.guardarSolicitud}" /></td>
+            </tr>
+        </table>
+    </p:panel>
+
+    <p:panel id="msgPanel">
+        <p:messages id="messages" autoUpdate="true" showDetail="false" showSummary="true" escape="false" />
+    </p:panel>
+    <p:panel id="funcionarioPanel">
+        <p:tabView id="tabSolicitud">
+            <p:tab id="tab1" title="#{msg['vuj.tab.solicitante']}">
+                <ui:include src="/resources/pages/ca/registroSolicitud/datos_Solicitante.xhtml" />
+            </p:tab>
+
+            <p:tab id="tab2" title="#{msg['vuj.tab.promocion']}">
+                <p:outputLabel value="#{msg['vuj.camposObligatorios']}" style="color:red" />
+                <p:separator />
+                <ui:include src="/resources/pages/ca/registroSolicitud/datos_Promocion.xhtml" />
+            </p:tab>
+        </p:tabView>
+    </p:panel>
+</h:body>
+</html>

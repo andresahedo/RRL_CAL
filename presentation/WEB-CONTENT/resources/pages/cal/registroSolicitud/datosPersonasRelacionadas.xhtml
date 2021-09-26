@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <h:body>
+        <h:outputScript name='/js/calendar_es.js' target="head" />
+
+        <h:outputText escape="false" value="&lt;!--[if !IE 8]&gt; --&gt;" />
+        <style type="text/css">
+.noBorder tr {
+    border-style: hidden !important;
+}
+</style>
+        <h:outputText escape="false" value="&lt;!-- &lt;![endif]--&gt;" />
+
+
+        <style type="text/css">
+.noBorder td {
+    border-style: hidden !important;
+}
+</style>
+
+        <style type="text/css">
+.noResize {
+    resize: none;
+}
+</style>
+
+        <p:panel id="panelPromo1" header="#{msg['ca.tabCaptura.personasOir.recibir.notificaciones']}" style="width:100%">
+            <pe:tooltip for="panelPromo1" value="#{msg['cal.reg.promocion.datos.persona']}" atPosition="topCenter"></pe:tooltip>
+        </p:panel>
+        <p:panel id="panelPromocion1" style="width:100%">
+            <p:panelGrid columns="3" styleClass="noBorder">
+
+                <p:row>
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.rfc']}">
+                        <h:graphicImage id="ayudaRfc" url="/resources/css/images/ayuda.png" />
+                    </h:outputLabel>
+                    <pe:tooltip for="ayudaRfc" value="#{msg['cal.reg.promocion.persona.rfc']}"></pe:tooltip>
+                </p:row>
+                <p:row></p:row>
+                <p:spacer />
+                <p:row>
+                    <p:inputText value="#{registroSolicitudCALController.personaOirNotificacionesDTO.rfc}"
+                        maxlength="13" size="30" id="rfcPersonaNot">
+                        <f:attribute name="msgRFC" value="#{errmsg['ca.solicitud.promocion.validation.rfcPersonaOir']}" />
+                    </p:inputText>
+                </p:row>
+                <p:row>
+                    <p:commandButton value="#{msg['vuj.boton.buscar']}"
+                        update="panelPromocion1,:FIELForm:panelPromocion2,:FIELForm:msgPanelPersonas"
+                        actionListener="#{registroSolicitudCALController.buscarPersonaOirNotificaciones}" ajax="true"
+                        oncomplete="remPerChckAll();" />
+                </p:row>
+                <p:row></p:row>
+
+
+                <p:row>
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.nombre']}">
+                        <h:graphicImage id="ayudaIcon" url="/resources/css/images/ayuda.png" />
+                    </h:outputLabel>
+                    <pe:tooltip for="ayudaIcon" value="#{msg['cal.reg.promocion.persona.nombre']}"></pe:tooltip>
+                </p:row>
+
+                <p:row>
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.apellidoPaterno']}">
+                        <h:graphicImage id="ayudaApPat" url="/resources/css/images/ayuda.png" />
+                    </h:outputLabel>
+                    <pe:tooltip for="ayudaApPat" value="#{msg['cal.reg.promocion.persona.appaterno']}"></pe:tooltip>
+                </p:row>
+                <p:row>
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.apellidoMaterno']}">
+                        <h:graphicImage id="ayudaApMat" url="/resources/css/images/ayuda.png" />
+                    </h:outputLabel>
+                    <pe:tooltip for="ayudaApMat" value="#{msg['cal.reg.promocion.persona.apmaterno']}"></pe:tooltip>
+                </p:row>
+
+                <p:row>
+                    <p:inputText value="#{registroSolicitudCALController.personaOirNotificacionesDTO.nombre}"
+                        maxlength="200" size="30" id="nombrePersonaNot"
+                        disabled="#{!registroSolicitudCALController.activarPerOirNotNom}" />
+                </p:row>
+                <p:row>
+                    <p:inputText value="#{registroSolicitudCALController.personaOirNotificacionesDTO.paterno}"
+                        maxlength="200" size="30" id="paternoPersonaNot"
+                        disabled="#{!registroSolicitudCALController.activarPerOirNotAPat}" />
+                </p:row>
+                <p:row>
+                    <p:inputText value="#{registroSolicitudCALController.personaOirNotificacionesDTO.materno}"
+                        maxlength="200" size="30" id="maternoPersonaNot"
+                        disabled="#{!registroSolicitudCALController.activarPerOirNotAMat}" />
+                </p:row>
+
+                <p:row>
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.direccion']}">
+                        <h:graphicImage id="ayudaDireccion" url="/resources/css/images/ayuda.png" />
+                    </h:outputLabel>
+                    <pe:tooltip for="ayudaDireccion" value="#{msg['cal.reg.promocion.invol.direccion']}" />
+                </p:row>
+                <p:row>
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.telefono']}">
+                        <h:graphicImage id="ayudaTelefono" url="/resources/css/images/ayuda.png" />
+                    </h:outputLabel>
+                    <pe:tooltip for="ayudaTelefono" value="#{msg['cal.reg.promocion.persona.telefono']}"></pe:tooltip>
+                </p:row>
+                <p:row></p:row>
+                <p:row>
+                    <p:inputText value="#{registroSolicitudCALController.personaOirNotificacionesDTO.direccion}"
+                        maxlength="300" size="30" id="direccionPersonaNot"
+                        disabled="#{!registroSolicitudCALController.activarPerOirNotDir}">
+                        <f:attribute name="msgValidacion"
+                            value="#{errmsg['cal.solicitud.promocion.validation.actividadesHechosRazones']}" />
+                        <f:validator validatorId="caracteresEspecialesValidator" />
+                    </p:inputText>
+                </p:row>
+                <p:row>
+                    <p:inputMask value="#{registroSolicitudCALController.personaOirNotificacionesDTO.telefono}"
+                        maxlength="30" size="30" id="telefonoPersonaNot" mask="(99)9999 9999?99999999999999999"
+                        disabled="#{!registroSolicitudCALController.activarPerOirNotTel}" oncomplete="remPerChckAll();" />
+                </p:row>
+                <p:row></p:row>
+                <p:spacer />
+            </p:panelGrid>
+            <p:panel style="border:hidden;height:30px;width:100%">
+                <p:commandButton style="float:right;" id="eliminarPerON" value="#{msg['vuj.boton.eliminar']}"
+                    update="panelPromocion1,:FIELForm:panelPromocion2,:FIELForm:msgPanelPersonas"
+                    disabled="#{!registroSolicitudCALController.eliminarVisiblePerOir}" ajax="true"
+                    oncomplete="remPerChckAll();"
+                    actionListener="#{registroSolicitudCALController.eliminarPersonaOirNotificacion}"
+                    process="@this,:FIELForm:panelPromocion2" />
+                <p:commandButton style="float:right;"
+                    actionListener="#{registroSolicitudCALController.agregarPersonaOirNotificacion}"
+                    id="agregarPerOirNot" value="Agregar"
+                    update=":FIELForm:panelPromocion1,:FIELForm:panelPromocion2,:FIELForm:msgPanelPersonas" ajax="true"
+                    process="@this,nombrePersonaNot,paternoPersonaNot,maternoPersonaNot,rfcPersonaNot,telefonoPersonaNot,direccionPersonaNot"
+                    oncomplete="cambiaEstado(); remPerChckAll();">
+                    <p:ajax event="click" listener="#{registroSolicitudCALController.cambiaRequerido}" />
+                </p:commandButton>
+            </p:panel>
+        </p:panel>
+        <p:panel id="panelPromocion2" style="width:100%">
+            <p:dataTable paginator="true" rows="10" selection="#{registroSolicitudCALController.personasONEliminar}"
+                var="personaOirNot" rowIndexVar="rowIndex" emptyMessage="#{msg['vuj.grid.vacio']}"
+                rowKey="#{personaOirNot.idPersona}"
+                value="#{registroSolicitudCALController.personaOirNotificacionesDataModel}" id="personaOirNotTable">
+                <p:ajax event="rowSelectCheckbox" update="personaOirNotTable,:FIELForm:eliminarPerON"
+                    listener="#{registroSolicitudCALController.rowSelectCheckbox}" async="false"
+                    oncomplete="remPerChckAll();" />
+                <p:ajax event="rowSelect" update="personaOirNotTable,:FIELForm:eliminarPerON"
+                    listener="#{registroSolicitudCALController.rowSelectCheckbox}" async="false"
+                    oncomplete="remPerChckAll();" />
+                <p:ajax event="rowUnselectCheckbox" update="personaOirNotTable,:FIELForm:eliminarPerON"
+                    listener="#{registroSolicitudCALController.rowUnselectCheckbox}" async="false"
+                    oncomplete="remPerChckAll();" />
+                #{personaOirNot.nombre}
+                #{personaOirNot.paterno}
+                #{personaOirNot.materno}
+                <p:column headerText="#{msg['ca.captura.solicitud.nombre']}" filterBy="nombre" resizable="false">
+                    <p style="word-break: break-all; white-space: pre-line;">
+                        <h:outputText value="#{personaOirNot.nombreCompleto}" id="nombreCompleto"
+                            style="white-space:pre-line;" />
+                    </p>
+                </p:column>
+                <p:column headerText="#{msg['ca.captura.solicitud.rfc']}" filterBy="rfc" resizable="false"
+                    style="width:12%">
+                    <p style="word-break: break-all;" align="center">
+                        <h:outputText value="#{personaOirNot.rfc}" id="rfc" />
+                    </p>
+                </p:column>
+                <p:column headerText="#{msg['ca.captura.solicitud.telefono']}" filterBy="telefono" resizable="false">
+                    <p style="word-break: break-all; white-space: pre-line;">
+                        <h:outputText value="#{personaOirNot.telefono}" id="telefono" />
+                    </p>
+                </p:column>
+                <p:column headerText="#{msg['ca.captura.solicitud.direccion']}" resizable="false">
+                    <p style="word-break: break-all; white-space: pre-line;">
+                        <h:outputText value="#{personaOirNot.direccion}" id="direccion" />
+                    </p>
+                </p:column>
+                <p:column selectionMode="multiple" style="width:1%; text-align:center"
+                    headerText="#{msg['vuj.grid.columnaEliminar']}" resizable="false" />
+            </p:dataTable>
+            <style type="text/css">
+.ui-chkbox-all {
+    visibility: hidden;
+    height: 22px !important;
+}
+
+.ui-column-filter {
+    visibility: hidden;
+}
+</style>
+        </p:panel>
+        <p:panel id="panelPromo3" header="#{msg['ca.tabCaptura.personasInvolucradas']}" style="width:100%">
+            <pe:tooltip for="panelPromo3" value="#{msg['cal.reg.promocion.datos.persona']}" atPosition="topCenter"></pe:tooltip>
+        </p:panel>
+        <p:panel id="panelPromocion3" style="width:100%">
+            <p:panelGrid styleClass="noBorder">
+                <p:row>
+                    <p:column style="width:15%">
+                        <h:outputLabel value="#{msg['ca.captura.solicitud.tipo.persona']}">
+                            <h:graphicImage id="ayudaTipoPer" url="/resources/css/images/ayuda.png" />
+                        </h:outputLabel>
+                        <pe:tooltip for="ayudaTipoPer" value="#{msg['cal.reg.promocion.tipo.persona']}"></pe:tooltip>
+                    </p:column>
+
+                    <p:column style="width:25%" colspan="1">
+                        <p:selectOneRadio id="tipoPersonaRadio"
+                            value="#{registroSolicitudCALController.personaInvolucradaDTO.tipoPersona}">
+                            <f:selectItems value="#{registroSolicitudCALController.listaTipoPersona}" var="tipoPersona"
+                                itemLabel="#{tipoPersona.descripcion}" itemValue="#{tipoPersona.clave}" />
+                            <p:ajax listener="#{registroSolicitudCALController.validaPersona}" update="panelPromocion3" />
+                        </p:selectOneRadio>
+                    </p:column>
+                    <p:column style="width:25%">
+                        <p:selectBooleanCheckbox
+                            value="#{registroSolicitudCALController.personaInvolucradaDTO.extranjero}"
+                            itemLabel="#{msg['ca.captura.solicitud.residenteExtranjeroBln']}" id="blnExtranjero">
+                            <p:ajax event="valueChange" listener="#{registroSolicitudCALController.extranjeroSelect}"
+                                update="panelPromocion3" />
+                        </p:selectBooleanCheckbox>
+                    </p:column>
+                </p:row>
+                <p:spacer />
+                <p:spacer></p:spacer>
+                <p:row rendered="#{registroSolicitudCALController.tipoPer}">
+                    <p:column>
+                        <h:outputLabel value="#{msg['ca.captura.solicitud.rfc.num.ofic']}">
+                            <h:graphicImage id="ayudaRfcNum" url="/resources/css/images/ayuda.png" />
+                        </h:outputLabel>
+                        <pe:tooltip for="ayudaRfcNum" value="#{msg['cal.reg.promocion.invol.idfiscal']}" />
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{registroSolicitudCALController.tipoPer}">
+                    <p:column style="width:25%">
+                        <p:inputText value="#{registroSolicitudCALController.personaInvolucradaDTO.rfc}" maxlength="20"
+                            style="width:90%" id="rfcPersonaInv2" />
+                    </p:column>
+                    <p:column>
+                        <p:commandButton value="#{msg['vuj.boton.buscar']}"
+                            actionListener="#{registroSolicitudCALController.buscarPersonaInvolucrada}"
+                            update="panelPromocion3,:FIELForm:panelPromocion4,:FIELForm:msgPanelPersonas" ajax="true"
+                            disabled="#{registroSolicitudCALController.disableBuscar}" />
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{registroSolicitudCALController.tipoPer}">
+                    <p:column style="width:25%">
+                        <h:outputLabel value="#{msg['ca.captura.solicitud.nombre']}"
+                            rendered="#{registroSolicitudCALController.tipoPer}">
+                            <h:graphicImage id="ayudaNomInvol" url="/resources/css/images/ayuda.png" />
+                        </h:outputLabel>
+                        <pe:tooltip for="ayudaNomInvol" value="#{msg['cal.reg.promocion.invol.nombre']}"></pe:tooltip>
+                    </p:column>
+
+                    <p:column style="width:25%">
+                        <h:outputLabel value="#{msg['ca.captura.solicitud.apellidoPaterno']}"
+                            rendered="#{registroSolicitudCALController.tipoPer}">
+                            <h:graphicImage id="ayudaApPatInvol" url="/resources/css/images/ayuda.png" />
+                        </h:outputLabel>
+                        <pe:tooltip for="ayudaApPatInvol" value="#{msg['cal.reg.promocion.invol.appaterno']}"></pe:tooltip>
+                    </p:column>
+
+                    <p:column style="width:25%">
+                        <h:outputLabel value="#{msg['ca.captura.solicitud.apellidoMaterno']}"
+                            rendered="#{registroSolicitudCALController.tipoPer}">
+                            <h:graphicImage id="ayudaApMatInvol" url="/resources/css/images/ayuda.png" />
+                        </h:outputLabel>
+                        <pe:tooltip for="ayudaApMatInvol" value="#{msg['cal.reg.promocion.invol.apmaterno']}"></pe:tooltip>
+                    </p:column>
+
+                </p:row>
+
+                <p:row rendered="#{registroSolicitudCALController.tipoPerMor}">
+                    <p:column style="width:25%">
+                        <h:outputLabel value="#{msg['ca.captura.solicitud.rfc.num.ofic']}">
+                            <h:graphicImage id="ayudaRfcNum2" url="/resources/css/images/ayuda.png" />
+                        </h:outputLabel>
+                        <pe:tooltip for="ayudaRfcNum2" value="#{msg['cal.reg.promocion.invol.idfiscal']}"></pe:tooltip>
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{registroSolicitudCALController.tipoPerMor}">
+                    <p:column style="width:25%">
+                        <p:inputText value="#{registroSolicitudCALController.personaInvolucradaDTO.rfc}" maxlength="20"
+                            style="width:90%" id="rfcPersonaInv" />
+                    </p:column>
+                    <p:column>
+                        <p:commandButton value="#{msg['vuj.boton.buscar']}"
+                            actionListener="#{registroSolicitudCALController.buscarPersonaInvolucrada}"
+                            update="panelPromocion3,:FIELForm:panelPromocion4,:FIELForm:msgPanelPersonas" ajax="true"
+                            disabled="#{registroSolicitudCALController.disableBuscar}" />
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{registroSolicitudCALController.tipoPerMor}">
+                    <p:column style="width:25%">
+                        <h:outputLabel value="#{msg['ca.captura.solicitud.razon.social']}"
+                            rendered="#{registroSolicitudCALController.tipoPerMor}">
+                            <h:graphicImage id="ayudaRazonSocial" url="/resources/css/images/ayuda.png" />
+                        </h:outputLabel>
+                        <pe:tooltip for="ayudaRazonSocial" value="#{msg['cal.reg.promocion.invol.denominacion']}"></pe:tooltip>
+                    </p:column>
+                </p:row>
+
+                <p:spacer rendered="#{registroSolicitudCALController.tipoPerMor}"></p:spacer>
+                <p:spacer rendered="#{registroSolicitudCALController.tipoPerMor}"></p:spacer>
+
+                <p:row rendered="#{registroSolicitudCALController.tipoPerMor}">
+                    <p:column style="width:25%">
+                        <p:inputText value="#{registroSolicitudCALController.personaInvolucradaDTO.razonSocial}"
+                            maxlength="254" style="width:90%" id="razonSocialPersonaInv"
+                            rendered="#{registroSolicitudCALController.tipoPerMor}"
+                            disabled="#{!registroSolicitudCALController.activarCamposPerInv}" />
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{registroSolicitudCALController.tipoPer}">
+                    <p:column style="width:25%">
+                        <p:inputText value="#{registroSolicitudCALController.personaInvolucradaDTO.nombre}"
+                            maxlength="200" style="width:90%" id="nombrePersonaInv"
+                            rendered="#{registroSolicitudCALController.tipoPer}"
+                            disabled="#{!registroSolicitudCALController.activarCamposPerInv}" />
+                    </p:column>
+                    <p:column style="width:25%">
+                        <p:inputText value="#{registroSolicitudCALController.personaInvolucradaDTO.paterno}"
+                            maxlength="200" style="width:90%" id="paternoPersonaInv"
+                            rendered="#{registroSolicitudCALController.tipoPer}"
+                            disabled="#{!registroSolicitudCALController.activarCamposPerInv}" />
+                    </p:column>
+                    <p:column style="width:25%">
+                        <p:inputText value="#{registroSolicitudCALController.personaInvolucradaDTO.materno}"
+                            maxlength="200" style="width:90%" id="maternoPersonaInv"
+                            rendered="#{registroSolicitudCALController.tipoPer}"
+                            disabled="#{!registroSolicitudCALController.activarCamposPerInv}" />
+                    </p:column>
+
+                </p:row>
+
+                <p:spacer rendered="#{registroSolicitudCALController.tipoPerMor}"></p:spacer>
+                <p:spacer rendered="#{registroSolicitudCALController.tipoPerMor}"></p:spacer>
+
+
+
+                <p:row>
+                    <p:column style="width:50%" colspan="2">
+                        <h:outputLabel value="#{msg['ca.captura.solicitud.direccion']}">
+                            <h:graphicImage id="ayudaDir" url="/resources/css/images/ayuda.png" />
+                        </h:outputLabel>
+                        <pe:tooltip for="ayudaDir" value="#{msg['cal.reg.promocion.invol.direccion']}"></pe:tooltip>
+                    </p:column>
+                </p:row>
+                <p:spacer rendered="#{registroSolicitudCALController.tipoPerMor}"></p:spacer>
+                <p:spacer rendered="#{registroSolicitudCALController.tipoPerMor}"></p:spacer>
+                <p:spacer rendered="#{registroSolicitudCALController.tipoPerMor}"></p:spacer>
+
+                <p:spacer rendered="#{registroSolicitudCALController.tipoPer}" />
+                <p:spacer rendered="#{registroSolicitudCALController.tipoPer}" />
+                <p:spacer rendered="#{registroSolicitudCALController.tipoPer}" />
+
+
+
+                <p:row>
+                    <p:column style="width:50%" colspan="2">
+                        <p:inputText value="#{registroSolicitudCALController.personaInvolucradaDTO.direccion}"
+                            disabled="#{!registroSolicitudCALController.activarCamposPerInv}" maxlength="1000" size="30"
+                            id="direccionPersonaInv">
+                            <f:attribute name="msgValidacion"
+                                value="#{errmsg['cal.solicitud.promocion.validation.actividadesHechosRazones']}" />
+                            <f:validator validatorId="caracteresEspecialesValidator" />
+                        </p:inputText>
+                    </p:column>
+                </p:row>
+
+            </p:panelGrid>
+            <p:panel style="border:hidden;height:30px;width:100%">
+                <p:commandButton id="eliminarPerinv" style="float:right;" value="#{msg['vuj.boton.eliminar']}"
+                    update="panelPromocion3,panelPromocion4"
+                    disabled="#{!registroSolicitudCALController.eliminarVisiblePerInv}"
+                    actionListener="#{registroSolicitudCALController.eliminarPersonaInvolucrada}"
+                    process="@this,panelPromocion4" oncomplete="remPerChckAll();" />
+                <p:commandButton style="float:right;"
+                    actionListener="#{registroSolicitudCALController.agregarPersonaInvolucrada}" id="agregarPerInv"
+                    value="Agregar"
+                    update=":FIELForm:panelPromocion3,:FIELForm:panelPromocion4,:FIELForm:msgPanelPersonas" ajax="true"
+                    process="@this,tipoPersonaRadio,nombrePersonaInv,paternoPersonaInv,maternoPersonaInv,
+            	rfcPersonaInv,rfcPersonaInv2,razonSocialPersonaInv,direccionPersonaInv,blnExtranjero"
+                    oncomplete="cambiaEstado(); remPerChckAll();">
+                    <p:ajax event="click" listener="#{registroSolicitudCALController.cambiaRequerido}" />
+                </p:commandButton>
+
+
+            </p:panel>
+        </p:panel>
+        <p:panel id="panelPromocion4" style="width:100%">
+            <p:dataTable paginator="true" rows="10"
+                selection="#{registroSolicitudCALController.personasInvolucradasEliminar}" rowIndexVar="rowIndex"
+                var="personaInv" emptyMessage="#{msg['vuj.grid.vacio']}" rowKey="#{personaInv.idPersona}"
+                value="#{registroSolicitudCALController.personaInvolucradaDataModel}" id="personaInvTable">
+                <p:ajax event="rowSelectCheckbox" update="personaInvTable,:FIELForm:eliminarPerinv"
+                    listener="#{registroSolicitudCALController.rowSelectCheckboxPerInv}" async="false"
+                    oncomplete="remPerChckAll();" />
+                <p:ajax event="rowSelect" update="personaInvTable,:FIELForm:eliminarPerinv"
+                    listener="#{registroSolicitudCALController.rowSelectCheckboxPerInv}" async="false"
+                    oncomplete="remPerChckAll();" />
+                <p:ajax event="rowUnselectCheckbox" update="personaInvTable,:FIELForm:eliminarPerinv"
+                    listener="#{registroSolicitudCALController.rowUnselectCheckboxPerInv}" async="false"
+                    oncomplete="remPerChckAll();" />
+                #{personaInv.tipoPersona}
+                #{personaInv.nombre}
+                #{personaInv.paterno}
+                #{personaInv.materno}
+                #{personaInv.razonSocial}
+                <p:column headerText="#{msg['ca.captura.solicitud.razon.nombre']}" filterBy="nom">
+                    <p style="word-break: break-all; white-space: pre-line;">
+                        <h:outputText value="#{personaInv.nombreCompleto}" id="nombreCompleto"
+                            style="white-space:pre-line;" />
+                    </p>
+                </p:column>
+                <p:column headerText="#{msg['ca.captura.solicitud.rfc.num.fiscal']}" filterBy="fisc" style="width:12%">
+                    <p style="word-break: break-all;" align="center">
+                        <h:outputText value="#{personaInv.rfc}" id="rfc" />
+                    </p>
+                </p:column>
+                <p:column headerText="#{msg['ca.captura.solicitud.residenteExtranjeroBln']}" style="width:10%">
+                    <p:selectBooleanCheckbox value="#{personaInv.extranjero}" disabled="true" />
+                </p:column>
+                <p:column headerText="#{msg['ca.captura.solicitud.direccion']}" filterBy="dir">
+                    <p style="word-break: break-all; white-space: pre-line;">
+                        <h:outputText value="#{personaInv.direccion}" id="direccion" style="white-space:pre-line;" />
+                    </p>
+                </p:column>
+                <p:column selectionMode="multiple" style="width:2%;text-align:center"
+                    headerText="#{msg['vuj.grid.columnaEliminar']}" />
+            </p:dataTable>
+            <style type="text/css">
+.ui-column-filter {
+    visibility: hidden;
+}
+</style>
+        </p:panel>
+    </h:body>
+
+    <script type="text/javascript">
+    $(document).ready(function(){
+    var checkAllBoxes = document.querySelectorAll(".ui-chkbox-all");
+/*  
+    if (checkAllBoxes.length != 0){
+        checkAllBoxes[0].remove();
+        checkAllBoxes[1].remove();
+     }
+     */
+    });
+    
+    function remPerChckAll(){
+        var checkAllBoxes = document.querySelectorAll(".ui-chkbox-all");
+        if (checkAllBoxes.length != 0){
+            checkAllBoxes[0].remove();
+        }
+    }
+</script>
+
+</ui:composition>

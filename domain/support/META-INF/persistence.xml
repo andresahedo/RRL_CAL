@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+    <persistence-unit name="VUJPersistenceUnit" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <jta-data-source>${datasource.app}</jta-data-source>
+        <non-jta-data-source>${datasource.app}</non-jta-data-source>
+
+
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.AgravioDetalle</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.Autoridad</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.ConceptoDetalle</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.DocumentoSolicitud</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.Documento</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.DocumentoRequerimiento</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.DocumentoResolucion</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.DomicilioSolicitud</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.Firma</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.Bitacora</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaRequerimiento</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaResolucion</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaSolicitud</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.FraccionDuda</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.InformacionUsuario</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.MedioDefensa</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.Notificacion</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.NotificacionRequerimiento</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.NotificacionResolucion</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.NotificacionRemision</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.Persona</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.PersonaFisica</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.PersonaInterna</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.PersonaMoral</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.PersonaOirRecibirNotificaciones</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.RepresentanteLegal</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.PersonaSistema</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.PersonaResidenteExtranjero</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.PersonaSolicitud</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.Requerimiento</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.RequerimientoDocumentos</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.ResolucionImpugnada</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.ResolucionImpugnadaCatalogoD</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.DocumentoSolicitudRequerimiento</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.Resolucion</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.ResolucionCatalogoD</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.Secuencia</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.Solicitante</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.Solicitud</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.SolicitudDatosGenerales</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.Tramite</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.UserCredentials</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.UserState</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.Remision</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.AsignacionTramite</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.BitacoraAU</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.model.UsuarioRolUnidadAdministrativa</class>
+        <class>mx.gob.sat.siat.juridica.configuracion.usuarios.dao.domain.model.TipoTramiteConfigurar</class>
+
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.Calendario</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.CatalogoD</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.CatalogoH</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.Colonia</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.DelegacionMunicipio</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.Dependencia</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.Descripcion</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.DiaInhabil</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.DocumentoTramite</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.Domicilio</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.EntidadFederativa</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.EnumeracionD</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.EnumeracionH</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.EnumeracionTr</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.Localidad</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.Pais</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.Role</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.TipoDocumento</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.TipoTramite</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.UnidadAdministrativa</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.UnidadAdministrativaRelacionada</class>
+        <class>mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.InfRoleUnidadAdmin</class>
+
+        <!-- BEGIN Models CA -->
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.ConsultaLeyIVA</class>
+		<class>mx.gob.sat.siat.juridica.ca.dao.domain.model.FranquiciaDiplomaticaVehiculos</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.ResarcimientoEconomicoEspecie</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.ResarcimientoEconomicoExtravioDestruccionMercancias</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.ResarcimientoEconomicoMercanciaPerecedera</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAutorizacionCentrosDestruccionVehiculos</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAutorizacionDeduccionPerdidas</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAutorizacionesDeducirPagosAviones</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAutorizacionesDeducirPagosCasaHabitacion</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAutorizacionesDeducirPagosComedores</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAutorizacionesDeducirPagosEmbarcaciones</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAutorizacionesEnajenarAcciones</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAutorizacionesMateriaImpuestosInternos</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAutorizacionesOrganoVerificador</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAutorizacionesProveedorServicioAutorizado</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAutorizacionFusion</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAutorizacionNoDisminucionCostoAdquisicion</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAutorizacionPagosUsoGoceTemporal</class>
+		<class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudCancelaAutorizacionOperaDestruirVehiculosUsados</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudCandadosOficiales</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudClasificacionArancelaria</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultaAutorizacion</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultaCoordinacionFiscal</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultaDecretosProgramas</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultaImpuestoAutosNuevos</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultaImpuestoEspecialProductosServicios</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultaImpuestoEspecialProductosServiciosImportaciones</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultaImpuestoInternos</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultaLeyISR</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultaMateriaCodigoFiscalFederacion</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultaMateriaDerechos</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultaMateriaLeyAduanera</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultaResolucionesGenerales</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultasLeyTenenciaVehiculo</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultasMateriaAduaneraComercioExterior</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudDestruccionRegimenMercanciasDestruidas</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudDonacionDesperdiciosEmpresasIMME</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudDonacionesExtranjero</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudDonacionFiscoFederalArt147</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudEmitiendoMonederosElectronicos</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudImportacionDefinitivaVehiculosEspeciales</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudImportacionNuevasMarcasTabacos</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudImportacionSinConcluirTramiteInscripcion</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudImportacionSinInscripcionPadron</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudMenajeCasaArt61</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudMonederosElectronicos</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudNoPagoIvaImportacionMercancias</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudProrrogasPlazosImportacionExportacion</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudProveedorCertificacionCFDI</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudRectificacionPedimentos</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudRegularizacionVehiculos</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudResarcimiento</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudRetornoSeguro</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudSeguridadNacional</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudTrasladoMercanciasIndustriaAutomotriz</class>
+
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudProrrogasImportacionExportacionCuadernosATA</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudProrrogasIMMEXVencido</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.AvisoRenovacionMonederoElectronico</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAvisoActualizarMonederoComustible</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAvisoActualizarMonederoElectronico</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAvisoCertificarProveedorServicio</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAvisoRenovarMonederoCombustible</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAvisoRenovarMonederoVale</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAvisoRenovarOrganoVerificador</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudAvisoRenovarProveedorServicio</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.AutorizacionAplicarRegimenOpcionalGruposSociedades</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolAutoSociedadesFinancierasObjMultipleNvCreacion</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolAutoDiferPagoISRDerivReestrucRefArt161LeyISR</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolAutNoAplDisTiVICaILeyISRIngPasGenEntFig</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.AutoExcInvActNvLimitEstaReqFideiInverEnerInfra</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.AutorizacionOperarOrganoCertificador</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolDejarSinEfectosAutorOperarOrganoCertificador</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.Modalidad20270</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.Modalidad20271</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.Modalidad20272</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.Modalidad20273</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.Modalidad20274</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.Modalidad20275</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.Modalidad20276</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.Modalidad20277</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.Modalidad20278</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.Modalidad20279</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.ConsultasMateriaPreciosTransferencia</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.ConsultasMateriaLeyImpuestoDepositosEfectivo</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.ConsultasMateriaLeyImpuestoEmpresarialTasaUnica</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.ConsultasMateriaLeyIngresosHidrocarburos</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.AutorizacionFusionDentro5AniosPostetioresFusionOEscision</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.AutorizacionDeterminacionRegimenFiscal</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.AutorizacionesBAPAs</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.AutorizacionesMAPs</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.AutorizacionDiferimientoImpuesto161LISR</class>
+        <class>mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudResolucionDeducirInteresesDeudasEntrePartesRelacionadas</class>
+
+        <!-- END Models CA -->
+
+        <class>mx.gob.sat.siat.juridica.rrl.dao.domain.model.SolicitudRecursoRevocacion</class>
+
+        <class>mx.gob.sat.siat.juridica.configuracion.usuarios.dao.domain.model.Movimiento</class>
+
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <shared-cache-mode>ALL</shared-cache-mode>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect" />
+            <property name="hibernate.archive.autodetection" value="class" />
+            <property name="hibernate.order_inserts" value="true" />
+            <property name="hibernate.order_updates" value="true" />
+            <property name="hibernate.jdbc.use_get_generated_keys" value="true" />
+            <property name="hibernate.transaction.flush_before_completion" value="true" />
+            <property name="hibernate.transaction.auto_close_session" value="true" />
+            <property name="hibernate.connection.release_mode" value="after_transaction" />
+            <property name="hibernate.bytecode.use_reflection_optimizer" value="true" />
+            <property name="hibernate.query.factory_class" value="org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory" />
+            <property name="hibernate.connection.charSet" value="UTF-8" />
+            <!-- BEGIN - Cache settings -->
+            <property name="hibernate.cache.use_second_level_cache" value="true" />
+            <property name="hibernate.cache.provider_class" value="org.hibernate.cache.OSCacheProvider" />
+            <property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory" />
+            <property name="hibernate.cache.use_minimal_puts" value="false" />
+            <property name="hibernate.cache.use_query_cache" value="true" />
+            <property name="hibernate.cache.region_prefix" value="HibernateCacheId" />
+            <property name="hibernate.cache.use_structured_entries" value="true" />
+            <!-- END - Cache settings -->
+            <!-- BEGIN - Properties to be used ONLY during development -->
+            <property name="hibernate.show_sql" value="false" />
+            <property name="hibernate.format_sql" value="false" />
+            <property name="hibernate.generate_statistics" value="false" />
+            <property name="hibernate.use_sql_comments" value="false" />
+            <!-- END - Properties to be used ONLY during development -->
+        </properties>
+    </persistence-unit>
+</persistence>

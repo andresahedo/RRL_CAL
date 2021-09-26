@@ -1,0 +1,73 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <style type="text/css">
+.ui-selectonemenu-panel {
+    width: 50px
+}
+</style>
+
+    <f:metadata>
+        <f:viewParam name="msgRedirect" value="#{registroSolicitudCALOPController.messagesRedirect}" />
+        <f:event type="preRenderView" listener="#{registroSolicitudCALOPController.mensajesRedirect}" />
+    </f:metadata>
+
+    <p:panel id="msgPanelSeleccion">
+        <p:messages id="messagesSeleccion" autoUpdate="true" showDetail="true" showSummary="false" />
+    </p:panel>
+    <div align="center">
+        <p:outputLabel style="color:black" value=" #{msg['vuj.documento.documentosOriginales']}">
+        </p:outputLabel>
+    </div>
+
+    <p:panel header="#{msg['vuj.solicitud.documentosObligatorios']}" style="width:100%;" id="panelDocObligatorios">
+        <pe:tooltip for="panelDocObligatorios" value="#{msg['vuj.documento.ofrecenOAdjuntan']}" atPosition="topCenter" />
+    </p:panel>
+    <p:panel>
+        <p:dataTable id="tablaDoc" var="documentoObligatorio"
+            value="#{registroSolicitudCALOPController.listaDocumentosRequeridos}" paginator="true" rows="5"
+            emptyMessage="#{msg['vuj.grid.vacio']}">
+                #{documento.idTipoDocumento}
+                <p:column headerText="Nombre" style="word-break:break-all;white-space:pre-line;">
+                <h:outputText value="#{documentoObligatorio.tipoDocumento}" id="nombreDocumentoObligatorio" />
+                <pe:tooltip for="nombreDocumentoObligatorio">
+                    <p:outputLabel escape="true" value="#{documentoObligatorio.tooltipDescripcion}"></p:outputLabel>
+                </pe:tooltip>
+            </p:column>
+        </p:dataTable>
+    </p:panel>
+    <BR />
+
+    <p:panel header="#{msg['vuj.solicitud.documentosOpcionales']}" style="width:100%;" id="panelDocOpcionales">
+        <pe:tooltip for="panelDocOpcionales" value="#{msg['vuj.documento.ofrecenOAdjuntan']}" atPosition="topCenter" />
+    </p:panel>
+    <p:panel>
+        <p:dataTable id="#{registroSolicitudCALOPController.idDinamicoOpcionales}" var="documentoOpcional"
+            paginator="true" rows="5" emptyMessage="#{msg['vuj.grid.vacio']}"
+            selection="#{registroSolicitudCALOPController.documentosSeleccionados}"
+            value="#{registroSolicitudCALOPController.documentoSeleccionDataModel}">
+
+            <p:column selectionMode="multiple"
+                style="width:40px;text-align:center;word-break:break-all;white-space:pre-line;" headerText="Todos" />
+                #{documento.idTipoDocumento}
+                <p:column headerText="Nombre" style="word-break:break-all;white-space:pre-line;">
+                <h:outputText value="#{documentoOpcional.tipoDocumento}" id="nombreDocumentoOpcional" />
+                <pe:tooltip for="nombreDocumentoOpcional">
+                    <p:outputLabel escape="true" value="#{documentoOpcional.tooltipDescripcion}"></p:outputLabel>
+                </pe:tooltip>
+            </p:column>
+        </p:dataTable>
+        <div align="center">
+            <p:outputLabel style="color:black" value=" #{msg['rrl.captura.solicitud.aviso']}">
+            </p:outputLabel>
+        </div>
+    </p:panel>
+    <SCRIPT type="text/javascript">
+			$(document).ready(function(){
+				$('#FIELForm\\:panelDocObligatorios_content').remove();
+		    	$('#FIELForm\\:panelDocOpcionales_content').remove();
+			});
+		</SCRIPT>
+</ui:composition>

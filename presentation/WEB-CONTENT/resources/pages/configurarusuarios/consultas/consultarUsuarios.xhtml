@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+    <style type="text/css">
+.ui-selectonemenu-panel {
+    width: 50px
+}
+
+.ui-panel {
+    width: #{sessionScope.tamanioApp}px;
+    border-style:none !important;
+}
+.ui-panelgrid td {
+    border-style: none;
+}
+
+.ui-panelgrid tr {
+    border-style: none;
+}
+
+.ui-widget {
+    font-family: Arial, sans-serif !important;
+    font-size: 11px !important;
+}
+</style>
+</h:head>
+
+<ui:decorate template="../encabezado.xhtml">
+</ui:decorate>
+
+<h:body>
+    <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" />
+
+    <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+        draggable="false" closable="false">
+        <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+    </p:dialog>
+
+    <h:form id="form">
+        <p:panel id="msgPanel" style="align:left; width: 100%">
+            <p:messages id="messages" showDetail="true" globalOnly="true">
+                <p:message showDetail="true" rendered=""></p:message>
+            </p:messages>
+        </p:panel>
+        <p:panel id="panelUsuarios">
+            <p:panel header="#{msg['administracion.usuarios.consulta.titulo']}" style="text-align:center" />
+            <p:panelGrid id="campos">
+                <p:row>
+                    <p:column>
+                        <h:outputLabel value="* Datos requeridos" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.unidadAdmin']}" />
+                        <p:outputLabel value="* " style="color:red" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['usuarios.permiso']}" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['usuarios.tramite']}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <c:choose>
+                            <c:when test="#{!consultarUsuariosController.adminUsuariosDTO.blnIsAdminGlobal}">
+                                <p:selectOneMenu id="unidadAdmin"
+                                    value="#{consultarUsuariosController.filtroUsuarios.idUnidadAdmin}" filter="true"
+                                    filterMatchMode="contains" required="true" widgetVar="comboUnidad"
+                                    style="width:350px"
+                                    disabled="#{!consultarUsuariosController.adminUsuariosDTO.blnIsAdminGlobal}">
+                                    <f:selectItem
+                                        itemLabel="#{consultarUsuariosController.adminUsuariosDTO.unidadAdministrativa}"
+                                        itemValue="#{consultarUsuariosController.adminUsuariosDTO.idUnidadAmin}" />
+                                    <f:selectItems value="#{consultarUsuariosController.listaUnidadesAUA}"
+                                        var="unidades" itemLabel="#{unidades.descripcion}" itemValue="#{unidades.clave}" />
+                                    <p:ajax event="valueChange" immediate="true" process="@this" />
+                                </p:selectOneMenu>
+                                <p:message for="unidadAdmin" display="text" />
+                            </c:when>
+                            <c:otherwise>
+                                <p:selectOneMenu id="unidadAdmin"
+                                    value="#{consultarUsuariosController.filtroUsuarios.idUnidadAdmin}" filter="true"
+                                    filterMatchMode="contains" required="true" widgetVar="comboUnidad"
+                                    style="width:350px">
+                                    <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                                    <f:selectItems value="#{consultarUsuariosController.listaUnidadesAdministrativas}"
+                                        var="unidades" itemLabel="#{unidades.descripcion}" itemValue="#{unidades.clave}" />
+                                    <p:ajax event="valueChange" immediate="true" process="@this" />
+                                </p:selectOneMenu>
+                                <p:message for="unidadAdmin" display="text" />
+                            </c:otherwise>
+                        </c:choose>
+                    </p:column>
+
+                    <p:column>
+                        <p:selectOneMenu id="selectPermiso"
+                            value="#{consultarUsuariosController.filtroUsuarios.permiso}" filter="true"
+                            filterMatchMode="contains" widgetVar="comboPermiso" style="width:200px">
+                            <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                            <f:selectItems value="#{consultarUsuariosController.listaPermisos}" var="permisos"
+                                itemLabel="#{permisos.permiso}" itemValue="#{permisos.idRol}" />
+                        </p:selectOneMenu>
+                    </p:column>
+
+                    <p:column>
+                        <p:selectOneMenu id="selectTipoTramite"
+                            value="#{consultarUsuariosController.filtroUsuarios.tipoTramite}" filter="true"
+                            filterMatchMode="contains" widgetVar="comboTrmite" style="width:200px">
+                            <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                            <f:selectItems value="#{consultarUsuariosController.listatipoTramite}" var="tipoTramite"
+                                itemLabel="#{tipoTramite.descripcionServicio}" itemValue="#{tipoTramite.servicio}" />
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.numeroEmpleado']}"
+                            id="numeroEmpleado" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="RFC Empleado" id="rfcEmpleado" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:inputMask value="#{consultarUsuariosController.filtroUsuarios.numeroEmpleado}"
+                            id="inputNumEmp" mask="9?9999999999" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText value="#{consultarUsuariosController.filtroUsuarios.rfcEmpleado}" maxlength="13"
+                            id="inputRfcEmp" />
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+            <p:panel style="text-align:right;">
+                <p:commandButton process="@this" value="#{msg['vuj.boton.limpiar']}"
+                    actionListener="#{consultarUsuariosController.limpiarBandeja}" update="@form" />
+                <p:commandButton value="#{msg['vuj.boton.consultar']}"
+                    actionListener="#{consultarUsuariosController.consultarPermisos}" update="@form" />
+                <p:commandButton value="#{msg['vuj.boton.cancelar']}"
+                    actionListener="#{consultarUsuariosController.back}" process="@this" update="@form" />
+            </p:panel>
+            <p:panel style="margin:0;padding:0">
+                <p:panel header="#{msg['administracion.usuarios.consulta.titulo.permisosAsignados']}"
+                    style="text-align:center;width:100%;padding:0;margin:0;" />
+                <p:scrollPanel style="width:100%; height:200px;" id="usuariosPanel" mode="native">
+                    <p:dataTable var="usuarios" style="width:100%;" value="#{consultarUsuariosController.listaUsuarios}"
+                        id="usuariosTable" emptyMessage="#{consultarUsuariosController.mensajeBandejaVacia}">
+
+                        <p:column style="width:16%" resizable="false">
+                            <f:facet name="header">
+                                <h:outputText value="#{msg['administracion.usuarios.bitacora.unidadAdmin']}" />
+                            </f:facet>
+                            <p:outputLabel value="#{usuarios.nombreUnidad}" id="numeroAsuntoTable"
+                                style="white-space:pre-line;" />
+                        </p:column>
+
+                        <p:column style="width:15%" resizable="false">
+                            <f:facet name="header">
+                                <h:outputText value="#{msg['administracion.usuarios.bitacora.numeroEmpleado']}" />
+                            </f:facet>
+                            <p:outputLabel value="#{usuarios.numeroEmpleado}" />
+                        </p:column>
+
+                        <p:column style="width:13%" resizable="false">
+                            <f:facet name="header">
+                                <h:outputText value="#{msg['administracion.usuarios.consulta.rfc']}" />
+                            </f:facet>
+                            <p:outputLabel value="#{usuarios.rfcUsuario}" style="white-space:pre-line;" />
+                        </p:column>
+
+                        <p:column style="width:15%" resizable="false">
+                            <f:facet name="header">
+                                <h:outputText value="#{msg['administracion.usuarios.consulta.nombre']}" />
+                            </f:facet>
+                            <p:outputLabel value="#{usuarios.nombreEmpleado}" style="white-space:pre-line;" />
+                        </p:column>
+
+                        <p:column style="width:11%" resizable="false">
+                            <f:facet name="header">
+                                <h:outputText value="#{msg['usuarios.tramite']}" />
+                            </f:facet>
+                            <p:outputLabel value="#{usuarios.tipoTramite}" style="white-space:pre-line;" />
+                        </p:column>
+
+                        <p:column style="width:11%" resizable="false">
+                            <f:facet name="header">
+                                <h:outputText value="#{msg['administracion.usuarios.consulta.modalidad']}" />
+                            </f:facet>
+                            <p:outputLabel value="#{usuarios.modalidad}" style="white-space:pre-line;" />
+                        </p:column>
+
+                        <p:column style="width:10%" resizable="false">
+                            <f:facet name="header">
+                                <h:outputText value="#{msg['administracion.usuarios.consulta.permiso']}" />
+                            </f:facet>
+                            <p:outputLabel value="#{usuarios.permiso}" style="white-space:pre-line;" />
+                        </p:column>
+
+                        <p:column style="width:9%;text-align: center" resizable="false">
+                            <f:facet name="header">
+                                <h:outputText value="#{msg['administracion.usuarios.consulta.responsable']}" />
+                            </f:facet>
+                            <p:outputLabel value="#{usuarios.responsableMsg}" />
+                        </p:column>
+
+                    </p:dataTable>
+                </p:scrollPanel>
+            </p:panel>
+            <p:panelGrid id="exportar" columns="1" styleClass="noBorder" style="float:right;">
+                <p:column>
+                    <p:commandButton value="#{msg['administracion.usuarios.consulta.exportar']}" ajax="false"
+                        disabled="#{!consultarUsuariosController.activaBtn}">
+                        <p:dataExporter target="usuariosTable" type="xls" fileName="ConsultaPermisos" />
+                    </p:commandButton>
+                </p:column>
+            </p:panelGrid>
+
+        </p:panel>
+    </h:form>
+</h:body>
+</html>

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+
+        <f:event listener="#{bandejaAsuntosConcluidosController.iniciarBandejaAsuntosConcluidos}" type="preRenderView" />
+
+        <style type="text/css">
+.panelMontoStyle td {
+    border-style: hidden !important;
+}
+
+.ui-panel {
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+    word-wrap:break-word;
+    }
+.panelContent td {
+    border: black solid 1px !important;
+}
+</style>
+
+
+        <p:ajaxStatus onstart="statusDialog.show();" oncomplete="statusDialog.hide();" />
+
+        <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+            draggable="false" closable="false">
+            <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+        </p:dialog>   
+       
+        <h:form id="formBandeja" onkeypress="if (event.keyCode == 13) { return false; }">
+            <p:panel id="panelMensajes" style="border-style: hidden !important;"
+                visible="#{bandejaAsuntosConcluidosController.showMessages}">
+                <p:messages showDetail="true" />
+            </p:panel>
+            <p:panel style="float:left;" id="bandejaPanel" header="Descarga de Documentos Remitidos y/o Resueltos Notificados">
+                <table cellpadding="0">
+                    <tr>
+                        <td><h:outputText value="#{msg['vuj.resol.funcionario']}" /></td>
+                        <td><h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" /></td>
+                        <td></td>
+
+                    </tr>
+                    <tr>
+                        <td><p:inputText id="funcionario" readonly="true"
+                                value="#{bandejaAsuntosConcluidosController.userProfile.nombreCompleto}" /></td>
+                       
+                        <td>
+                        <p:inputText id="rfcFuncionario" readonly="true"
+                                value="#{bandejaAsuntosConcluidosController.userProfile.rfc}" required="true" 
+                                validatorMessage="#{errmsg['vuj.error.bandeja.rfc']}">
+                                <f:validateRegex for="rfcFuncionario"
+                                    pattern="(^[A-Za-z]{4}\-\d{6}(?:\-[A-Za-z\d]{3})?$)?" />
+                          </p:inputText>
+                          </td>
+                        <td><p:message display="text" for="rfcFuncionario" /></td>
+                    </tr>
+                    <tr>
+                        <td>
+                        <h:outputText value="N&uacute;mero de Asunto " /> <h:graphicImage id="ayudaIdNumero"
+                                url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdNumero"
+                                value="#{msg['atender.requerimiento.numeroAsunto']}" adjustX="20" adjustY="20"
+                                mouseTracking="true" showEffect="fade" />
+                        </td>            
+                        <td>
+                        <h:outputText value="Fecha Inicio " /> <h:graphicImage id="ayudaIdFecInicio"
+                                url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdFecInicio"
+                                value="#{msg['atender.requerimiento.fechaInicio']}" adjustX="20" adjustY="20"
+                                mouseTracking="true" showEffect="fade" />
+                       </td>  
+                        <td>
+                        <h:outputText value="Fecha Fin " /> <h:graphicImage id="ayudaIdFecFin"
+                                url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdFecFin"
+                                value="#{msg['atender.requerimiento.fechaFin']}" adjustX="20" adjustY="20"
+                                mouseTracking="true" showEffect="fade" />
+                       </td>                            
+                        <td><h:outputText value="RFC Promovente " /> <h:graphicImage id="ayudaIdRFC"
+                                url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdRFC"
+                                value="#{msg['atender.requerimiento.rfcPromovente']}" adjustX="20" adjustY="20"
+                                mouseTracking="true" showEffect="fade" />
+                      </td>
+
+                    </tr>
+                    <tr>
+                        <td><p:inputText value="#{bandejaAsuntosConcluidosController.filtroBandejaTareaDTO.numeroAsunto}"
+                                id="numeroAsunto" maxlength="13" /></td>
+                                                                
+                        <td><p:calendar pattern="dd/MM/yyyy" locale="es" navigator="true" id="fechaInicio"
+                                value="#{bandejaAsuntosConcluidosController.filtroBandejaTareaDTO.fechaInicio}" readonlyInput="true"
+                                maxdate="#{bandejaAsuntosConcluidosController.maxFechaInicio}">
+                                <p:ajax event="dateSelect" listener="#{bandejaAsuntosConcluidosController.rangoMaxFechas}"
+                                    update="fechaFin" />
+                            </p:calendar></td>
+                        <td><p:calendar pattern="dd/MM/yyyy" locale="es" navigator="true" id="fechaFin"
+                                mindate="#{bandejaAsuntosConcluidosController.minFechaFin}" maxdate="#{bandejaAsuntosConcluidosController.maxFechaFin}"
+                                value="#{bandejaAsuntosConcluidosController.filtroBandejaTareaDTO.fechaFin}" readonlyInput="true">
+                                <f:attribute name="startDate"
+                                    value="#{bandejaAsuntosConcluidosController.filtroBandejaTareaDTO.fechaInicio}" />
+                                <f:attribute name="msgFechaFin" value="#{bandejaAsuntosConcluidosController.mensageFechaFin}" />
+                                <f:attribute name="msgObligatorio" value="#{bandejaAsuntosConcluidosController.mensageFechas}" />
+                            </p:calendar></td>
+                        <td><p:inputText value="#{bandejaAsuntosConcluidosController.filtroBandejaTareaDTO.rfcPromovente}"
+                                id="idrfcPromovente" maxlength="13">
+                                <f:attribute name="msgRFC" value="#{errmsg['vuj.error.bandeja.rfc']}" />
+                                <f:validator validatorId="rfcValidator" />
+                            </p:inputText></td>
+                    </tr>
+                    <tr>
+                        <td><h:outputText value="Estado Procesal " /> <h:graphicImage id="ayudaIdEstadoProc"
+                                url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdEstadoProc"
+                                value="#{msg['descargo.consulta.estadoProcesal']}" adjustX="20" adjustY="20"
+                                mouseTracking="true" showEffect="fade" /></td>
+                    </tr>
+                    <tr>
+                        <td><p:selectOneMenu   effect="fade" id="estadoProcesalSelect"
+                                converter="#{estadoProcesalConverter}" filter="true" filterMatchMode="contains"
+                                value="#{bandejaAsuntosConcluidosController.filtroBandejaTareaDTO.estadoProcesal}">
+                                <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" style="width:300px" />
+                                 <f:selectItems value="#{bandejaAsuntosConcluidosController.estadosProcesales}" var="estadoProcesal"
+                                    itemValue="#{estadoProcesal}" itemLabel="#{estadoProcesal.descripcion}"
+                                    />                                
+                            </p:selectOneMenu> <p:message display="text" for="estadoProcesalSelect" /></td>                            
+                         </tr>
+                    
+                </table>
+                <p:panelGrid columns="2" styleClass="panelMontoStyle" style="float:right;">
+                    <p:column>
+                        <p:commandButton process="@this,fechaInicio"
+                            actionListener="#{bandejaAsuntosConcluidosController.limpiarBandeja}"
+                            update=":formBandeja:bandejaTablePanel,:formBandeja:bandejaPanel,:formBandeja:panelMensajes"
+                            value="Limpiar">
+                        </p:commandButton>
+                    </p:column>
+                    <p:column>
+                        <p:commandButton value="Buscar" id="buscar"
+                             update="@form, :formBandeja:bandejaTablePanel,formBandeja:panelMensajes"
+                            actionListener="#{bandejaAsuntosConcluidosController.buscarAsuntosConcluidos}" />
+                            
+                    </p:column>
+                </p:panelGrid>
+                <br />
+            </p:panel>
+             
+                  <p:panel id="bandejaTablePanel">
+                <p:dataTable paginator="true" rows="10" selection="#{bandejaAsuntosConcluidosController.bandejaTareaDTO}"
+                    widgetVar="bandejaSelection" selectionMode="single" var="bandeja"
+                    value="#{bandejaAsuntosConcluidosController.bandejaLazyAsuntos}" id="bandejaTable" lazy="true"
+                    emptyMessage="#{bandejaAsuntosConcluidosController.mensajeBandejaVacia}" resizableColumns="true"
+                    binding="#{bandejaAsuntosConcluidosController.dataTableFil}">
+                    
+                    
+                    <p:ajax event="rowDblselect" listener="#{bandejaAsuntosConcluidosController.onRowDblClckSelect}" />
+
+                #{bandeja.idSolicitud}
+				#{bandeja.idTarea}
+				#{bandeja.idTareaUsuario}	
+				#{bandeja.tipoTramite}	
+                	<p:column headerText="#{msg['rrl.buscarPromocion.grid.numeroAsunto']}" sortBy="#{bandeja.numeroAsunto}"
+                        style="width:7%;white-space:pre-line;text-align: center;" resizable="false">
+                        <h:outputText value="#{bandeja.numAsunto}" id="numeroAsuntoTable" />
+                    </p:column>
+					
+					<p:column headerText="RFC Promovente " sortBy="#{bandeja.rfcSolicitante}" resizable="false"
+                        style="width:15%;white-space:pre-line;">
+                        <h:outputText value="#{bandeja.rfcSolicitante}" id="rfcPromovente" />
+                    </p:column>
+                    
+					
+					 <p:column headerText="Tipo de Tr&aacute;mite" sortBy="#{bandeja.descripcionTipoTramite}"
+                        style="width:15%;white-space:pre-line;" resizable="false">
+                        <h:outputText value="#{bandeja.descripcionTipoTramite}" id="tipoTramite" />
+                    </p:column>
+                    
+           			<p:column headerText="Estado Procesal" resizable="false" sortBy="#{bandeja.estadoProcesal}"
+                        style="width:12%;white-space:pre-line;">
+                        <h:outputText value="#{bandeja.estadoProcesal.descripcion}" id="estadoProcesalTable" />
+                    </p:column>
+           
+                     
+                </p:dataTable>
+                 <pe:tooltip for="bandejaTable" value="#{msg['atender.requerimiento.listaBandejaPendientes']}"
+                 
+                    adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" />
+                </p:panel>
+                    </h:form>
+
+       
+        <h:outputScript name='/js/calendar_es.js' target="head" />
+        <script type="text/javascript">
+	
+
+		function actualizarDataTable() {
+			
+				$('#actualizarTableButton').click();
+		}
+
+	</script>
+    </ui:define>
+</ui:composition>
+
+</html>

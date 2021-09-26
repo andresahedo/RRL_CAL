@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+        <style type="text/css">
+.ui-panel {
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+    word-wrap:break-word;
+    }
+.panelContent td {
+    border: black solid 1px !important;
+}
+</style>
+	<h:form enctype="multipart/form-data" id="formaDocumentos">
+		<p:panel header="Documentos de la Promoción"
+			style="width:100%;margin-bottom:10px;">
+			<p:dataTable 
+				id="tablaDoc" 
+				var="documento"
+				lazy="false"	
+				value="#{consultasController.listaDocumentos}"
+				emptyMessage="#{msg['vuj.grid.vacio']}" 
+				rowIndexVar="rowIndex"
+				resizableColumns="true" 
+				paginator="true" 
+				rowKey="#{documento.rutaAzure}" 
+				selection="#{consultasController.listaDocumentosDTO}"
+				widgetVar="listaDocumentos"
+				rows="10"
+				>
+				<p:ajax event="rowSelect"
+					listener="#{consultasController.descargarResueltosDTO}"
+					update=":tabSolicitud:formaDocumentos:descargaPromocion" />
+				<p:ajax event="rowUnselect"
+					listener="#{consultasController.descargarResueltosDTO}"
+					update=":tabSolicitud:formaDocumentos:descargaPromocion" />
+				<p:ajax event="rowSelectCheckbox"
+					listener="#{consultasController.descargarResueltosDTO}"
+					update=":tabSolicitud:formaDocumentos:descargaPromocion" />
+				<p:ajax event="rowUnselectCheckbox"
+					listener="#{consultasController.descargarResueltosDTO}"
+					update=":tabSolicitud:formaDocumentos:descargaPromocion" />
+				<p:ajax event="toggleSelect"
+					listener="#{consultasController.descargarResueltosDTO}"
+					update=":tabSolicitud:formaDocumentos:descargaPromocion" />
+				<p:ajax event="page"
+					listener="#{consultasController.paginaDescargarResueltosDTO}"
+					update=":tabSolicitud:formaDocumentos:descargaPromocion"
+					 />
+				<p:column headerText="Tipo de Documento" style="width:25%"
+					resizable="false">
+					<h:outputText value="#{documento.tipoDocumento}" id="tipoDoc" />
+					<pe:tooltip for="tipoDoc" value="#{documento.tipoDocumento}"
+						mouseTracking="true" adjustX="20" adjustY="20" />
+				</p:column>
+
+				<p:column headerText="Nombre del Archivo" style="width:45%"
+					resizable="false">
+					<h:outputText value="#{documento.nombre}" id="nomDoc" />
+					<pe:tooltip for="nomDoc" mouseTracking="true" adjustX="20"
+						adjustY="20">
+						<p:outputLabel escape="true" value="#{documento.nombre}"></p:outputLabel>
+					</pe:tooltip>
+				</p:column>
+
+				<p:column headerText="#{msg['vuj.documento.tamanioDocumento']}"
+					style="width:15%;white-space:pre-line;" resizable="false">
+					<h:outputText value="#{documento.cadenaTamanioArchivo}">
+					</h:outputText>
+				</p:column>
+				<p:column style="width:5%;text-align:center;" resizable="false">
+					<p:commandButton value="#{msg['vuj.boton.ver']}" id="generarRuta" update=":tabSolicitud:dialogVisor"
+			                        oncomplete="visorDialog.show()">
+			                        <f:setPropertyActionListener value="#{documento}"
+			                            target="#{consultasController.documentoDTOSelected}" />
+			                        <p:ajax event="click" listener="#{consultasController.activaBanderaDocumentoPromocion}" />
+			                </p:commandButton>
+				</p:column>
+				<p:column selectionMode="multiple" resizable="false" style="width:5%;text-align:center;" />
+				
+			</p:dataTable>
+			<h:panelGrid id="panelDescargaPromocion" columns="0"
+				styleClass="noBorder btnPanelGrid" style="float:right;">
+				<p:column>
+					<p:commandButton id="descargaPromocion" value="Descargar Selección"
+						ajax="false"
+						disabled="#{consultasController.bolDocDto}"
+						onclick="PrimeFaces.monitorDownload(start, stop);"
+						actionListener="#{consultasController.descargarDocumentosSeleccionados}">
+						<p:fileDownload value="#{consultasController.archivoZip}" />
+					</p:commandButton>
+				</p:column>
+			</h:panelGrid>
+			<br></br>
+			<br></br>
+		</p:panel>
+
+		<p:panel header="Acuses y Oficios"
+			style="width:100%;margin-bottom:10px;">
+			<p:dataTable 
+				id="tablaDocumentos" 
+				var="documento"
+				lazy="false"	
+				value="#{consultasController.listaDocumentosOficiales}"
+				emptyMessage="#{msg['vuj.grid.vacio']}" 
+				rowIndexVar="rowIndex"
+				resizableColumns="true" 
+				paginator="true"
+				rowKey="#{documento.rutaAzure}"
+				selection="#{consultasController.listaDocumentosOficialDTO}"
+				widgetVar="listaDocumentosOficiales" 
+				rows="10">
+				<p:ajax event="rowSelect"
+					listener="#{consultasController.descargarResueltosOficiales}"
+					update=":tabSolicitud:formaDocumentos:descargaOficial" />
+				<p:ajax event="rowUnselect"
+					listener="#{consultasController.descargarResueltosOficiales}"
+					update=":tabSolicitud:formaDocumentos:descargaOficial" />
+				<p:ajax event="rowSelectCheckbox"
+					listener="#{consultasController.descargarResueltosOficiales}"
+					update=":tabSolicitud:formaDocumentos:descargaOficial" />
+				<p:ajax event="rowUnselectCheckbox"
+					listener="#{consultasController.descargarResueltosOficiales}"
+					update=":tabSolicitud:formaDocumentos:descargaOficial" />
+				<p:ajax event="toggleSelect"
+					listener="#{consultasController.descargarResueltosOficiales}"
+					update=":tabSolicitud:formaDocumentos:descargaOficial" />
+				<p:ajax event="page"
+					listener="#{consultasController.paginaDescargarResueltosOficiales}"
+					update=":tabSolicitud:formaDocumentos:descargaOficial"
+					 />				
+				<p:column headerText="Tipo de Documento" style="width:25%"
+					resizable="false">
+					<h:outputText value="#{documento.descripcionTipoDocumento}"
+						id="tipoDoc" />
+					<pe:tooltip for="tipoDoc"
+						value="#{documento.descripcionTipoDocumento}" mouseTracking="true"
+						adjustX="20" adjustY="20" />
+				</p:column>
+				<p:column headerText="Nombre del Archivo" style="width:45%"
+					resizable="false">
+					<h:outputText value="#{documento.nombreArchivo}" id="nomDocumento" />
+					<pe:tooltip for="nomDocumento" mouseTracking="true" adjustX="20"
+						adjustY="20">
+						<p:outputLabel escape="true" value="#{documento.nombreArchivo}"></p:outputLabel>
+					</pe:tooltip>
+				</p:column>
+
+				<p:column headerText="#{msg['vuj.documento.tamanioDocumento']}"
+					style="width:15%;white-space:pre-line;" resizable="false">
+					<h:outputText value="#{documento.cadenaTamanioArchivo}">
+					</h:outputText>
+				</p:column>
+				<p:column style="width:5%;text-align:center;" resizable="false">
+					<p:commandButton value="#{msg['vuj.boton.ver']}" id="generarRuta" update=":tabSolicitud:dialogVisor"
+			                        oncomplete="visorDialog.show()" style="width:auto;">
+			                        <f:setPropertyActionListener value="#{documento}"
+			                            target="#{consultasController.documentoOficialSelected}" />
+			                        <p:ajax event="click" listener="#{consultasController.activaBanderaDocumentoOficial}" />
+			        	</p:commandButton>
+				</p:column>
+				<p:column selectionMode="multiple" resizable="false" style="width:5%;text-align:center;" />
+			</p:dataTable>
+			<h:panelGrid id="panelOficial" columns="0"
+				styleClass="noBorder btnPanelGrid" style="float:right;">
+				<p:column>
+					<p:commandButton id="descargaOficial" value="Descargar Selección"
+						disabled="#{consultasController.bolDocDtoOficial}"
+						ajax="false"
+						onclick="PrimeFaces.monitorDownload(start, stop);"
+						actionListener="#{consultasController.descargarDocumentosOficialesSeleccionados}">
+						<p:fileDownload value="#{consultasController.archivoOficialZip}" />
+					</p:commandButton>
+				</p:column>
+			</h:panelGrid>
+			<br></br>
+			<br></br>
+		</p:panel>
+	</h:form>
+	<script type="text/javascript">
+		function start() {
+			statusDialog.show();
+		}
+
+		function stop() {
+			statusDialog.hide();
+		}
+	</script>
+	    <p:dialog id="dialogVisor" widgetVar="visorDialog" header="PDF" dynamic="true" modal="true" styleClass="dialogVisor"
+	        position="left top" closeOnEscape="true" draggable="false" resizable="false">
+	        <c:if test="#{not empty consultasController.urlDescargaSelected}">
+	            <p:media player="pdf" value="#{consultasController.urlDescargaSelected}" width="780px" height="480px"
+	                styleClass="dialogMedia">
+		       			Su navegador no es compatible con la vista previa de pdfs. Para descargar el documento de click en esta
+			       		<a href="#{consultasController.urlDescargaSelected}" target="_blank"> liga </a>
+	            </p:media>
+	        </c:if>
+	    </p:dialog>
+	<p:dialog id="statusDialog" modal="true" widgetVar="statusDialog" resizable="false"
+		header="#{msg['vuj.estatus.procesando']}" draggable="false"
+		closable="false">
+		<p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+	</p:dialog>
+	<p:ajaxStatus onstart="statusDialog.show();" oncomplete="statusDialog.hide();" />
+</ui:composition>

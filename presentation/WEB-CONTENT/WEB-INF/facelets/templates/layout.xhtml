@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <title></title>
+    <f:facet name="first">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <h:outputStylesheet library="css" name="html5.css" />
+        <h:outputStylesheet library="css" name="azure.css" />
+        <h:outputStylesheet library="css" name="combos.css"></h:outputStylesheet>
+        <h:outputScript name="/js/html5.js" />
+    </f:facet>
+
+
+    <script type="text/javascript">
+		var contextPath = '#{request.contextPath}';
+	</script>
+
+
+</h:head>
+
+<h:body>
+    <div id="layout">
+
+
+        <div id="content">
+            <ui:insert name="content">
+                <span></span>
+            </ui:insert>
+        </div>
+
+
+    </div>
+    <p:outputLabel value="." id="version" style="color:white" />
+
+    <pe:tooltip for="version" value="#{version['version.build']}" mouseTracking="true" showEffect="fade" />
+    <ui:include src="/resources/pages/home/sesion.xhtml" />
+</h:body>
+<script type="text/javascript" src="#{request.contextPath}/resources/js/fixes/autoNumeric.js" />
+</html>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+    <style type="text/css">
+.ui-selectonemenu-panel {
+    width: 50px
+}
+
+.ui-panel {
+    width: #{sessionScope.tamanioApp}px;
+    border-style:none !important;
+}
+.ui-panelgrid td {
+    border-style: none;
+}
+
+.ui-panelgrid tr {
+    border-style: none;
+}
+
+.ui-panel-titlebar {
+    text-align: center;
+}
+
+.ui-widget {
+    font-family: Arial, sans-serif !important;
+    font-size: 11px !important;
+}
+</style>
+</h:head>
+
+<body>
+    <h:form>
+        <p:panel id="servsDisponibles" style="border-style: none !important;">
+
+
+            <p:panel id="encabezado" style="border-style: none !important;">
+
+                <c:choose>
+                    <c:when test="#{not empty serviciosDisponiblesController.adminUsuariosDTO.idUnidadAmin}">
+                        <p:panelGrid id="datosEncabezado1" columns="1" visible="">
+
+                            <p:outputLabel value="#{msg['usuarios.unidadAdministrativa']}" />
+                            <p:inputText id="unidadAdministrativaFuncionario"
+                                value="#{serviciosDisponiblesController.adminUsuariosDTO.unidadAdministrativa}"
+                                style="width: 400px" readonly="true" />
+
+                        </p:panelGrid>
+                    </c:when>
+                </c:choose>
+                <p:panelGrid id="datosEncabezado" style="width:100%" columns="3">
+                    <p:outputLabel value="#{msg['vuj.resol.rfcFuncionario']}" />
+                    <p:outputLabel value="#{msg['vuj.resol.funcionario']}" />
+                    <p:outputLabel value="#{msg['usuarios.permiso']}" />
+
+
+                    <p:inputText id="rfcFuncionario"
+                        value="#{serviciosDisponiblesController.adminUsuariosDTO.rfcUsuario}" readonly="true" />
+
+                    <p:inputText id="nombreFuncionario"
+                        value="#{serviciosDisponiblesController.adminUsuariosDTO.nombreEmpleado}" readonly="true" />
+
+                    <p:inputText id="permisoFuncionario"
+                        value="#{serviciosDisponiblesController.adminUsuariosDTO.permiso}" style="width:250px"
+                        readonly="true" />
+
+                </p:panelGrid>
+            </p:panel>
+            <p:panel header="#{serviciosDisponiblesController.headerMenu}" style="float:left">
+                <p:dataList value="#{serviciosDisponiblesController.listaServicios}" var="servicio" type="ordered"
+                    itemType="disc">
+                    <p:commandLink value="#{servicio.descripcion}" ajax="false" id="menuAdmin"
+                        actionListener="#{serviciosDisponiblesController.siguienteMenu}">
+                        <f:attribute name="url" value="#{servicio.url}" />
+                    </p:commandLink>
+                </p:dataList>
+            </p:panel>
+            <p:panelGrid id="buttonPanel" columns="1" styleClass="noBorder" style="float:right;">
+                <p:column>
+                    <p:commandButton id="regresarButton" rendered="#{serviciosDisponiblesController.inicial}"
+                        action="#{serviciosDisponiblesController.back}" value="#{msg['vuj.boton.regresar']}"
+                        process="@this" />
+                </p:column>
+            </p:panelGrid>
+
+        </p:panel>
+    </h:form>
+</body>
+</html>

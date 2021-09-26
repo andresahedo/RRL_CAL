@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui"
+    xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <h:head>
+        <title>Anexar Documentos</title>
+    </h:head>
+    <h:body>
+
+        <style type="text/css">
+.ui-selectonemenu-panel {
+    width: 50px
+}
+</style>
+        <h:form enctype="multipart/form-data;charset=UTF-8" id="formaDocumentos">
+            <p:panel id="navegationPanel">
+                <table>
+                    <tr>
+                        <td><p:commandButton process="@this" ajax="false" value="#{msg['vuj.boton.siguiente']}"
+                                action="#{registroSolicitudCALController.guardarDocumentosSolicitud}" /></td>
+                    </tr>
+                </table>
+            </p:panel>
+
+            <p:panel id="msgPanel">
+                <p:messages id="messages" autoUpdate="true" showDetail="false" showSummary="true" />
+            </p:panel>
+
+
+            <h:panelGrid>
+                <p:row>
+                    <p:column colspan="5">
+                        <p:outputLabel value="#{msg['vuj.documento.anexar.tipoDocumento']}">
+
+                            <h:graphicImage id="tipDocumentoT" url="/resources/css/images/ayuda.png" />
+                        </p:outputLabel>
+                        <pe:tooltip for="tipDocumentoT" mouseTracking="true" adjustX="20" adjustY="20"></pe:tooltip>
+                        <p:selectOneMenu id="documento" value="#{registroSolicitudCALController.documentoSelected}"
+                            widgetVar="comboDocs" onchange="habilitarBtnAnexar(this)" filter="true"
+                            filterMatchMode="contains">
+                            <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                            <f:selectItems value="#{registroSolicitudCALController.documentosCombo}" var="documento"
+                                itemLabel="#{documento.tipoDocumento}"
+                                itemValue="#{documento.idTipoDocumento},#{documento.tipoDocumento}" />
+                        </p:selectOneMenu>
+                        <p:commandButton id="anexarBtn" update=":formaDocumentos:display" widgetVar="anexarBtnW"
+                            disabled="true" oncomplete="anexarDialogo.show()" value="#{msg['vuj.boton.adjuntar']}" />
+                    </p:column>
+                </p:row>
+            </h:panelGrid>
+
+            <h:panelGrid id="anexarPanel">
+                <p:dataTable id="tablaDocumentos" var="documento"
+                    value="#{registroSolicitudCALController.documentoAdjuntarDataModel}" rowIndexVar="rowIndex"
+                    resizableColumns="true" selection="#{registroSolicitudCALController.registrosEliminar}"
+                    rowKey="#{documento.rutaAzure}" emptyMessage="#{msg['vuj.grid.vacio']}"
+                    paginator="true" rows="10">
+                    <p:column selectionMode="multiple" style="width:2%" />
+                    <h:inputHidden value="#{documento.idTipoDocumento}" />
+                    <h:inputHidden value="#{documento.idDocumentoSolicitud}" />
+                    <h:inputHidden value="#{documento.ruta}" />
+
+                    <p:column headerText="#{msg['vuj.documento.anexar.tipoDocumento']}" style="width:280px">
+                        <h:outputText value="#{documento.tipoDocumento}" id="tipoDoc" />
+                        <pe:tooltip for="tipoDoc" value="#{documento.tipoDocumento}" mouseTracking="true" adjustX="20"
+                            adjustY="20" />
+                    </p:column>
+                    <p:column headerText="#{msg['vuj.documento.anexar.nombreArchivo']}" style="width:280px">
+                        <h:outputText value="#{documento.nombre}" />
+                    </p:column>
+                    <p:column headerText="#{msg['vuj.documento.tamanioDocumento']}" style="width:80px">
+                        <h:outputText value="---">
+                        </h:outputText>
+                    </p:column>
+                    <p:column style="width:150px">
+                        <p:commandLink id="linkVer" value="#{msg['vuj.boton.ver']}" ajax="false"
+                            update=":formaDocumentos:tablaDocumentos"
+                            actionListener="#{registroSolicitudCALController.descargarDocumento}"
+                            disabled="#{documento.nombre eq null}">
+                            <f:attribute name="documentoParametro" value="#{documento}" />
+                            <p:fileDownload value="#{registroSolicitudCALController.archivoDescarga}" />
+                        </p:commandLink>
+                        <p:tooltip for="linkVer" value="#{msg['contribuyente.ver.documento']}" />
+                    </p:column>
+                </p:dataTable>
+                <p:column>
+                    <p:commandButton id="eliminarRegButton" value="#{msg['vuj.boton.eliminar']}"
+                        update=":formaDocumentos:tablaDocumentos"
+                        actionListener="#{registroSolicitudCALController.eliminarDocumentos}" />
+                </p:column>
+                <pe:tooltip for="anexarPanel" value="#{msg['atender.requerimiento.archivosEliminar']}" adjustX="20"
+                    adjustY="20" />
+            </h:panelGrid>
+            <div align="center">
+                <p:outputLabel style="color:black" value=" #{msg['vuj.documento.nota']}">
+                </p:outputLabel>
+            </div>
+            <p:dialog id="dlgAnexar" widgetVar="anexarDialogo" header="#{msg['vuj.documento.anexar.tituloDialogo']}"
+                modal="true">
+                <h:panelGrid id="display" columns="2" cellpadding="4" style="margin:0 auto;">
+                    <p:fileUpload fileUploadListener="#{registroSolicitudCALController.anexarDocumento}" mode="advanced"
+                        multiple="true" required="true" update=":formaDocumentos" fileLimit="1"
+                        fileLimitMessage="#{errmsg['validation.uploadfile.fileLimitMessage']}"
+                        invalidFileMessage="#{errmsg['validation.uploadfile.invalid.ca']}"
+                        label="#{msg['vuj.documento.anexar.seleccione']}" uploadLabel="#{msg['vuj.boton.cargar']}"
+                        cancelLabel="#{msg['vuj.boton.cancelar']}" allowTypes="/(\.|\/)(pdf|PDF|jpg|JPG)$/"
+                        onstart="$('#progress').show();"
+                        oncomplete="$('#progress').hide();anexarDialogo.hide(); inicializarCombo()" />
+                </h:panelGrid>
+                <p:commandButton onclick="anexarDialogo.hide();" value="#{msg['vuj.boton.cerrar']}" />
+
+            </p:dialog>
+
+        </h:form>
+
+
+
+        <script type="text/javascript">  
+    			function inicializarCombo() {
+    				comboDocs.selectValue("");
+   				}
+    			function habilitarBtnAnexar(val){
+    				if(val.value == null || val.value == ""){
+    					anexarBtnW.disable();
+    				}else{
+    					anexarBtnW.enable();	
+    				}
+   				}
+		</script>
+    </h:body>
+</ui:composition>

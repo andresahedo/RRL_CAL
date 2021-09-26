@@ -1,0 +1,52 @@
+package mx.gob.sat.siat.juridica.ca.dao.domain.model;
+
+import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.TipoTramite;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.DiscriminadorConstants;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
+
+/**
+ * 
+ * @author softtek - EQG Since 06/11/2014
+ */
+@Entity
+@DiscriminatorValue(value = DiscriminadorConstants.T2_PRORROGAS_IMPORTACION_EXPORTACION_CUADERNOS_ATA)
+public class SolicitudProrrogasImportacionExportacionCuadernosATA extends SolicitudConsultaAutorizacion {
+
+    /**
+     * Numero de serie
+     */
+    private static final long serialVersionUID = 5100730260863151126L;
+
+    /**
+     * Atributo privado "tipoTramite" tipo TipoTramite
+     */
+    @Transient
+    private TipoTramite tipoTramite = new TipoTramite(
+            Integer.valueOf(DiscriminadorConstants.T2_PRORROGAS_IMPORTACION_EXPORTACION_CUADERNOS_ATA));
+
+    /**
+     * Atributo privado "discriminatorValue" tipo String
+     */
+    @Transient
+    private String discriminatorValue = DiscriminadorConstants.T2_PRORROGAS_IMPORTACION_EXPORTACION_CUADERNOS_ATA;
+
+    /**
+     * @return tipoTramite
+     */
+    @Override
+    public TipoTramite getTipoTramite() {
+        return tipoTramite;
+    }
+
+    /**
+     * @return discriminatorValue
+     */
+    @Override
+    public String getDiscriminatorValue() {
+        return discriminatorValue;
+    }
+
+}

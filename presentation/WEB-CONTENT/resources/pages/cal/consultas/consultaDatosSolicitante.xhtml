@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<p:panel id="panelSolicitante1" style="width:100%">
+		<table cellpadding="5">
+			<tr>
+				<td><h:outputText value="#{msg['vuj.solicitante.rfc']} " /></td>
+				<td><h:outputText value="#{msg['vuj.solicitante.estadoContribuyente']}" /></td>
+				<td><h:outputLabel value="#{msg['vuj.solicitante.tipoContribuyente']}" /></td>
+			</tr>
+			<tr>
+				<td><p:inputText
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.rfcContribuyente}"
+						readonly="true" id="ivan" /></td>
+				<td><p:inputText
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.estadoContribuyente}"
+						disabled="true" /></td>
+				<td>
+                	<p:inputText value="#{consultasAutorizacionesTramiteController.tipoContribuyente}" disabled="true" />
+                </td>
+			</tr>
+		</table>
+
+		<table cellpadding="5">
+			<c:choose>
+				<c:when	test="#{consultasAutorizacionesTramiteController.banderaRazonSocial}">
+				<tr>
+				<td><h:outputText value="#{msg['vuj.solicitante.razonSocial']} "/></td>
+				</tr>
+				<tr>
+					<td><p:inputText
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.razonSocial}"
+						readonly="true" style="width:200%"/>
+				</td>
+				</tr>
+				</c:when>
+				<c:otherwise>
+					<tr>
+						<td><p:outputLabel value="#{msg['vuj.solicitante.nombre']}" /></td>
+						<td><p:outputLabel
+								value="#{msg['vuj.solicitante.apellidoPaterno']}" /></td>
+						<td><p:outputLabel
+								value="#{msg['vuj.solicitante.apellidoMaterno']}" /></td>
+					</tr>
+					<tr>
+						<td><p:inputText
+								value="#{consultasAutorizacionesTramiteController.datosSolicitud.nombre}"
+								readonly="true" /></td>
+						<td><p:inputText
+								value="#{consultasAutorizacionesTramiteController.datosSolicitud.apellidoPaterno}"
+								readonly="true" /></td>
+						<td><p:inputText
+								value="#{consultasAutorizacionesTramiteController.datosSolicitud.apellidoMaterno}"
+								readonly="true" /></td>
+					</tr>
+				</c:otherwise>
+			</c:choose>
+		</table>
+	</p:panel>
+
+	<p:panel id="panelSolicitante2" style="width:100%"
+		header="#{msg['vuj.solicitante.domicilioContribuyente']}">
+		<table cellpadding="5">
+			<tr>
+				<td><p:outputLabel
+						value="#{msg['vuj.solicitante.domicilio.calle']}" /> <h:graphicImage
+						id="ayudaIdCalle" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+						for="ayudaIdCalle" value="#{msg['contribuyente.calle']}"
+						adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+				<td><p:outputLabel
+						value="#{msg['vuj.solicitante.domicilio.numeroExterior']}" /> <h:graphicImage
+						id="ayudaIdNexterior" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+						for="ayudaIdNexterior"
+						value="#{msg['contribuyente.num.exterior']}" adjustX="20"
+						adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+				<td><p:outputLabel
+						value="#{msg['vuj.solicitante.domicilio.numeroInterior']}" /> <h:graphicImage
+						id="ayudaIdNinterior" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+						for="ayudaIdNinterior"
+						value="#{msg['contribuyente.num.interior']}" adjustX="20"
+						adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+				<td><p:outputLabel
+						value="#{msg['vuj.solicitante.domicilio.colonia']}" /> <h:graphicImage
+						id="ayudaIdCol" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+						for="ayudaIdCol" value="#{msg['contribuyente.colonia']}"
+						adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+			</tr>
+			<tr>
+				<td><p:inputText
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.calle}"
+						readonly="true" /></td>
+				<td><p:inputText
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.numeroExterior}"
+						readonly="true" /></td>
+				<td><p:inputText
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.numeroInterior}"
+						readonly="true" /></td>
+				<td><p:inputText
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.colonia}"
+						readonly="true" /></td>
+			</tr>
+		</table>
+		<table cellpadding="5">
+			<tr>
+				<td><p:outputLabel
+						value="#{msg['vuj.solicitante.domicilio.delegacionMunicipio']}" />
+					<h:graphicImage id="ayudaIdDel"
+						url="/resources/css/images/ayuda.png" /> <pe:tooltip
+						for="ayudaIdDel" value="#{msg['contribuyente.delegacion']}"
+						adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+				<td><p:outputLabel
+						value="#{msg['vuj.solicitante.domicilio.estado']}" /> <h:graphicImage
+						id="ayudaIdEdo" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+						for="ayudaIdEdo" value="#{msg['contribuyente.estado']}"
+						adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+				<td><p:outputLabel
+						value="#{msg['vuj.solicitante.domicilio.codigoPostal']}" /> <h:graphicImage
+						id="ayudaIdcp" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+						for="ayudaIdcp" value="#{msg['contribuyente.cp']}" adjustX="20"
+						adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+				<td><p:outputLabel
+						value="#{msg['vuj.solicitante.domicilio.telefono']}" /> <h:graphicImage
+						id="ayudaIdTel" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+						for="ayudaIdTel" value="#{msg['contribuyente.tel']}" adjustX="20"
+						adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+			</tr>
+			<tr>
+				<td><p:inputText
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.delegacionMunicipio}"
+						readonly="true" /></td>
+				<td><p:inputText
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.estado}"
+						readonly="true" /></td>
+				<td><p:inputText
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.codigoPostal}"
+						readonly="true" /></td>
+				<td><p:inputText
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.telefono}"
+						readonly="true" /></td>
+			</tr>
+		</table>
+		<table cellpadding="5">
+			<tr>
+				<td><p:outputLabel
+						value="#{msg['vuj.solicitante.domicilio.correoElectronico']}" />
+					<h:graphicImage id="ayudaIdMail"
+						url="/resources/css/images/ayuda.png" /> <pe:tooltip
+						for="ayudaIdMail" value="#{msg['contribuyente.correo']}"
+						adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+				<td><p:outputLabel
+						value="#{msg['vuj.solicitante.representanteLegal']}" /> <h:graphicImage
+						id="ayudaIdRep" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+						for="ayudaIdRep"
+						value="#{msg['contribuyente.representanteLegal']}" adjustX="20"
+						adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+				<td><p:outputLabel
+						value="#{msg['vuj.solicitante.administracionLocal']}" /> <h:graphicImage
+						id="ayudaIdLocal" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+						for="ayudaIdLocal" value="#{msg['contribuyente.administracion']}"
+						adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><p:inputTextarea
+						rows="#{consultasAutorizacionesTramiteController.rowsCorreo}"
+						id="inputCorreo"
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.correoElectronico}"
+						readonly="true" /></td>
+				<td><p:inputText
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.representanteLegal}"
+						readonly="true" /></td>
+				<td><p:inputText
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.nombreAdministracionLocal}"
+						readonly="true" style="width:300px" /></td>
+				<td><h:inputHidden
+						value="#{consultasAutorizacionesTramiteController.datosSolicitud.administracionLocal}"
+						readonly="true" /></td>
+			</tr>
+		</table>
+	</p:panel>
+
+</ui:composition>

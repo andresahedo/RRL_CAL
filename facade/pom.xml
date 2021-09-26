@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>mx.gob.sat.siat.juridica</groupId>
+        <artifactId>juridica</artifactId>
+        <version>-SNAPSHOT</version>
+    </parent>
+    <artifactId>juridica-facade</artifactId>
+    <packaging>jar</packaging>
+    <name>VUJ - RRL - facade</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF8</project.build.sourceEncoding>
+
+    </properties>
+
+    <dependencies>
+        <!-- SIAT deps -->
+        <dependency>
+            <groupId>mx.gob.sat</groupId>
+            <artifactId>rolproceso</artifactId>
+        </dependency>
+        <!-- AscpectJ deps -->
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>aspectj-aspectjweaver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>aspectj-aspectjrt</artifactId>
+        </dependency>
+
+        <!-- Juridica deps -->
+        <dependency>
+            <groupId>mx.gob.sat.siat.juridica</groupId>
+            <artifactId>juridica-domain</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Logging deps -->
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>${primefaces.version}</version>
+        </dependency>
+
+        <!-- Apache deps -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.0</version>
+        </dependency>
+	
+		<dependency>
+		    <groupId>commons-io</groupId>
+		   <artifactId>commons-io</artifactId>
+		   <version>2.5</version>
+		</dependency>
+		
+        <!-- ORM deps -->
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.0-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!--efirma-->
+        <dependency>
+            <groupId>mx.gob.sat</groupId>
+            <artifactId>SgiCripto</artifactId>
+			<version>1.0</version>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <outputDirectory>${project.build.directory}/classes</outputDirectory>
+        <testOutputDirectory>${project.build.directory}/test-classes</testOutputDirectory>
+        <sourceDirectory>${project.basedir}/src</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/test</testSourceDirectory>
+        <finalName>juridica-facade</finalName>
+
+
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <version>1.3.1</version>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>test-compile</goal>
+                        </goals>
+                        <configuration>
+                            <aspectLibraries>
+                                <aspectLibrary>
+                                    <groupId>mx.gob.sat.siat.juridica</groupId>
+                                    <artifactId>juridica-infrastructure</artifactId>
+                                </aspectLibrary>
+                                <aspectLibrary>
+                                    <groupId>softtek</groupId>
+                                    <artifactId>aspectj-aspectjweaver</artifactId>
+                                </aspectLibrary>
+                            </aspectLibraries>
+                            <complianceLevel>1.6</complianceLevel>
+                            <verbose>false</verbose>
+                            <showWeaveInfo>false</showWeaveInfo>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+    </build>
+
+
+</project>

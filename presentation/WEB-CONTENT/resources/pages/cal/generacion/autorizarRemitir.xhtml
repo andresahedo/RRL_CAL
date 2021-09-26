@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+
+
+        <style type="text/css">
+.resolucionImportante {
+    background-color: #d8da3d !important;
+}
+
+.ui-panel {
+    border-style: hidden !important;
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+.noBorder td {
+    border-style: hidden !important;
+}
+</style>
+
+        <p:ajaxStatus onstart="statusDialog.show();" oncomplete="statusDialog.hide();" />
+        <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+            draggable="false" closable="false">
+            <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+        </p:dialog>
+
+
+        <h:form id="remitirForm">
+            <p:panel id="msgPanel" style="border-style: none !important;">
+                <p:messages globalOnly="true" showDetail="true"></p:messages>
+                <h:outputText id="errorMsg" value="#{autorizarRemisionCALController.errorMessage}" />
+                <h:outputText id="msg" value="#{autorizarRemisionCALController.msg}" />
+            </p:panel>
+
+            <p:panel id="funcionarioPanel" header="#{msg['cal.remision.titulo']}" style="widht:100%;">
+                <p:panelGrid columns="3" styleClass="noBorder" style="widht:100%;">
+                    <p:row>
+                        <h:outputText value="#{msg['vuj.resol.funcionario']}" />
+                    </p:row>
+                    <p:row>
+                        <h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" />
+                    </p:row>
+                    <p:row>
+                        <h:outputText value="#{msg['vuj.resol.estadoProcesal']}" />
+                    </p:row>
+                    <p:row>
+                        <p:inputText maxlength="500" readonly="true" id="funcionarioInput"
+                            value="#{autorizarRemisionCALController.userProfile.nombreCompleto}" />
+                    </p:row>
+                    <p:row>
+                        <p:inputText maxlength="13" value="#{autorizarRemisionCALController.userProfile.rfc}"
+                            readonly="true" id="rfcFuncionarioInput" />
+                    </p:row>
+                    <p:row>
+                        <p:inputText maxlength="32" readonly="true"
+                            value="#{autorizarRemisionCALController.tramite.estadoProcesal}" id="estadoProcesalInput" />
+                    </p:row>
+
+                    <p:row>
+                        <h:outputText value="#{msg['vuj.resol.numAsunto']}" />
+                    </p:row>
+                    <p:row>
+                        <h:outputText value="#{msg['vuj.fechaRecepcion']}" />
+                    </p:row>
+                    <p:row>
+                        <h:outputText value="#{msg['vuj.resol.fechaVenc']}" />
+                    </p:row>
+                    <p:row>
+                        <p:inputText readonly="true" maxlength="13"
+                            value="#{autorizarRemisionCALController.tramite.numeroAsunto}" id="numAsuntoInput" />
+                    </p:row>
+                    <p:row>
+                        <p:inputText readonly="true" value="#{autorizarRemisionCALController.tramite.fechaRecepcion}"
+                            id="fechaRecepcionInput">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:inputText>
+                    </p:row>
+                    <p:row>
+                        <p:inputText readonly="true" value="#{autorizarRemisionCALController.tramite.fechaVencimiento}"
+                            id="fechaVencimientoInput">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:inputText>
+                    </p:row>
+
+
+
+
+                    <p:row>
+
+                        <p:outputLabel value="#{msg['rrl.emitir.reemitir.administracion' ]}"></p:outputLabel>
+                        <h:graphicImage id="admonRemite" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="admonRemite" value="#{msg['atender.requerimiento.autoridadAlaQueSeRemite']}">
+                        </pe:tooltip>
+
+
+
+                    </p:row>
+                    <p:spacer></p:spacer>
+                    <p:spacer></p:spacer>
+                </p:panelGrid>
+                <p:panelGrid columns="1" styleClass="noBorder">
+                    <p:row>
+                        <p:selectOneMenu id="documento" value="#{autorizarRemisionCALController.unidad}"
+                            widgetVar="comboUnidades" required="true" requiredMessage="Campo requerido" filter="true"
+                            filterMatchMode="contains">
+                            <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                            <f:selectItems value="#{autorizarRemisionCALController.listaUnidadesEmisoras}"
+                                var="unidades" itemLabel="#{unidades.descripcion}" itemValue="#{unidades.clave}" />
+                        </p:selectOneMenu>
+                        <p:message display="text" for="documento" />
+                    </p:row>
+                    <p:spacer></p:spacer>
+                </p:panelGrid>
+                <p:panel style="border:hidden;height:30px">
+                    <p:commandButton id="rechazarButton" style="float:right;" value="#{msg['vuj.boton.rechazar']}"
+                        onclick="rechazarRemisionDlg.show()" />
+                    <p:confirmDialog widgetVar="rechazarRemisionDlg" showEffect="fade" hideEffect="explode"
+                        header="#{msg['vuj.confirmacion.header']}" message="#{msg['vuj.confirmacion.rechazo.remision']}"
+                        icon="ui-icon-alert" style="float:right;">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td align="right"><p:commandButton value="#{msg['confirm.si']}"
+                                        styleClass="ui-confirmdialog-yes" icon="ui-icon-check" update="@form"
+                                        process="@this"
+                                        actionListener="#{autorizarRemisionCALController.rechazarRemision}"
+                                        oncomplete="rechazarRemisionDlg.hide()" /> <p:commandButton
+                                        value="#{msg['confirm.no']}" type="button" styleClass="ui-confirmdialog-no"
+                                        icon="ui-icon-close" onclick="rechazarRemisionDlg.hide()" /></td>
+                            </tr>
+                        </table>
+                    </p:confirmDialog>
+                    <p:commandButton id="remitirButton" value="Siguiente" update="@form" style="float:right;"
+                        action="#{autorizarRemisionCALController.anexarDocumentos}" />
+
+                    <p:commandButton style="float:right;" id="anteriorButton"
+                        action="/resources/pages/rrl/bandeja/bandeja.jsf?faces-redirect=true" process="@this"
+                        value="#{msg['vuj.boton.anterior']}" />
+                </p:panel>
+
+
+            </p:panel>
+        </h:form>
+
+        <p:panel id="solicitantePanel" style="border-style: none !important;">
+            <ui:decorate template="../consultas/consultaFuncionario.xhtml">
+            </ui:decorate>
+        </p:panel>
+        <h:outputScript name='/js/calendar_es.js' target="head" />
+    </ui:define>
+</ui:composition>
+
+</html>

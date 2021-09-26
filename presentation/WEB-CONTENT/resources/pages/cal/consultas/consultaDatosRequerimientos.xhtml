@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+
+    <p:dataTable rowIndexVar="rowId" editMode="row" id="requerimientoTable" paginator="true" rows="5"
+        widgetVar="requerimientoTableVar" var="req"
+        value="#{consultasAutorizacionesTramiteController.datosRequerimientoDataModel}"
+        emptyMessage="#{msg['vuj.grid.vacio']}" selection="#{consultasAutorizacionesTramiteController.selectedReq}">
+        <f:attribute name="tableReqs" value="#{consultasAutorizacionesTramiteController.datosRequerimientoDataModel}"></f:attribute>
+
+        <p:ajax event="rowSelectRadio" update=":tabSolicitud:consultaReqForm" process="@this"
+            listener="#{consultasAutorizacionesTramiteController.onRowSelect}" />
+
+
+        <p:column headerText="#{msg['rrl.requerimiento.tipoRequerimiento']}" resizable="false"
+            style="width:15%;white-space:pre-line;">
+
+            <h:outputText value="#{req.tipoRequerimiento}" />
+
+
+        </p:column>
+        <p:column headerText="#{msg['rrl.requerimiento.autoridad']}" resizable="false"
+            style="width:15%;white-space:pre-line;">
+            <h:outputText value="#{req.autoridad}" />
+        </p:column>
+
+        <p:column headerText="#{msg['rrl.requerimiento.fechageneracion']}" resizable="false"
+            style="width:15%;white-space:pre-line;">
+            <h:outputText value="#{req.fechaGeneracion}" id="fechaGeneracion">
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+            </h:outputText>
+        </p:column>
+
+        <p:column headerText="#{msg['rrl.requerimiento.fechaNotificacion']}" resizable="false"
+            style="width:15%;white-space:pre-line;">
+            <h:outputText value="#{req.fechaNotificacion}" id="fechaNotif">
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+            </h:outputText>
+        </p:column>
+
+        <p:column headerText="#{msg['rrl.requerimiento.fechaatencion']}" resizable="false"
+            style="width:15%;white-space:pre-line;">
+            <h:outputText value="#{req.fechaAtencion}" id="fechaAtencion">
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+            </h:outputText>
+        </p:column>
+        <p:column headerText="#{msg['rrl.requerimiento.estado']}" resizable="false"
+            style="width:15%;white-space:pre-line;">
+            <h:outputText value="#{req.estadoRequerimiento}" id="estadoRequerimientoTable" />
+        </p:column>
+        <p:column style="width:6%;white-space:pre-line;" selectionMode="single" headerText="Detalle" resizable="false">
+
+        </p:column>
+
+    </p:dataTable>
+
+    <h:form id="consultaReqForm">
+
+        <p:panel id="panelDialogReq" header="Detalle de Requerimiento" style="margin-bottom:10px;width:100%"
+            visible="#{consultasAutorizacionesTramiteController.reqVisible}">
+            <p:panel id="panelMensajesReq" style="border-style: hidden !important;width:100%">
+                <p:messages autoUpdate="false" showDetail="true" showSummary="false" id="reqMessage" globalOnly="true"/>
+            </p:panel>
+            <table>
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+
+                <tr>
+                    <td width="250"><h:outputText value="#{msg['rrl.requerimiento.estadoRequerimiento']}" /></td>
+                    <td width="250"><h:outputText value="#{msg['rrl.requerimiento.tipoRequerimiento']}" /></td>
+                    <td width="250"><h:outputText value="#{msg['rrl.requerimiento.autoridad']}" /></td>
+                    <td width="250"><h:outputText value="#{msg['vuj.autorizar.fechaNotif']}" /></td>
+                </tr>
+                <tr>
+                    <td><p:inputText
+                            value="#{consultasAutorizacionesTramiteController.selectedReq.estadoRequerimiento}"
+                            disabled="true" /></td>
+                    <td><p:inputText
+                            value="#{consultasAutorizacionesTramiteController.selectedReq.tipoRequerimiento}"
+                            disabled="true" /></td>
+                    <td><p:inputText value="#{consultasAutorizacionesTramiteController.selectedReq.autoridad}"
+                            disabled="true" /></td>
+                    <td><p:calendar pattern="dd/MM/yyyy" locale="es" navigator="true" required="true"
+                            id="fechaNotificacionnInput"
+                            value="#{consultasAutorizacionesTramiteController.selectedReq.fechaNotificacion}"
+                            readonlyInput="true"
+                            disabled="#{consultasAutorizacionesTramiteController.selectedReq.deshabilitarFechas}"
+                            maxdate="#{consultasAutorizacionesTramiteController.fechaMaxima}" /> <p:message
+                            display="text" for="fechaNotificacionnInput" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><h:outputText value="#{msg['rrl.requerimiento.generadoPor']}" /></td>
+                    <td><h:outputText value="#{msg['rrl.requerimiento.fechaCreacion']}" /></td>
+                    <td><h:outputText value="#{msg['rrl.requerimiento.fechaAtencion']}" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><p:inputText
+                            value="#{consultasAutorizacionesTramiteController.selectedReq.nombreAbogado}"
+                            disabled="true" /></td>
+                    <td><p:inputText
+                            value="#{consultasAutorizacionesTramiteController.selectedReq.fechaGeneracion}"
+                            disabled="true">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:inputText></td>
+                    <td><p:calendar pattern="dd/MM/yyyy" locale="es" readonlyInput="true"
+                            disabled="#{consultasAutorizacionesTramiteController.selectedReq.deshabilitarFechas}"
+                            navigator="true"
+                            value="#{consultasAutorizacionesTramiteController.selectedReq.fechaAtencion}"
+                            id="fechaAtencionInput" maxdate="#{consultasAutorizacionesTramiteController.fechaMaxima}">
+
+                        </p:calendar></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><h:outputText value="#{msg['rrl.requerimiento.autorizadoPor']}" /></td>
+                    <td><h:outputText value="#{msg['rrl.requerimiento.fechaAutorizacion']}" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><p:inputText
+                            value="#{consultasAutorizacionesTramiteController.selectedReq.autorizadoPor}"
+                            disabled="true" /></td>
+                    <td><p:inputText
+                            value="#{consultasAutorizacionesTramiteController.selectedReq.fechaAutorizacion}"
+                            disabled="true">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:inputText></td>
+
+                    <td><c:if test="#{consultasAutorizacionesTramiteController.esAbogado}">
+                            <p:commandButton update=":tabSolicitud:consultaReqForm"
+                                disabled="#{consultasAutorizacionesTramiteController.selectedReq.deshabilitarFechas}"
+                                id="guardarReqButton"
+                                actionListener="#{consultasAutorizacionesTramiteController.actualizarRequerimiento}"
+                                ajax="true" value="#{msg['vuj.resol.guardar']}" />
+
+                            <p:commandButton ajax="true" id="adjuntarDocButton"
+                                disabled="#{consultasAutorizacionesTramiteController.selectedReq.deshabilitarFechas}"
+                                action="#{consultasAutorizacionesTramiteController.adjuntarCumplimentacion}" process="@this"
+                                update=":tabSolicitud:consultaReqForm" value="#{msg['vuj.boton.adjuntar']}" />
+                        </c:if></td>
+                </tr>
+            </table>
+
+
+
+            <p:dataTable id="tablaDocumentosReq" var="documentoReq"
+                value="#{consultasAutorizacionesTramiteController.selectedReq.documentosConsultaReq}"
+                emptyMessage="No se encontraron resultados" rowIndexVar="rowIndex" resizableColumns="true"
+                paginator="true" rows="10">
+                <p:column headerText="#{msg['rrl.requerimiento.tipoDocumento']}" style="width:100px" resizable="false">
+                    <h:outputText value="#{documentoReq.tipoDocumento}" />
+                </p:column>
+                <p:column headerText="#{msg['rrl.requerimiento.nombreArchivo']}" style="width:280px" resizable="false">
+                    <h:outputText value="#{documentoReq.nombre}" id="nomDocumento" />
+                    <pe:tooltip for="nomDocumento" mouseTracking="true">
+                        <p:outputLabel escape="true" value="#{documentoReq.nombre}"></p:outputLabel>
+                    </pe:tooltip>
+                </p:column>
+                <p:column style="width:100px" resizable="false">
+                    <p:commandButton value="#{msg['vuj.boton.ver']}" id="generarRuta" update=":dialogVisor"
+                        oncomplete="visorDialog.show()">
+                        <f:setPropertyActionListener value="#{documentoReq}"
+                            target="#{consultasAutorizacionesTramiteController.documentoDTOSelected}" />
+                        <p:ajax event="click"
+                            listener="#{consultasAutorizacionesTramiteController.activaBanderaDocumentoPromocion}" />
+                    </p:commandButton>
+                </p:column>
+
+            </p:dataTable>
+
+
+        </p:panel>
+
+
+    </h:form>
+
+
+</ui:composition>

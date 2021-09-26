@@ -1,0 +1,137 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <style type="text/css">
+.noBorder td {
+    border-style: hidden !important;
+}
+
+.ui-panel {
+    border-style: none !important;
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+</style>
+    </h:head>
+
+    <h:body>
+        <h:form id="rechazarForm">
+
+            <p:panel id="msgPanelRes">
+                <p:messages id="messagesRes" showDetail="true" globalOnly="true" autoUpdate="true" />
+            </p:panel>
+
+            <p:panel styleClass="noBorder">
+                <p:panelGrid columns="1" styleClass="noBorder" style="float:right;">
+                    <p:column>
+                        <p:commandButton id="firma" value="#{msg['vuj.boton.rechazar']}"
+                            actionListener="#{consultasController.activaDialogoAsunto}"
+                            update=":rechazarForm:confirmarDialogo" ajax="false" />
+                    </p:column>
+                </p:panelGrid>
+            </p:panel>
+
+            <p:panel id="datosGenerales" style="border-style: hidden !important;">
+                <p:panelGrid styleClass="noBorder">
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.funcionario']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.numAsunto']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText readonly="true" value="#{consultasController.userProfile.nombreCompleto}" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText readonly="true" value="#{consultasController.userProfile.rfc}" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText readonly="true"
+                                value="#{consultasController.datosBandejaTareaDTO.numeroAsunto}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{msg['oficialia.rechazo.asunto.fechaRecepcion']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['oficialia.rechazo.asunto.fechaVencimiento']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['oficialia.rechazo.asunto.estadoProcesal']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText readonly="true" value="#{consultasController.tramite.fechaRecepcion}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText>
+                        </p:column>
+                        <p:column>
+                            <p:inputText readonly="true" value="#{consultasController.tramite.fechaVencimiento}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText>
+                        </p:column>
+                        <p:column>
+                            <p:inputText readonly="true" value="#{consultasController.tramite.estadoProcesal}" />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </p:panel>
+
+            <p:panel id="motivoRechazo" header="#{msg['oficialia.rechazo.asunto.encabezadoDocumento']}"
+                style="text-align:center;border-style: hidden !important;" />
+            <p:panel style="border-style: hidden !important;">
+                <p:panelGrid styleClass="noBorder">
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{msg['oficialia.rechazo.asunto.seleccionMotivoDocumento']}" />
+                            <p:outputLabel style="color:red">*</p:outputLabel>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:selectOneMenu id="motivo" widgetVar="motivosCom" style="width:400px;"
+                                value="#{consultasController.idMotivo}" filter="true" filterMatchMode="contains"
+                                required="true" requiredMessage="#{msg['op.validacion.dato.requerido']}">
+                                <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                                <f:selectItems value="#{consultasController.listaMotivoCombo}" var="motivo"
+                                    itemLabel="#{motivo.descripcion}" itemValue="#{motivo.clave}" />
+                            </p:selectOneMenu>
+                            <p:message for="motivo" display="text" />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </p:panel>
+
+            <p:panel>
+                <p:confirmDialog closable="false" global="false" message="#{consultasController.msg}"
+                    visible="#{consultasController.activaDialogo}" id="confirmarDialogo" widgetVar="confirmarAccion"
+                    showEffect="fade">
+                    <p:panelGrid columns="2" styleClass="noBorder" style="float:right;">
+                        <p:column>
+                            <p:commandButton oncomplete="confirmarAccion.hide()" value="Si"
+                                process="@this,confirmarDialogo" ajax="false"
+                                action="#{consultasController.firmaRechazo}" styleClass="ui-confirmdialog-yes"
+                                icon="ui-icon-check" update="@form" />
+                        </p:column>
+                        <p:column>
+                            <p:commandButton value="No" oncomplete="confirmarAccion.hide()"
+                                process="@this,confirmarDialogo" action="#{consultasController.noConfirma}"
+                                styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:column>
+                    </p:panelGrid>
+                </p:confirmDialog>
+            </p:panel>
+        </h:form>
+    </h:body>
+
+</ui:composition>

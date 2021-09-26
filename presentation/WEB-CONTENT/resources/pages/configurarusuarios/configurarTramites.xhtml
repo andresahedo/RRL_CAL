@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+
+    <ui:define name="content">
+
+
+
+        <style type="text/css">
+.noBorder td {
+    border-style: none !important
+}
+
+.ui-panel-titlebar {
+    text-align: center;
+}
+
+.noBorder tr {
+    border-style: none !important
+}
+
+.ui-panel {
+    border-style: none !important;
+    width: #{sessionScope.tamanioApp}px;
+}
+</style>
+
+
+        <p:panel id="encabezadoTramites">
+            <ui:include src="/resources/pages/configurarusuarios/encabezado.xhtml" />
+        </p:panel>
+
+        <h:form id="configurarForm" style="width:100%">
+
+            <p:panel id="msgPanel" style="text-align:left">
+                <p:messages id="messages" showDetail="true" globalOnly="true">
+                    <p:message showDetail="true" rendered=""></p:message>
+                </p:messages>
+            </p:panel>
+
+            <p:panel id="seleccionaUnidad" header="#{msg['usuarios.tramites.asignar']}" styleClass="noBorder">
+                <p:panelGrid columns="2">
+                    <p:row>
+                        <h:outputText value="* Datos requeridos" style="color:red"></h:outputText>
+                    </p:row>
+                    <p:spacer></p:spacer>
+                    <p:row>
+                        <h:outputText value="#{msg['usuarios.tramites.unidad']}"></h:outputText>
+                        <p:outputLabel style="color:red">*</p:outputLabel>
+                    </p:row>
+                    <p:spacer></p:spacer>
+                    <p:row>
+                        <p:selectOneMenu id="comboUniAdmin" filter="true" filterMatchMode="contains"
+                            value="#{configurarTramitesController.unidadSelected}" style="text-align:left;width:500px;"
+                            onchange="eventoCambiaUA(this);" required="true" widgetVar="wvComboUniAdmin"
+                            converter="#{autoridadConverter}">
+                            <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue=""></f:selectItem>
+                            <f:selectItems value="#{configurarTramitesController.comboUnidadesAdministrativas}"
+                                var="unidad" itemLabel="#{unidad.nombre}" itemValue="#{unidad}"></f:selectItems>
+                        </p:selectOneMenu>
+                        <p:message display="text" for="comboUniAdmin" />
+                    </p:row>
+
+                </p:panelGrid>
+            </p:panel>
+            <p:panel style="text-align:right">
+                <p:commandButton id="botonTramites" actionListener="#{configurarTramitesController.mostrarTramites}"
+                    update=":configurarForm:seleccionaUnidad,:configurarForm:panelTramites, :configurarForm:msgPanel"
+                    process="@this,:configurarForm:comboUniAdmin" oncomplete="consultaUA();"
+                    value="#{msg['usuarios.tramites.botonTramites']}" widgetVar="btnTramites"></p:commandButton>
+            </p:panel>
+
+            <p:panel id="panelTramites" header="#{configurarTramitesController.tituloTablaTramites}" visible="false"
+                styleClass="Border">
+
+                <p:dataTable id="tablaTramites" value="#{configurarTramitesController.tramitesDataModel}" rows="5"
+                    var="tramite" rowKey="#{tramite.servicio}"
+                    selection="#{configurarTramitesController.tramitesSelected}">
+                    <p:column>
+                        <f:facet name="header">
+                            <p:outputLabel value="#{msg['usuarios.tramites.tramiteTabla']}" style="text-align:center"></p:outputLabel>
+                        </f:facet>
+                        <h:outputText value="#{tramite.descripcionServicio}"></h:outputText>
+                        <h:inputHidden value="#{tramite.servicio}"></h:inputHidden>
+                    </p:column>
+
+                    <p:column headerText="Todo" selectionMode="multiple" style="width:2%;;text-align:center" />
+                </p:dataTable>
+                <br />
+                <br />
+
+                <table align="right">
+                    <tr>
+                        <td><p:commandButton id="botonActualizar"
+                                value="#{msg['usuarios.tramites.boton.actualizar']}"
+                                oncomplete="cdConfirmaActualizar.show();"
+                                action="#{configurarTramitesController.activaDialogoTramites}"
+                                process="@this,:configurarForm:tablaTramites" update=":configurarForm:confirmActualizar">
+                            </p:commandButton></td>
+                        <td><p:commandButton id="botonRegresar" process="@this"
+                                value="#{msg['usuarios.tramites.boton.regresar']}"
+                                action="#{configurarTramitesController.back}">
+                            </p:commandButton></td>
+                    </tr>
+                </table>
+            </p:panel>
+            <p:panel>
+                <p:confirmDialog closable="false" global="false"
+                    message="#{configurarTramitesController.msgValidaActualizar}" showEffect="fade" hideEffect="explode"
+                    id="confirmActualizar" header="Confirmación" severity="alert" widgetVar="cdConfirmaActualizar">
+                    <p:panelGrid columns="2" styleClass="noBorder" style="float:right;">
+                        <p:column>
+                            <p:commandButton value="Si"
+                                actionListener="#{configurarTramitesController.actualizarTramites}"
+                                styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                process="@this,:configurarForm:tablaTramites"
+                                update=":configurarForm:msgPanel,:configurarForm:tablaTramites"
+                                oncomplete="cdConfirmaActualizar.hide();" />
+                        </p:column>
+                        <p:column>
+                            <p:commandButton value="No" onclick="cdConfirmaActualizar.hide();" type="button"
+                                styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:column>
+                    </p:panelGrid>
+                </p:confirmDialog>
+            </p:panel>
+        </h:form>
+
+        <script type="text/javascript">
+			function eventoCambiaUA(val) {
+				btnTramites.enable();
+				$('#configurarForm\\:panelTramites').hide();
+			}
+			function consultaUA() {
+				var elemento = wvComboUniAdmin.value;
+				if (null == elemento || "" == elemento) {
+					btnTramites.enable();
+					$('#configurarForm\\:panelTramites').hide();
+				} else {
+					btnTramites.disable();
+					$('#configurarForm\\:panelTramites').show();
+				}
+			}
+		</script>
+    </ui:define>
+</ui:composition>
+</html>

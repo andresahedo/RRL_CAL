@@ -1,0 +1,117 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://primefaces.org/ui" xmlns:ui="http://java.sun.com/jsf/facelets">
+		
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+
+        <f:event type="preRenderView" listener="#{firmarTareaController.cargarDatosBandeja}" />
+        <p:messages id="messages" showDetail="true" />
+        <h:outputStylesheet library="css" name="fiel.css" />
+    	<!-- Javascript de firma -->
+        <!--Biblioteca jsrsasign (Dependencia de la biblioteca FielUtil)-->
+        <h:outputScript name="./js/jsrsasign-4.7.0-all-min_sat-fix.js" target="head" />
+        <!--Biblioteca FielUtil de firmado-->
+        <h:outputScript name="./js/FielUtil-1.5.js" target="head" />
+        <!--Ejecuciones del firmado JS -->
+        <h:outputScript name="./js/fielFirmar-1.4.js" target="head" />
+        <!-- Javascript de firma -->
+        <div id="appletContainer"></div>
+        <h:form id="FIELForm" method="post" autocomplete="off">
+            <table border="0" align="center">
+
+                <tr>
+                    <td width="auto"></td>
+                    <td><br /> <br />
+                        <div align="center">
+                            <table class="unico" width="500" bgcolor="dbdbdb" cellpadding="0" cellspacing="3" border="0">
+
+                                <tr>
+                                    <td align="center" colspan="3">
+                                        <table class="contrasena" width="100%" border="0">
+                                            <tr>
+
+                                                <td width="69%"><div align="center"></div></td>
+                                                <td width="20%"></td>
+                                                <td width="2%">|</td>
+                                                <td width="9%"><div align="left">
+                                                        <b>FIEL</b>
+                                                    </div></td>
+
+                                                <td width="69%"></td>
+                                                <td width="20%"></td>
+                                                <td width="2%"></td>
+                                                <td width="9%"><div align="left"></div></td>
+                                            </tr>
+                                        </table>
+                                        <div>
+                                            <b> <span>Acceso a los servicios <br /> electrónicos del SAT
+                                            </span>
+                                            </b> <br /> <br />
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="224" align="right"><b>Certificado (cer)</b></td>
+                                    <td width="158" align="left"><input type="file" name="certificate" id="certificate" accept=".cer"/></td>
+                                </tr>
+                                <tr>
+                                    <td align="right" class="normalFont"><b>Clave privada (key)</b></td>
+                                    <td align="left"><input type="file" name="privateKey" id="privateKey" accept=".key"/></td>
+                                </tr>
+                                <tr>
+                                    <td align="right" class="normalFont"><b>Contraseña de clave privada</b></td>
+                                    <td colspan="2" align="left"><input type="password" name="privateKeyPassword"
+                                        id="privateKeyPassword" size="25" class="cajatexto"
+                                        title="#{msg['firma.clavePrivadaPassword']}" /></td>
+                                </tr>
+                                <tr>
+                                    <td align="right"><b>RFC</b></td>
+                                    <td colspan="2" align="left"><input type="text" name="userID" id="RFC"
+                                        size="25" class="deshabilitado" readonly="readonly" value="#{header['userRFC']}" /></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" align="center"></td>
+                                </tr>
+                                <tr>
+                                    <td align="center" height="33" colspan="3"><input type="button" id="btnSubmit"
+                                        value="Firmar" onclick="ejecutarProcesoFirma('FIELForm:procesa')" /> <input
+                                        type="hidden" id="mode" name="mode" value="#{sessionScope.fielMode}" /> <input
+                                        type="hidden" id="firmaDigital" name="firmaDigital" /> <input type="hidden" id="numeroSerie"
+                                	name="numeroSerie" /><input type="hidden" id="cadenaOriginal" name="cadenaOriginal"
+                                        value="#{firmarTareaController.cadenaOriginal}" /></td>
+                                </tr>
+                            </table>
+                        </div></td>
+                    <td width="auto"></td>
+                    <td></td>
+                </tr>
+            </table>
+            <h:commandButton action="#{firmarTareaController.firmaConsulta}" id="procesa" style="display:none;"
+                ajax="false" />
+            <p:defaultCommand target="procesa" />
+        </h:form>
+        <script>
+    
+	
+	$( "#FIELForm" ).submit(function( event ) {
+			procesarFirmaFormulario(event);
+	});
+
+	$('form input').keydown(function (e) {
+	    if (e.keyCode == 13) {
+	        var inputs = $(this).parents("form").eq(0).find(":input");
+	        if (inputs[inputs.index(this) + 1] != null) {                    
+	            inputs[inputs.index(this) + 1].focus();
+	        }
+	        e.preventDefault();
+	        return false;
+	    }
+	});
+	
+	</script>
+
+    </ui:define>
+</ui:composition>
+
+</html>

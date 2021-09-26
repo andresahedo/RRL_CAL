@@ -1,0 +1,73 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Firma</title>
+    <f:facet name="first">
+        <script type="text/javascript">
+			var contextPath = '#{request.contextPath}';
+		</script>
+    </f:facet>
+</h:head>
+
+<h:body>
+    <f:event type="preRenderView" listener="#{firmarTareaController.cargarDatosRechazo}" />
+    <style type="text/css">
+.ui-panel {
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+</style>
+
+    <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" />
+    <h:outputStylesheet library="css" name="fiel.css" />
+    <div id="appletContainer"></div>
+    <p:panel id="msgPanelFirma" style="width:100%;border-style: hidden !important;">
+        <p:messages id="messagesFirma" showDetail="true" />
+    </p:panel>
+    <h:form id="FIELForm" onkeypress="if (event.keyCode == 13) { return false; }">
+        <table border="0" align="center">
+
+            <tr>
+                <td width="auto"></td>
+                <td><br /> <br />
+                    <div align="center">
+                        <table class="unico" width="500" bgcolor="dbdbdb" cellpadding="0" cellspacing="3" border="0">
+                            <tr>
+                                <td align="right"><b>RFC</b></td>
+                                <td colspan="2" align="left"><input type="text" name="userID" id="RFC" size="25"
+                                    class="cajatexto" value="#{firmarTareaController.userProfile.rfc}" /></td>
+                            </tr>
+
+                            <tr>
+                                <td align="right"><b>numeroSerie</b></td>
+                                <td colspan="2" align="left"><input type="text" name="numeroSerie" id="numeroSerie"
+                                    class="cajatexto" value="#{firmarTareaController.userProfile.rfc}" /></td>
+                            </tr>
+
+                            <tr>
+                                <td align="right"><b>cadenaOriginal</b></td>
+                                <td colspan="2" align="left"><input type="text" name="cadenaOriginal"
+                                    id="cadenaOriginal" class="cajatexto"
+                                    value="|ABCDEF123457890|ABCDEFABCDEFABCDEFABCDEF|ABCDEF123457890|" /></td>
+                            </tr>
+
+                            <tr>
+                                <td align="right"><b>firmaDigital</b></td>
+                                <td colspan="2" align="left"><input type="text" name="firmaDigital"
+                                    id="firmaDigital" class="cajatexto"
+                                    value="ABCDEF123457890ABCDEFABCDEFABCDEFABCDEFABCDEF123457890" /></td>
+                            </tr>
+
+                        </table>
+                    </div></td>
+                <td width="auto"></td>
+                <td></td>
+            </tr>
+        </table>
+        <h:commandButton action="#{firmarTareaController.firmaRechazoOficialia}" id="procesa"
+            onkeypress="if (event.keyCode == 13) { return false; }" ajax="false" value="Firmar" />
+        <p:defaultCommand target="procesa" />
+    </h:form>
+</h:body>
+
+</html>

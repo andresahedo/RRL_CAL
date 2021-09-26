@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    </h:head>
+
+    <h:body>
+        <h:form id="formConsulta">
+            <p:tabView id="tablaConsultas" style="border-style: none !important">
+
+                <p:tab id="tab1" title="#{msg['ca.requerimiento.datosSolicitante']}">
+                    <ui:include src="#{consultaReqController.tabSolicitante}" />
+                </p:tab>
+
+                <p:tab id="tab2" title="#{msg['ca.requerimiento.datosPromocion']}">
+                    <ui:include src="#{consultaReqController.tabPromocion}" />
+                </p:tab>
+
+                <p:tab id="tab3" title="#{msg['ca.requerimiento.datosRequerimiento']}">
+                    <ui:include src="#{consultaReqController.tabRequerimiento}" />
+                </p:tab>
+
+            </p:tabView>
+        </h:form>
+    </h:body>
+</ui:composition>

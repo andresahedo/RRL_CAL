@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+
+        <style type="text/css">
+.centered {
+    height: 100px;
+    margin: 0 auto;
+    padding: 10% 0;
+}
+
+.ui-panel {
+    border-style: hidden !important;
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+.noBorder td {
+    border-style: hidden !important;
+}
+</style>
+
+        <p:panel id="msgPanel">
+            <p:messages id="messages" showDetail="true" autoUpdate="true" globalOnly="true" />
+        </p:panel>
+        <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" />
+
+        <p:dialog modal="false" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+            draggable="false" closable="false">
+            <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+        </p:dialog>
+
+        <h:form id="formResolucion">
+            <p:panel id="panelResolucion" header="#{msg['cal.resol.panelGral.header']}">
+                <div align="right">
+                    <p:commandButton value="#{msg['vuj.boton.anterior']}"
+                        action="#{generarResolucionAutorizacionController.anteriorAction}" update="@form"
+                        process="@this" ajax="true" />
+
+
+
+                    <c:choose>
+                        <c:when test="#{generarResolucionController.panelType==1}">
+                            <p:commandButton value="#{msg['vuj.boton.siguiente']}"
+                                action="#{generarResolucionAutorizacionController.siguienteAction}" update="@form"
+                                ajax="true" />
+                        </c:when>
+                        <c:when test="#{generarResolucionController.panelType==2}">
+                            <p:commandButton value="#{msg['vuj.boton.siguiente']}" ajax="true"
+                                process=":formResolucion:panelResolucion,:formResolucion:panelSentidoRes,:formResolucion:formResarcimientoResolucion:resarcimientoData"
+                                update=":formResolucion:panelResolucion,:formResolucion:panelSentidoRes,:formResolucion:formResarcimientoResolucion:resarcimientoData,:msgPanel"
+                                action="#{generarResolucionAutorizacionController.siguienteAction}" />
+                        </c:when>
+                        <c:otherwise>
+                            <p:commandButton value="#{msg['vuj.boton.siguiente']}"
+                                action="#{generarResolucionAutorizacionController.siguienteAction}" update="@form"
+                                ajax="true" />
+                        </c:otherwise>
+                    </c:choose>
+
+
+                    <p:commandButton id="rechazarButton" value="#{msg['vuj.boton.rechazar']}"
+                        oncomplete="cdRechazarRes.show()" process="@this">
+                    </p:commandButton>
+                    <p:confirmDialog message="#{msg['vuj.confirmacion.rechazo.resolucion']}" showEffect="fade"
+                        hideEffect="explode" header="Confirmación" severity="alert" widgetVar="cdRechazarRes">
+                        <table align="right">
+                            <tr>
+                                <td><p:commandButton value="Si"
+                                        actionListener="#{generarResolucionAutorizacionController.rechazarResolucion}"
+                                        styleClass="ui-confirmdialog-yes" icon="ui-icon-check" process="@this"
+                                        oncomplete="cdRechazarRes.hide()" /> <p:commandButton value="No"
+                                        onclick="cdRechazarRes.hide();" type="button" styleClass="ui-confirmdialog-no"
+                                        icon="ui-icon-close" /></td>
+                            </tr>
+                        </table>
+                    </p:confirmDialog>
+                </div>
+                <p:panelGrid columnClasses="3" styleClass="noBorder">
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.funcionario']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.numAsunto']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText id="funcionario" readonly="false" disabled="true"
+                                value="#{generarResolucionAutorizacionController.userProfile.nombreCompleto}" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="rfcFuncionario" readonly="false" disabled="true"
+                                value="#{generarResolucionAutorizacionController.userProfile.rfc}" maxlength="13" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="numeroAsunto" readonly="false" disabled="true"
+                                value="#{generarResolucionAutorizacionController.datosBandejaTareaDTO.numeroAsunto}"
+                                maxlength="14" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{msg['ca.bandejaConsulta.fechaInicio']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['ca.bandejaConsulta.fechaFin']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.estadoProcesal']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText id="fechaInicio" readonly="false" disabled="true"
+                                value="#{generarResolucionAutorizacionController.tramiteDTO.fechaRecepcion}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="fechaFin" readonly="fasle" disabled="true"
+                                value="#{generarResolucionAutorizacionController.tramiteDTO.fechaVencimiento}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="estadoProcesal" readonly="false" disabled="true"
+                                value="#{generarResolucionAutorizacionController.datosBandejaTareaDTO.estadoProcesal}" />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </p:panel>
+            <p:panel id="panelSentidoRes" header="#{msg['ca.captura.solicitud.promocion.sentidoResolucion']}">
+                <p:panelGrid columnClasses="3" styleClass="noBorder">
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="#{msg['cal.resol.resolucion']}" />
+                            <p:outputLabel value=" * " style="color:red" />
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu effect="fade" id="cboResolucion" filter="true" filterMatchMode="contains"
+                                value="#{generarResolucionAutorizacionController.resolucionCbo}" style="width:160px"
+                                panelStyle="width:150px" required="true"
+                                requiredMessage="#{errmsg['cal.resolucion.required.resolucion']}">
+                                <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                <f:selectItems value="#{generarResolucionAutorizacionController.listaResolucion}"
+                                    var="resolucion" itemValue="#{resolucion.clave}"
+                                    itemLabel="#{resolucion.descripcion}">
+                                </f:selectItems>
+                            </p:selectOneMenu>
+                            <p:message for="cboResolucion" display="text" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="#{msg['cal.resol.numOficio']}" />
+                            <p:outputLabel value=" * " style="color:red" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{generarResolucionAutorizacionController.numeroOficio}" maxlength="50"
+                                required="true" id="resolucionNumeroOficio">
+                                <f:validator for="resolucionNumeroOficio" validatorId="numeroOficioResolucionValidator"></f:validator>
+                            </p:inputText>
+                            <p:message for="resolucionNumeroOficio" display="text" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="#{msg['cal.resol.fechaOficio']}" />
+                            <p:outputLabel value=" * " style="color:red" />
+                        </p:column>
+                        <p:column>
+                            <p:calendar id="fechaOficio" pattern="dd/MM/yyyy" locale="es" required="true"
+                                navigator="true" maxdate="#{generarResolucionAutorizacionController.fechaMaxima}"
+                                mindate="#{generarResolucionAutorizacionController.fechaMinima}"
+                                value="#{generarResolucionAutorizacionController.fechaResolucion}" readonlyInput="true">
+                            </p:calendar>
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>
+            </p:panel>
+
+            <c:choose>
+                <c:when test="#{generarResolucionAutorizacionController.panelType==1}">
+                    <ui:decorate template="../generacion/panelClasificacionAutorizarResolucion.xhtml">
+                    </ui:decorate>
+                </c:when>
+                <c:when test="#{generarResolucionAutorizacionController.panelType==2}">
+                    <ui:decorate template="../generacion/panelResarcimientoAutorizarResolucion.xhtml">
+                    </ui:decorate>
+                </c:when>
+            </c:choose>
+
+
+        </h:form>
+
+        <p:panel id="solicitantePanel">
+            <ui:decorate template="../consultas/consultaFuncionario.xhtml">
+            </ui:decorate>
+        </p:panel>
+    </ui:define>
+</ui:composition>
+</html>

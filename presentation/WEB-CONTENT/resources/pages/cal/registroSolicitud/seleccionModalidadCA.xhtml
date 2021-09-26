@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+        <f:event listener="#{seleccionaModalidadController.validaAccesoProcesoMenu}" type="preRenderView" />
+        <style type="text/css">
+.noBorder td {
+    border-style: hidden !important;
+}
+
+.dataList .ui-datalist-content {
+    border: none;
+    background: transparent;
+    background-image: none;
+}
+
+.ui-panel {
+    border-style: hidden !important;
+    width: #{sessionScope.tamanioBuzon}#{sessionScope.tipoTamanioBuzon};
+}
+.ui-selectonemenu-panel {
+    width: 70%;
+}
+
+.centered {
+    position: relative;
+    margin: 0 auto;
+    padding: 10% 0;
+}
+</style>
+
+        <p:panel id="msgPanel">
+            <p:messages id="messages" autoUpdate="true" closable="true" showDetail="false" showSummary="true" />
+        </p:panel>
+        <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" />
+        <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+            draggable="false" closable="false">
+            <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+        </p:dialog>
+
+        <h:form id="seleccionForm">
+            <p:panel id="panelTipoModalidad">
+                <p:panel id="radioPanel" styleClass="noBorder">
+                    <p:selectOneRadio id="customRadio" layout="custom" required="true"
+                        value="#{seleccionaModalidadController.optionModalidad}">
+                        <f:selectItem itemLabel="Option 1" itemValue="1" />
+                        <f:selectItem itemLabel="Option 2" itemValue="2" />
+                        <f:selectItem itemLabel="Option 3" itemValue="3" />
+                        <f:selectItem itemLabel="Option 4" itemValue="4" />
+                        <p:ajax event="change" listener="#{seleccionaModalidadController.escogerTipoModalidad}"
+                            update="panelTipoModalidad" process="radioPanel" />
+                    </p:selectOneRadio>
+                    <p:panelGrid columns="14" styleClass="centered" style="width:5%;text-align:center;">
+
+                        <p:radioButton id="opt1" for="customRadio" itemIndex="0" />
+                        <h:outputLabel for="opt1" value="#{msg['cal.seleccion.modalidad.autorizaciones']}" />
+                        <p:spacer />
+                        <p:spacer />
+                        <p:radioButton id="opt2" for="customRadio" itemIndex="1" />
+                        <h:outputLabel for="opt2" value="#{msg['cal.seleccion.modalidad.consultas']}" />
+                        <p:spacer />
+                        <p:spacer />
+                        <!-- Aqui se hace el cambio para esconder la opción de avisos -->
+                        <p:radioButton id="opt3" for="customRadio" itemIndex="2" rendered="false" />
+                        <h:outputLabel for="opt3" value="#{msg['cal.seleccion.modalidad.avisos']}" rendered="false"/>
+                        <!--  
+                        <p:spacer />
+                        <p:spacer />
+                        -->
+                        <p:radioButton id="opt4" for="customRadio" itemIndex="3" />
+                        <h:outputLabel for="opt4" value="#{msg['cal.seleccion.modalidad.todas']}" />
+
+                    </p:panelGrid>
+                </p:panel>
+                <p:panelGrid styleClass="noBorder">
+                    <p:row>
+                        <p:column>
+                            <p:spacer height="30px" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['cal.seleccion.modalidad.modalidad']}" style="text-align:left" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:selectOneMenu id="comboModalidades" effect="fade" required="#{modalidadRequerida}"
+                                value="#{seleccionaModalidadController.modalidadSeleccionada}"
+                                valueChangeListener="#{seleccionaModalidadController.deshabilitaBoton}" filter="true"
+                                filterMatchMode="contains" widgetVar="comboModalidad" style="font-size: 15px; width:900px;">
+                                <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                <f:selectItems value="#{seleccionaModalidadController.listaModalidadesGeneral}"
+                                    var="modalidad" itemValue="#{modalidad.id}" itemLabel="#{modalidad.descripcion}" />
+                                <p:ajax update=":seleccionForm:tooltipModalidad,:seleccionForm:btnSiguiente"
+                                    listener="#{seleccionaModalidadController.muestraTooltip}" />
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:spacer height="30px" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['cal.seleccion.modalidad.descripcion']}"
+                                style="font-weight:bold" />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                <p:panel id="panelTooltip">
+                    <p:outputLabel id="tooltipModalidad" style="white-space:pre-wrap;"
+                        value="#{seleccionaModalidadController.tooltipModalidadSeleccionada}" />
+                </p:panel>
+                <p:commandButton id="btnSiguiente" value="#{msg['vuj.boton.siguiente']}" style="float:right;"
+                    actionListener="#{seleccionaModalidadController.accionSiguiente}" update="@this" ajax="false"
+                    disabled="#{seleccionaModalidadController.deshabilitarBoton}" />
+            </p:panel>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+
+</html>

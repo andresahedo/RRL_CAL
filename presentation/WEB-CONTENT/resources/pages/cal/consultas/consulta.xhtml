@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:body>
+
+        <p:panel id="panelConsultasPr" style="float:left;width:100%">
+            <p:tabView id="tabSolicitud">
+                <p:tab id="tab1" title="#{msg['cal.consultas.tab.datosPromovente']}">
+                    <ui:include src="#{consultasAutorizacionesTramiteController.tabSolicitante}" />
+                </p:tab>
+                <p:tab id="tab2" title="#{msg['cal.consultas.tab.datosPromocion']}">
+                    <ui:include src="#{consultasAutorizacionesTramiteController.tabTramite}" />
+                </p:tab>
+                <p:tab id="tab4" title="#{msg['cal.consultas.tab.documentos']}">
+                    <ui:include src="#{consultasAutorizacionesTramiteController.tabDocumentos}" />
+                </p:tab>
+                <p:tab id="tab3" title="#{msg['cal.consultas.tab.requerimiento']}">
+                    <ui:include src="#{consultasAutorizacionesTramiteController.tabRequerimiento}" />
+                </p:tab>
+
+                <p:tab id="tab5" title="#{msg['oficialia.cal.observaciones']}"
+                    rendered="#{consultasAutorizacionesTramiteController.datosBandejaTareaDTO.oficialia}">
+                    <ui:include src="#{consultasAutorizacionesTramiteController.tabObservaciones}" />
+                </p:tab>
+            </p:tabView>
+        </p:panel>
+
+        <p:dialog id="dialogVisor" widgetVar="visorDialog" header="PDF" dynamic="true" modal="true"
+            styleClass="dialogVisor" position="left top" closeOnEscape="true" draggable="false" resizable="false">
+            <c:if test="#{not empty consultasAutorizacionesTramiteController.urlDescargaSelected}">
+                <p:media player="pdf" value="#{consultasAutorizacionesTramiteController.urlDescargaSelected}"
+                    width="780px" height="480px" styleClass="dialogMedia"> 
+       				Su navegador no es compatible con la vista previa de pdfs. Para descargar el documento de click en esta
+		       		<a href="#{consultasAutorizacionesTramiteController.urlDescargaSelected}" target="_blank"> liga </a>
+                </p:media>
+            </c:if>
+        </p:dialog>
+
+    </h:body>
+
+</ui:composition>

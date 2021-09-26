@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="formatoSolicitudPromocion" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="92d833bf-df45-4437-a238-9549c9ec1213">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="211"/>
+	<parameter name="idSolicitud" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cadenaOriginal" class="java.lang.String"/>
+	<parameter name="paramSello" class="java.lang.String"/>
+	<parameter name="BASE_PATH" class="java.lang.String"/>
+	<parameter name="FILE_SEPARATOR" class="java.lang.String"/>
+	<parameter name="tipoAcuse" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fecha" class="java.util.Date"/>
+	<parameter name="EDOCONTRIBUYENTE" class="java.lang.String"/>
+	<parameter name="TIPOCONTRIBUYENTE" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT distinct tTramite.IDTIPOTRAMITE AS modalidad,
+  personaSol.NOMBRE           AS nombreProm,
+  personaSol.APELLIDOPATERNO  AS apellidoPatProm,
+  personaSol.APELLIDOMATERNO  AS apellidoMatProm,
+  personaSol.RAZONSOCIAL      AS razonSocial,
+  tramite.IDTRAMITE           AS numAsunto,
+  personaSol.RFC,
+  personaCap.NOMBRE           AS nombreCap,
+  personaCap.APELLIDOPATERNO  AS apellidoPatCap,
+  personaCap.APELLIDOMATERNO  AS apellidoMatCap,
+  personaCap.RAZONSOCIAL      AS razonSocialCap,
+  personaCap.RFC			  AS rfcCap,
+  sol.IDROLCAPTURISTA         AS rolCapturista,
+  tTramite.DESCMODALIDAD      AS nombremodalidad,
+  tTramite.DESCSERVICIO       AS descripcionServicio,
+  tTramite.IDMODULO              AS idModulo,
+  tTramite.DESCSUBSERVICIO 	AS descSubServicio,
+  tipoReq.IDETIPOREQUERIMIENTO        AS tipoReq,
+  TO_CHAR(sol.FECENVIO, 'DD/MM/YYYY') AS fecRecepcion,
+  TO_CHAR(sol.FECENVIO, 'HH:MI:SS')   AS horaRecepcion,
+
+  direccion.CALLE,
+  colonia.NOMBRE  AS colonia,
+  entidad.NOMBRE  AS entidad,
+  delegmun.NOMBRE AS delegmun,
+  direccion.CP,
+  direccion.TELEFONO,
+  personaSol.CORREOELECTRONICO,
+
+  direccionCap.CALLE           AS calleCap,
+  (SELECT DISTINCT colCap.NOMBRE
+   FROM RVCT_SOLICITUD sol
+   LEFT JOIN RVCP_PERSONA perCap ON sol.IDUSUARIOCAPTURISTA = perCap.RFC
+   LEFT JOIN RVCT_DIRECCION dirCap ON dirCap.IDPERSONA = perCap.IDPERSONA
+   LEFT JOIN RVCC_COLONIA colCap ON dirCap.IDCOLONIA = colCap.idColonia
+   WHERE sol.IDSOLICITUD = $P{idSolicitud}
+   AND perCap.IDETIPOPERSONA = 'TIPER.IN') AS coloniaCap,
+  (SELECT DISTINCT entCap.NOMBRE
+   FROM RVCT_SOLICITUD sol
+   LEFT JOIN RVCP_PERSONA perCap ON sol.IDUSUARIOCAPTURISTA = perCap.RFC
+   LEFT JOIN RVCT_DIRECCION dirCap ON dirCap.IDPERSONA = perCap.IDPERSONA
+   LEFT JOIN RVCC_ENTIDAD entCap ON entCap.IDENTIDAD = dirCap.IDENTIDAD
+   WHERE sol.IDSOLICITUD = $P{idSolicitud}
+   AND perCap.IDETIPOPERSONA = 'TIPER.IN') AS entidadCap,
+  (SELECT DISTINCT delMunCap.NOMBRE
+   FROM RVCT_SOLICITUD sol
+   LEFT JOIN RVCP_PERSONA perCap ON sol.IDUSUARIOCAPTURISTA = perCap.RFC
+   LEFT JOIN RVCT_DIRECCION dirCap ON dirCap.IDPERSONA = perCap.IDPERSONA
+   LEFT JOIN RVCC_DELEGMUN delMunCap ON delMunCap.IDDELEGMUN = dirCap.IDDELEGMUN
+   WHERE sol.IDSOLICITUD = $P{idSolicitud}
+   AND perCap.IDETIPOPERSONA = 'TIPER.IN') AS delegMunCap,
+  direccionCap.CP                 AS cpCap,
+  direccionCap.TELEFONO           AS telefonoCap,
+  personaCap.CORREOELECTRONICO    AS correoElectronicoCap,
+
+  datosGen.IDUNIADMINEMISORA,
+  datosGen.BLNGRANCONTRIBUYENTE AS granContribuyente,
+  datosGen.DESCACTIVIDAD        AS actividades,
+  datosGen.MONTO                AS montoOpreaciones,
+  datosGen.DESCRAZON            AS RazonesNegocio,
+  datosGen.DESCHECHO		 AS descHecho,
+    (SELECT DISTINCT ListAgg(tipdocs.NOMBRE, ', ') Within GROUP (
+  ORDER BY documentoSol.IDEESTDOCUMENTOSOL) AS docs
+  FROM RVCA_SOL_DOCUMENTO documentoSol
+  LEFT JOIN RVCC_TIPODOCUMENTO tipdocs
+  ON documentoSol.IDTIPODOCUMENTO     = tipdocs.IDTIPODOCUMENTO
+  WHERE documentoSol.IDSOLICITUD      = sol.IDSOLICITUD
+  AND documentoSol.IDEESTDOCUMENTOSOL = 'ESTDOC.AN'
+  )                               AS docs,
+
+  (SELECT DISTINCT uniAdminHechos.nombre AS autoridadHechos
+  FROM RVCT_SOLAUTORIDAD autoridad
+  INNER JOIN RVCC_UNIADMIN uniAdminHechos
+  ON autoridad.iduniadmin    = uniAdminHechos.iduniadmin
+      AND autoridad.IDETIPOAUTORIDADSOL = 'TIAUT.HCH'
+  WHERE autoridad.IDSOLICITUD      = sol.IDSOLICITUD
+  AND autoridad.blnactivo=1
+  )                               AS autoridadHechos,
+  (SELECT DISTINCT uniAdminEjercicio.nombre AS autoridadEjercicio
+  FROM RVCT_SOLAUTORIDAD autoridad
+  INNER JOIN RVCC_UNIADMIN uniAdminEjercicio
+  ON autoridad.iduniadmin    = uniAdminEjercicio.iduniadmin
+      AND autoridad.IDETIPOAUTORIDADSOL = 'TIAUT.SUJ'
+  WHERE autoridad.IDSOLICITUD      = sol.IDSOLICITUD
+  AND autoridad.blnactivo=1
+  )                               AS autoridadEjercicio,
+
+  datosGen.BLNHECHO        AS hechosPlanteados,
+  UnidadAdminAsunto.NOMBRE        AS AutoridadAsunto,
+  TO_CHAR(datosGen.FECHECHO,'DD/MM/YYYY')  AS fechapromocion,
+  datosGen.BLNMEDIODEFENSA        AS banderaMedioDefensa,
+  mediodefensa.DESCAUTORIDADMEDIO AS AutoridadPromovio,
+  mediodefensa.NUMASUNTO          AS asuntoExpediente,
+  mediodefensaenum.DESCRIPCION    AS medioDefensa,
+  mediodefensasentidores.DESCGENERICA1  AS sentidoResolucionHechos,
+  datosGen.BLNSUJETOEJERCICIO      AS contribuyenteSujeto,
+  datosGen.DESCPERIODOCONTRIBUCION AS periodos,
+  datosGen.BLNDENTROPLAZO          AS enplazo,
+  datosGen.IDECLASIFARANCELARIA,
+  clasificacionenum.DESCRIPCION    AS tipoClasificacion,
+  datosGen.DESCNOMBREMERCANCIA,
+  datosGen.FRACCIONAPLICABLEV,
+  (SELECT ListAgg(fraccionDuda.fraccionDudaV, ', ') Within GROUP (
+  ORDER BY fraccionDuda.fraccionDudaV) AS fraccionDudaV
+  FROM RVCT_FRACCIONDUDA fraccionDuda
+  WHERE fraccionDuda.IDSOLICITUD      = sol.IDSOLICITUD
+  )                               AS fraccionDudaV,
+  direccion.NUMEXTERIOR,
+  direccion.NUMINTERIOR,
+  direccionCap.NUMEXTERIOR       AS numExteriorCap,
+  direccionCap.NUMINTERIOR       AS numInteriorCap,
+  direccion.CVEADMLOCALRECIDC AS unidadAdminSAT
+FROM RVCT_SOLICITUD sol
+LEFT JOIN RVCT_TRAMITE tramite
+ON sol.IDSOLICITUD = tramite.IDSOLICITUD
+LEFT JOIN RVCT_SOLPERSONA personaSol
+ON sol.IDSOLICITUD = personaSol.IDSOLICITUD
+LEFT JOIN RVCP_PERSONA personaCap
+ON sol.idpersonasolicitante = personaCap.idpersona
+LEFT JOIN RVCT_DIRECCION direccionCap
+ON direccionCap.IDPERSONA = personaCap.IDPERSONA
+LEFT JOIN RVCC_TIPOTRAMITE tTramite
+ON tTramite.IDTIPOTRAMITE = sol.IDTIPOTRAMITE
+LEFT JOIN RVCT_REQUERIMIENTO tipoReq
+ON tipoReq.IDTRAMITE = tramite.IDTRAMITE
+LEFT JOIN RVCT_SOLDIRECCION direccion
+ON personaSol.IDSOLDIRECCION = direccion.IDSOLDIRECCION
+LEFT JOIN RVCC_COLONIA colonia
+ON colonia.IDCOLONIA = direccion.IDCOLONIA
+LEFT JOIN RVCC_DELEGMUN delegmun
+ON delegmun.IDDELEGMUN = direccion.IDDELEGMUN
+LEFT JOIN RVCC_ENTIDAD entidad
+ON entidad.IDENTIDAD = direccion.IDENTIDAD
+LEFT JOIN RVCD_SOL_DATOSGEN datosGen
+ON datosGen.IDSOLICITUD = sol.IDSOLICITUD
+LEFT JOIN RVCC_UNIADMIN UnidadAdminAsunto
+ON UnidadAdminAsunto.IDUNIADMIN = datosGen.IDUNIADMINEMISORA
+LEFT JOIN RVCT_MEDIODEFENSA mediodefensa
+ON sol.IDSOLICITUD = mediodefensa.IDSOLICITUD
+LEFT JOIN RVCC_ENUMERACIONTR mediodefensaenum
+ON mediodefensa.IDETIPOMEDIODEFENSA = mediodefensaenum.IDENUMERACIOND
+LEFT JOIN RVCC_ENUMERACIONTR clasificacionenum
+ON datosGen.IDECLASIFARANCELARIA = clasificacionenum.IDENUMERACIOND
+LEFT JOIN RVCC_CATALOGOD mediodefensasentidores
+ON mediodefensa.IDESENTRESOLUCION = mediodefensasentidores.IDCATALOGOD
+WHERE sol.IDSOLICITUD            = $P{idSolicitud}
+AND personaSol.IDETIPOPERSONASOL = 'TIPERS.SL']]>
+	</queryString>
+	<field name="MODALIDAD" class="java.math.BigDecimal"/>
+	<field name="NOMBREPROM" class="java.lang.String"/>
+	<field name="APELLIDOPATPROM" class="java.lang.String"/>
+	<field name="APELLIDOMATPROM" class="java.lang.String"/>
+	<field name="RAZONSOCIAL" class="java.lang.String"/>
+	<field name="NUMASUNTO" class="java.lang.String"/>
+	<field name="RFC" class="java.lang.String"/>
+	<field name="NOMBRECAP" class="java.lang.String"/>
+	<field name="APELLIDOPATCAP" class="java.lang.String"/>
+	<field name="APELLIDOMATCAP" class="java.lang.String"/>
+	<field name="RAZONSOCIALCAP" class="java.lang.String"/>
+	<field name="RFCCAP" class="java.lang.String"/>
+	<field name="ROLCAPTURISTA" class="java.lang.String"/>
+	<field name="NOMBREMODALIDAD" class="java.lang.String"/>
+	<field name="DESCRIPCIONSERVICIO" class="java.lang.String"/>
+	<field name="IDMODULO" class="java.math.BigDecimal"/>
+	<field name="DESCSUBSERVICIO" class="java.lang.String"/>
+	<field name="TIPOREQ" class="java.lang.String"/>
+	<field name="FECRECEPCION" class="java.lang.String"/>
+	<field name="HORARECEPCION" class="java.lang.String"/>
+	<field name="CALLE" class="java.lang.String"/>
+	<field name="COLONIA" class="java.lang.String"/>
+	<field name="ENTIDAD" class="java.lang.String"/>
+	<field name="DELEGMUN" class="java.lang.String"/>
+	<field name="CP" class="java.lang.String"/>
+	<field name="TELEFONO" class="java.lang.String"/>
+	<field name="CORREOELECTRONICO" class="java.lang.String"/>
+	<field name="CALLECAP" class="java.lang.String"/>
+	<field name="COLONIACAP" class="java.lang.String"/>
+	<field name="ENTIDADCAP" class="java.lang.String"/>
+	<field name="DELEGMUNCAP" class="java.lang.String"/>
+	<field name="CPCAP" class="java.lang.String"/>
+	<field name="TELEFONOCAP" class="java.lang.String"/>
+	<field name="CORREOELECTRONICOCAP" class="java.lang.String"/>
+	<field name="IDUNIADMINEMISORA" class="java.lang.String"/>
+	<field name="GRANCONTRIBUYENTE" class="java.math.BigDecimal"/>
+	<field name="ACTIVIDADES" class="java.lang.String"/>
+	<field name="MONTOOPREACIONES" class="java.math.BigDecimal"/>
+	<field name="RAZONESNEGOCIO" class="java.lang.String"/>
+	<field name="DESCHECHO" class="java.lang.String"/>
+	<field name="DOCS" class="java.lang.String"/>
+	<field name="AUTORIDADHECHOS" class="java.lang.String"/>
+	<field name="AUTORIDADEJERCICIO" class="java.lang.String"/>
+	<field name="HECHOSPLANTEADOS" class="java.math.BigDecimal"/>
+	<field name="AUTORIDADASUNTO" class="java.lang.String"/>
+	<field name="FECHAPROMOCION" class="java.lang.String"/>
+	<field name="BANDERAMEDIODEFENSA" class="java.math.BigDecimal"/>
+	<field name="AUTORIDADPROMOVIO" class="java.lang.String"/>
+	<field name="ASUNTOEXPEDIENTE" class="java.lang.String"/>
+	<field name="MEDIODEFENSA" class="java.lang.String"/>
+	<field name="SENTIDORESOLUCIONHECHOS" class="java.lang.String"/>
+	<field name="CONTRIBUYENTESUJETO" class="java.math.BigDecimal"/>
+	<field name="PERIODOS" class="java.lang.String"/>
+	<field name="ENPLAZO" class="java.math.BigDecimal"/>
+	<field name="IDECLASIFARANCELARIA" class="java.lang.String"/>
+	<field name="TIPOCLASIFICACION" class="java.lang.String"/>
+	<field name="DESCNOMBREMERCANCIA" class="java.lang.String"/>
+	<field name="FRACCIONAPLICABLEV" class="java.lang.String"/>
+	<field name="FRACCIONDUDAV" class="java.lang.String"/>
+	<field name="NUMEXTERIOR" class="java.lang.String"/>
+	<field name="NUMINTERIOR" class="java.lang.String"/>
+	<field name="NUMEXTERIORCAP" class="java.lang.String"/>
+	<field name="NUMINTERIORCAP" class="java.lang.String"/>
+	<field name="UNIDADADMINSAT" class="java.math.BigDecimal"/>
+	<variable name="QR_CODE_WIDTH" class="java.lang.Integer">
+		<variableExpression><![CDATA[110]]></variableExpression>
+	</variable>
+	<variable name="QR_CODE_HEIGHT" class="java.lang.Integer">
+		<variableExpression><![CDATA[110]]></variableExpression>
+	</variable>
+	<variable name="QR_CODE_IMAGE" class="java.lang.Object"/>
+	<variable name="QR_CODE_VALUE" class="java.lang.String">
+		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="86" splitType="Stretch">
+			<image>
+				<reportElement x="17" y="0" width="233" height="86" uuid="69cd46a2-6b6c-447d-9fba-f9a1a9466c8d"/>
+				<imageExpression><![CDATA[$P{BASE_PATH}+$P{FILE_SEPARATOR}+"SHCP.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="391" y="14" width="177" height="40" uuid="149bf691-142b-462f-a771-dda8377300c5"/>
+				<imageExpression><![CDATA[$P{BASE_PATH}+$P{FILE_SEPARATOR}+"SAT.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="254">
+			<staticText>
+				<reportElement x="38" y="8" width="502" height="20" uuid="2f515abe-7f07-4a37-893f-2f40fad1041e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PROMOCIÓN]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="48" width="502" height="67" uuid="d842ad05-3cac-4ef2-b524-56d303fbe016"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<b>Número de asunto: </b>"+ $F{NUMASUNTO}+
+"<br><b>Tipo de asunto: </b>"+$F{DESCSUBSERVICIO}+
+"<br><b>Sub Tipo: </b>"+$F{NOMBREMODALIDAD}+
+"<br><b>Fecha de recepción: </b>"+ new SimpleDateFormat("dd/MM/yyyy").format($P{fecha})+
+"<br><b>Hora de recepción: </b>"+ new SimpleDateFormat("HH:mm").format($P{fecha})+
+
+($F{ROLCAPTURISTA}.equals("solicitante")?"<br><br><b>Promovente </b>":"<br><br><b>Oficial de Partes </b>")+
+($F{ROLCAPTURISTA}.equals("solicitante")?
+("<br><br><b>Nombre. Denominación o Razón Social: </b>"+ ($F{RAZONSOCIAL}!=null?$F{RAZONSOCIAL}:($F{NOMBREPROM}+" "+$F{APELLIDOPATPROM}+" "+$F{APELLIDOMATPROM}))+" "+
+"<br><b>RFC: </b>"+ $F{RFC}):
+("<br><br><b>Nombre del Oficial de Partes: </b>"+ ($F{RAZONSOCIALCAP}!=null?$F{RAZONSOCIALCAP}:($F{NOMBRECAP}+" "+$F{APELLIDOPATCAP}+" "+$F{APELLIDOMATCAP}))+" "+
+"<br><b>RFC: </b>"+ $F{RFCCAP}))+
+"<br><b>Estado del Contribuyente: </b>"+$P{EDOCONTRIBUYENTE}+
+"<br><b>Tipo de Contribuyente: </b>"+$P{TIPOCONTRIBUYENTE}+
+"<br><b>Domicilio fiscal: </b>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="233" width="502" height="17" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<b>Datos de la promoción</b><br><br>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="52" y="115" width="488" height="28" uuid="d842ad05-3cac-4ef2-b524-56d303fbe016"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{ROLCAPTURISTA}.equals("solicitante")?
+("<b>Calle: </b>"+ ($F{CALLE}==null?"":$F{CALLE})+" "+($F{NUMEXTERIOR}==null?"":$F{NUMEXTERIOR})+" "+($F{NUMINTERIOR}==null?"":$F{NUMINTERIOR})+
+"<br><b>Colonia: </b>"+ ($F{COLONIA}==null?"":$F{COLONIA})+
+"<br><b>Delegación/Municipio: </b>"+ ($F{DELEGMUN}==null?"":$F{DELEGMUN})+
+"<br><b>Entidad federativa: </b>"+ ($F{ENTIDAD}==null?"":$F{ENTIDAD})+
+"<br><b>C.P.: </b>"+($F{CP}==null?"":$F{CP})):
+("<b>Calle: </b>"+ ($F{CALLECAP}==null?"":$F{CALLECAP})+" "+($F{NUMEXTERIORCAP}==null?"":$F{NUMEXTERIORCAP})+" "+($F{NUMINTERIORCAP}==null?"":$F{NUMINTERIORCAP})+
+"<br><b>Colonia: </b>"+ ($F{COLONIACAP}==null?"":$F{COLONIACAP})+
+"<br><b>Delegación/Municipio: </b>"+ ($F{DELEGMUNCAP}==null?"":$F{DELEGMUNCAP})+
+"<br><b>Entidad federativa: </b>"+ ($F{ENTIDADCAP}==null?"":$F{ENTIDADCAP})+
+"<br><b>C.P.: </b>"+($F{CPCAP}==null?"":$F{CPCAP})))]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="143" width="502" height="67" uuid="d842ad05-3cac-4ef2-b524-56d303fbe016"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{ROLCAPTURISTA}.equals("solicitante")?
+("<b>Teléfono: </b>"+ ($F{TELEFONO}==null?" ":$F{TELEFONO})+
+"<br><b>Correo electrónico para recibir notificaciones: </b>"+($F{CORREOELECTRONICO}==null?"":$F{CORREOELECTRONICO}) +
+($F{RAZONSOCIAL}!=null?("<br><b>Representante legal: </b>"+ ""):"")):
+("<b>Teléfono: </b>"+ " " +
+"<br><b>Correo electrónico para recibir notificaciones: </b>"+($F{CORREOELECTRONICOCAP}==null?"":$F{CORREOELECTRONICOCAP}) +
+($F{RAZONSOCIALCAP}!=null?("<br><b>Representante legal: </b>"+ ""):"")))+
+
+"<br><br><b>Unidad administrativa del SAT  que atiende la promoción: </b>"+($F{AUTORIDADASUNTO}==null?"":$F{AUTORIDADASUNTO})]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement positionType="Float" x="34" y="211" width="503" height="8" isRemoveLineWhenBlank="true" uuid="7d35ec70-d338-483c-b2f9-d9f2f5c21393"/>
+				<subreportParameter name="idSolicitud">
+					<subreportParameterExpression><![CDATA[$P{idSolicitud}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + $P{FILE_SEPARATOR}+ "formatoSolicitudProm_PersAutNot.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="34" y="224" width="503" height="8" isRemoveLineWhenBlank="true" uuid="50c4e3ba-6cf5-4900-8646-900cc647c132"/>
+				<subreportParameter name="idSolicitud">
+					<subreportParameterExpression><![CDATA[$P{idSolicitud}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + $P{FILE_SEPARATOR}+"formatoSolicitudProm_PersInvolucradas.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="29" splitType="Prevent">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="14" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Señalar todos los hechos y circunstancias relacionados con la promoción, así como acompañar los </b>documentos e información que soporten tales hechos o circunstancias: </b><br>"+$F{DESCHECHO}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="312" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<b>Monto de la operación u operaciones objeto de la promoción: </b>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
+				<reportElement positionType="Float" x="354" y="0" width="179" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA[$F{MONTOOPREACIONES}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Prevent">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Razones del negocio que motivan la operación planteada: </b><br>"+
+$F{RAZONESNEGOCIO}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="27" splitType="Prevent">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Documentos o información que soportan los hechos y circunstancias relacionados con la promoción: </b><br>"]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement positionType="Float" x="38" y="16" width="499" height="9" uuid="a5d1dfb4-4d9f-4170-8b4b-5b422ad29e1b"/>
+				<subreportParameter name="idSolicitud">
+					<subreportParameterExpression><![CDATA[$P{idSolicitud}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} +$P{FILE_SEPARATOR}+ "formatoSolicitudProm_Documentos.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="14" splitType="Prevent">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Los hechos o circunstancias han sido previamente planteados ante la misma autoridad u otra distinta: </b>"+(new BigDecimal(1).equals($F{HECHOSPLANTEADOS})?"Si":"No")]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Prevent">
+			<printWhenExpression><![CDATA[new BigDecimal(1).equals($F{HECHOSPLANTEADOS})]]></printWhenExpression>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Autoridad que conoció el asunto:  </b>"+($F{AUTORIDADHECHOS}!=null?$F{AUTORIDADHECHOS}:"")]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Prevent">
+			<printWhenExpression><![CDATA[new BigDecimal(1).equals($F{HECHOSPLANTEADOS})]]></printWhenExpression>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Fecha de la promoción: </b>"+($F{FECHAPROMOCION}!=null?$F{FECHAPROMOCION}:"")]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Prevent">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Los hechos o circunstancias han sido materia de medios de defensa ante autoridades administrativas o jurisdiccionales: </b>"+(new BigDecimal(1).equals($F{BANDERAMEDIODEFENSA})?"Si":"No")]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Prevent">
+			<printWhenExpression><![CDATA[new BigDecimal(1).equals($F{BANDERAMEDIODEFENSA})]]></printWhenExpression>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Autoridad ante la que se promovió el medio de defensa: </b>"+($F{AUTORIDADPROMOVIO}==null?"":$F{AUTORIDADPROMOVIO})]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Prevent">
+			<printWhenExpression><![CDATA[new BigDecimal(1).equals($F{BANDERAMEDIODEFENSA})]]></printWhenExpression>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Medio de defensa: </b>"+$F{MEDIODEFENSA}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Prevent">
+			<printWhenExpression><![CDATA[new BigDecimal(1).equals($F{BANDERAMEDIODEFENSA})]]></printWhenExpression>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Número de asunto o expediente: </b>"+$F{ASUNTOEXPEDIENTE}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Prevent">
+			<printWhenExpression><![CDATA[new BigDecimal(1).equals($F{BANDERAMEDIODEFENSA})]]></printWhenExpression>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Sentido: </b>"+$F{SENTIDORESOLUCIONHECHOS}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Prevent">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>El contribuyente se encuentra sujeto al ejercicio de las facultades de comprobación por parte de la  Secretaría de Hacienda y Crédito Público o por las Entidades federativas coordinadas en ingresos federales: </b>"+(new BigDecimal(1).equals($F{CONTRIBUYENTESUJETO})?"Si":"No")]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Prevent">
+			<printWhenExpression><![CDATA[new BigDecimal(1).equals($F{CONTRIBUYENTESUJETO})]]></printWhenExpression>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Periodos y contribuciones objeto de la revisión: </b><br>"+
+$F{PERIODOS}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Prevent">
+			<printWhenExpression><![CDATA[new BigDecimal(1).equals($F{CONTRIBUYENTESUJETO})]]></printWhenExpression>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Se encuentra dentro del plazo para que las autoridades fiscales emitan la resolución a que se refiere el artículo 50 del Código Fiscal de la Federación: </b>"+(new BigDecimal(1).equals($F{ENPLAZO})?"Si":"No")]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Prevent">
+			<printWhenExpression><![CDATA[new BigDecimal(1).equals($F{CONTRIBUYENTESUJETO})]]></printWhenExpression>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Autoridad que está revisando: </b>"+($F{AUTORIDADEJERCICIO}!=null?$F{AUTORIDADEJERCICIO}:"")]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="15" splitType="Prevent">
+			<printWhenExpression><![CDATA[$F{IDMODULO}.toString().equals("1")]]></printWhenExpression>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Datos de clasificación arancelaria<br><br>"+
+
+"Tipo de clasificación: </b><br>"+
+$F{TIPOCLASIFICACION}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Prevent">
+			<printWhenExpression><![CDATA[$F{IDMODULO}.toString().equals("1")]]></printWhenExpression>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Nombre o descripción de la mercancía: </b><br>"+
+$F{DESCNOMBREMERCANCIA}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Prevent">
+			<printWhenExpression><![CDATA[$F{IDMODULO}.toString().equals("1") && "CLA.CLAS".equals($F{IDECLASIFARANCELARIA})]]></printWhenExpression>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Fracción arancelaria que considera como aplicable: </b>"+$F{FRACCIONAPLICABLEV}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="26" splitType="Prevent">
+			<printWhenExpression><![CDATA[$F{IDMODULO}.toString().equals("1") && "CLA.CLAS".equals($F{IDECLASIFARANCELARIA})]]></printWhenExpression>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="0" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Fracción o fracciones arancelarias con las que existe duda: </b><br>"]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement positionType="Float" x="38" y="16" width="499" height="9" uuid="a5d1dfb4-4d9f-4170-8b4b-5b422ad29e1b"/>
+				<subreportParameter name="idSolicitud">
+					<subreportParameterExpression><![CDATA[$P{idSolicitud}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} +$P{FILE_SEPARATOR}+ "formatoSolicitudProm_FraccionesDuda.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="26" splitType="Prevent">
+			<subreport>
+				<reportElement positionType="Float" x="38" y="16" width="499" height="9" uuid="209bc82f-aa29-4f05-935f-13e2e89c0288"/>
+				<subreportParameter name="idSolicitud">
+					<subreportParameterExpression><![CDATA[$P{idSolicitud}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} +$P{FILE_SEPARATOR}+ "formatoSolicitudProm_Manifiestos.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="50">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="25" width="502" height="14" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["<br><b>Cadena de validación del documento firmado: </b><br>"+
+$P{cadenaOriginal}+
+"<br><br><b>Sello digital: </b><br>"+$P{paramSello}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

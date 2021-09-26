@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Selección de Documentos</title>
+</h:head>
+<h:body>
+
+    <style type="text/css">
+.ui-selectonemenu-panel {
+    width: 50px
+}
+</style>
+
+    <f:metadata>
+        <f:viewParam name="msgRedirect" value="#{registroSolicitudCAController.messagesRedirect}" />
+        <f:event type="preRenderView" listener="#{registroSolicitudCAController.mensajesRedirect}" />
+    </f:metadata>
+
+
+    <p:panel id="navegationPanel">
+        <table>
+            <tr>
+                <td><p:commandButton id="prepararDocsAnexarButton" value="#{msg['vuj.boton.siguiente']}"
+                        update=":msgPanel" actionListener="#{registroSolicitudCAController.prepararDocumentosAnexar}" />
+                </td>
+            </tr>
+        </table>
+    </p:panel>
+
+    <p:panel id="msgPanel">
+        <p:messages id="messages" autoUpdate="true" showDetail="false" showSummary="true" />
+    </p:panel>
+
+    <h:form id="formaSeleccionDocs">
+        <p:panel header="#{msg['vuj.solicitud.documentosObligatorios']}" style="margin-bottom:10px;">
+            <p:dataTable id="tablaDoc" var="documentoObligatorio"
+                value="#{registroSolicitudCAController.listaDocumentosRequeridos}" paginator="true" rows="5"
+                emptyMessage="#{msg['vuj.grid.vacio']}">
+                <p:column headerText="Nombre">
+                    <h:outputText value="#{documentoObligatorio.tipoDocumento}" />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+
+        <p:panel header="#{msg['vuj.solicitud.documentosOpcionales']}" style="margin-bottom:10px;">
+            <p:dataTable id="tablaDocOpcionales" var="documentoOpcional" paginator="true" rows="5"
+                emptyMessage="#{msg['vuj.grid.vacio']}" rowKey="#{documentoOpcional}"
+                selection="#{registroSolicitudCAController.documentosSeleccionados}"
+                value="#{registroSolicitudCAController.documentoSeleccionDataModel}">
+
+                <p:column selectionMode="multiple" style="width:2%;text-align:center" headerText="Todos" />
+                <p:column headerText="Nombre">
+                    <h:outputText value="#{documentoOpcional.tipoDocumento}" />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+    </h:form>
+
+</h:body>
+</html>

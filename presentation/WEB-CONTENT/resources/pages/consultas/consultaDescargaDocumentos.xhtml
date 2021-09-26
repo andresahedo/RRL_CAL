@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui"
+    xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head></h:head>
+
+<h:body onload="inicializarboton()">
+    <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" />
+
+    <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+        draggable="false" closable="false">
+        <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+    </p:dialog>
+
+
+    <h:form enctype="multipart/form-data" id="formaDocumentos">
+
+        <p:panel header="#{msg['buzon.titulo.doc.seleccionados']}" style="width:100%;margin-bottom:10px;">
+            <p:dataTable id="tablaDocumentos" var="documento" value="#{consultasController.documentoDataModel}"
+                emptyMessage="No se encontraron resultados" rowIndexVar="rowIndex" resizableColumns="true"
+                paginator="true" rows="10">
+                <p:column headerText="Tipo de Documento" style="width:40%" resizable="false">
+                    <h:outputText value="#{documento.tipoDocumento}" id="tipoDoc" />
+                    <pe:tooltip for="tipoDoc" value="#{documento.tipoDocumento}" mouseTracking="true" adjustX="20"
+                        adjustY="20" />
+                </p:column>
+                <p:column headerText="Nombre del Archivo" style="width:25%" resizable="false">
+                    <h:outputText value="#{documento.nombre}" id="nomDocumento" />
+                    <pe:tooltip for="nomDocumento" value="#{documento.nombre}" mouseTracking="true" adjustX="20"
+                        adjustY="20"></pe:tooltip>
+                </p:column>
+                <p:column headerText="#{msg['vuj.documento.tamanioDocumento']}" style="width:20%;white-space:pre-line;"
+                    resizable="false">
+                    <h:outputText value="#{documento.cadenaTamanioArchivo}">
+                    </h:outputText>
+                </p:column>
+                <p:column style="width:9%;text-align:center;" resizable="false">
+                    <p:commandButton value="#{msg['vuj.boton.ver']}" id="generarRuta"
+                        update=":formaConsulta:tabSolicitud:dialogVisor" oncomplete="visorDialog.show()"
+                        style="width:auto;">
+                        <f:setPropertyActionListener value="#{documento}"
+                            target="#{consultasController.documentoDTOSelected}" />
+                        <p:ajax event="click" listener="#{consultasController.activaBanderaDocumentoPromocion}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+
+        <p:panel header="#{msg['buzon.titulo.doc.acuses']}" style="width:100%;margin-bottom:10px;">
+            <p:dataTable id="tablaDocumentosOficiales" var="documento"
+                value="#{consultasController.documentoOficialDataModel}" emptyMessage="#{msg['vuj.grid.vacio']}"
+                rowIndexVar="rowIndex" resizableColumns="true" paginator="true" rows="10">
+                <p:column headerText="Tipo de Documento" style="width:15%" resizable="false">
+                    <h:outputText value="#{documento.descripcionTipoDocumento}" id="tipoDoc" />
+                    <pe:tooltip for="tipoDoc" value="#{documento.descripcionTipoDocumento}" mouseTracking="true"
+                        adjustX="20" adjustY="20" />
+                </p:column>
+                <p:column headerText="Nombre del Archivo" style="width:25%" resizable="false">
+                    <h:outputText value="#{documento.nombreArchivo}" id="nomDocumento" />
+                    <pe:tooltip for="nomDocumento" mouseTracking="true" adjustX="20" adjustY="20">
+                        <p:outputLabel escape="true" value="#{documento.nombreArchivo}"></p:outputLabel>
+                    </pe:tooltip>
+                </p:column>
+                <p:column headerText="#{msg['vuj.documento.tamanioDocumento']}" style="width:9%;white-space:pre-line;"
+                    resizable="false">
+                    <h:outputText value="#{documento.cadenaTamanioArchivo}">
+                    </h:outputText>
+                </p:column>
+                <p:column style="width:4%">
+                    <p:commandButton value="#{msg['vuj.boton.ver']}" id="generarRuta"
+                        update=":formaConsulta:tabSolicitud:dialogVisor" oncomplete="visorDialog.show()">
+                        <f:setPropertyActionListener value="#{documento}"
+                            target="#{consultasController.documentoOficialSelected}" />
+                        <p:ajax event="click" listener="#{consultasController.activaBanderaDocumentoOficial}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            <p:panel id="boton">
+                <table width="100%">
+                    <tr>
+                        <td colspan="4" align="right"><p:commandButton id="anexarBtn" ajax="false"
+                                widgetVar="anexarBtnW" value="#{msg['vuj.boton.adjuntar']}"
+                                action="#{consultasController.documentosAnexar}"
+                                disabled="#{consultasController.disabledBoton}" /></td>
+                    </tr>
+                </table>
+            </p:panel>
+        </p:panel>
+
+
+
+        <p:panel id="display">
+            <table>
+                <tr>
+                    <td><p:outputLabel value="Tipo de Documento">
+                        </p:outputLabel>
+                        <p /></td>
+                </tr>
+                <tr>
+                    <td><p:selectOneMenu id="documento" value="#{consultasController.id}" widgetVar="comboDocs"
+                            onfilter="true" filterMatchMode="contains" style="max-width:400px;min-width:200px;">
+                            <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                            <f:selectItems value="#{consultasController.documentosCombo}" var="documento"
+                                itemLabel="#{documento.tipoDocumento}"
+                                itemValue="#{documento.idTipoDocumento},#{documento.tipoDocumento}" />
+                            <p:ajax update="display,boton" event="change"
+                                listener="#{consultasController.validarDesistimiento}" />
+                        </p:selectOneMenu></td>
+                    <td><p:selectBooleanCheckbox value="#{consultasController.manifiesto}" id="select"
+                            required="#{consultasController.manifiestoRequerido}"
+                            rendered="#{consultasController.esDesestimiento}">
+                            <p:ajax event="change" listener="#{consultasController.activarAdjuntar}" update="boton"></p:ajax>
+                        </p:selectBooleanCheckbox></td>
+                    <td><h:outputText value="Manifestación bajo protesta de decir verdad *" id="selectLabel"
+                            rendered="#{consultasController.esDesestimiento}" /></td>
+
+                </tr>
+            </table>
+        </p:panel>
+
+    </h:form>
+
+    <p:dialog id="dialogVisor" widgetVar="visorDialog" header="PDF" dynamic="true" modal="true" styleClass="dialogVisor"
+        position="left top" closeOnEscape="true" draggable="false" resizable="false">
+        <c:if test="#{not empty consultasController.urlDescargaSelected}">
+            <p:media player="pdf" value="#{consultasController.urlDescargaSelected}" width="780px" height="480px"
+                styleClass="dialogMedia"> 
+	    			Su navegador no es compatible con la vista previa de pdfs. Para descargar el documento de click en esta
+		       		<a href="#{consultasController.urlDescargaSelected}" target="_blank"> liga </a>
+            </p:media>
+        </c:if>
+    </p:dialog>
+
+    <script type="text/javascript">  
+    		function inicializarCombo() {
+    			comboDocs.selectValue("");
+   			}
+    		function habilitarBtnAnexar(val){
+    			if(val.value == null || val.value == ""){
+    				anexarBtnW.disable();
+    			}else{
+    				anexarBtnW.enable();	
+    			}
+   			}
+   			function inicializarboton(){
+   				anexarBtnW.disable();
+   			}
+   			
+		</script>
+</h:body>
+
+</html>

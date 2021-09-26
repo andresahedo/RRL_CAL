@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<faces-config xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd"
+    version="2.0">
+
+    <application>
+        <el-resolver>org.springframework.web.jsf.el.SpringBeanFacesELResolver</el-resolver>
+        <locale-config>
+            <default-locale>es_MX</default-locale>
+        </locale-config>
+        <locale-config>
+        	<default-locale>en</default-locale>
+        </locale-config>
+        <resource-bundle>
+            <base-name>mx.gob.sat.siat.juridica.errormessages</base-name>
+            <var>errmsg</var>
+        </resource-bundle>
+        <resource-bundle>
+            <base-name>mx.gob.sat.siat.juridica.messages</base-name>
+            <var>msg</var>
+        </resource-bundle>
+        <resource-bundle>
+            <base-name>version</base-name>
+            <var>version</var>
+        </resource-bundle>
+        <message-bundle>mx.gob.sat.siat.juridica.msg</message-bundle>
+    </application>
+
+    <render-kit>
+        <renderer>
+            <component-family>org.primefaces.extensions.component</component-family>
+            <renderer-type>org.primefaces.extensions.component.InputNumberRenderer</renderer-type>
+            <renderer-class>mx.gob.sat.siat.juridica.primefaces.component.inputnumber.JuridicaInputNumberRenderer</renderer-class>
+        </renderer>
+    </render-kit>
+</faces-config>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+
+    <h:body>
+        <style type="text/css">
+.ui-panelgrid td {
+    border-color: inherit;
+    border-style: solid;
+    border-width: 0;
+    padding: 4px 10px;
+}
+
+.ui-panelgrid tr {
+    border-style: none;
+    border-width: 0px;
+}
+
+.ui-panel {
+    border-style: hidden !important;
+}
+
+.ui-panel {
+    border-style: none !important;
+}
+</style>
+        <script type="text/javascript">
+			function cambiaEstadoPrincipal() {
+				$('#FIELForm\\:cambiaRequerido').click();
+			}
+
+			function cambiaEstado() {
+				$('#FIELForm\\:cambiaNoRequerido').click();
+			}
+		</script>
+		<f:event listener="#{atenderObservacionCALOPController.validaAcceso}" type="preRenderView" />
+        <h:form id="pform">
+            <p:commandButton action="#{atenderObservacionCALOPController.cambiaNoReq}" id="cambiaNoRequerido"
+                style="display:none" />
+            <p:commandButton action="#{atenderObservacionCALOPController.cambiaRequeridoPrincipal}" id="cambiaRequerido"
+                style="display:none" />
+        </h:form>
+        <h:form id="FIELForm">
+            <p:panel style="width:#{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};">
+                <p:panel id="msgPanel" style="border-style: none !important;width:100%;">
+                    <p:messages id="messagesRes" autoUpdate="false" showDetail="true" showSummary="false" escape="false" />
+                </p:panel>
+
+                <p:panelGrid style="float:right;" columns="1" styleClass="noBorder">
+                    <p:commandButton value="#{msg['vuj.boton.siguiente']}" update="@form"
+                        action="#{atenderObservacionCALOPController.siguiente}">
+
+                    </p:commandButton>
+
+
+                </p:panelGrid>
+                <br />
+                <br />
+                <br />
+
+
+                <p:panelGrid styleClass="noBorder" columns="2" cellpadding="3" style="border-style: hidden !important;">
+                    <h:outputText value="#{msg['vuj.resol.funcionario']}" />
+                    <h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" />
+
+
+                    <p:inputText maxlength="500" readonly="true" id="funcionarioInput"
+                        value="#{atenderObservacionCALOPController.userProfile.nombreCompleto}" />
+                    <p:inputText maxlength="13" value="#{atenderObservacionCALOPController.userProfile.rfc}"
+                        readonly="true" id="rfcFuncionarioInput" />
+
+                </p:panelGrid>
+                <p:tabView id="tabSolicitud"
+                    style="border-style: none !important;width:#{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};">
+                    <p:tab id="tab1" title="#{msg['vuj.tab.solicitante']}">
+                        <ui:include src="#{atenderObservacionCALOPController.tabSolicitante}" />
+                    </p:tab>
+
+                    <p:tab id="tab2" title="#{msg['vuj.tab.promocion']}">
+                        <p:panelGrid styleClass="noBorder" columns="2" cellpadding="3"
+                            style="border-style: hidden !important;">
+
+                            <h:outputText value="#{msg['vuj.resol.numAsunto']}" />
+                            <h:outputText value="#{msg['oficialia.bandeja.consulta.folio']}" />
+
+                            <p:inputText readonly="true" maxlength="13"
+                                value="#{atenderObservacionCALOPController.datosBandejaTareaDTO.numeroAsunto}"
+                                id="numAsuntoInput" disabled="true" />
+                            <p:inputText readonly="true"
+                                value="#{atenderObservacionCALOPController.solicitud.numeroFolio}"
+                                id="fechaRecepcionInput" disabled="true" />
+                        </p:panelGrid>
+
+
+                        <p:panel id="panel2Title" header="#{msg['vuj.tab.promocion']}">
+                            <ui:include src="/resources/pages/cal/observacion/atenderObservacionDatosPromocion.xhtml" />
+                        </p:panel>
+                    </p:tab>
+                </p:tabView>
+            </p:panel>
+        </h:form>
+        <p:panel style="width:#{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};">
+            <ui:decorate template="/resources/pages/cal/consultas/consulta.xhtml">
+            </ui:decorate>
+        </p:panel>
+        <h:outputScript name='/js/calendar_es.js' target="head" />
+    </h:body>
+
+    </ui:define>
+</ui:composition>
+</html>

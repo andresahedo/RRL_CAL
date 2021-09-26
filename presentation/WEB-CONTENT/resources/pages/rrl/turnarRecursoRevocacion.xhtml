@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:dr="http://pe.siat.sat.gob.mx/taglib">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+        <style type="text/css">
+.noBorder td {
+    border-style: hidden !important;
+}
+
+.panelMontoStyle td {
+    border-style: hidden !important;
+}
+
+.ui-panel {
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+</style>
+        <f:event type="preRenderView" listener="#{turnarRecursoRevocacionController.validaAccesoAdministrador}" />
+        <p:ajaxStatus onstart="statusDialog.show();" oncomplete="statusDialog.hide();" />
+        <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+            draggable="false" closable="false">
+            <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+        </p:dialog>
+        <p:panel style="float:left;" id="datosPanel" header="Usuarios Disponibles">
+            <p:panel id="oficialia" visible="#{consultasAutorizacionesTramiteController.datosBandejaTareaDTO.oficialia}">
+                <p:outputLabel value="#{msg['rrl.consulta.oficialia']}" style="color:red; font-weight: bold;" />
+            </p:panel>
+            <h:form id="turnarForm">
+                <p:messages id="messages" showDetail="true" autoUpdate="true" />
+
+                <table cellpadding="5">
+                    <tr>
+                        <td><h:outputText value="Funcionario " /></td>
+                        <td><h:outputText value="RFC Funcionario " /></td>
+                        <td><h:outputText value="Estado Procesal " /></td>
+                    </tr>
+                    <tr>
+                        <td><p:inputText id="funcionario" readonly="true"
+                                value="#{turnarRecursoRevocacionController.userProfile.nombreCompleto}" /></td>
+                        <td><p:inputText id="rfcFuncionario" readonly="true"
+                                value="#{turnarRecursoRevocacionController.userProfile.rfc}" /></td>
+                        <td><p:inputText id="estadoProcesal" readonly="true"
+                                value="#{turnarRecursoRevocacionController.tramite.estadoProcesal}" /></td>
+                        <td align="right" width="100%"><c:choose>
+                                <c:when test="#{turnarRecursoRevocacionController.reasignar}">
+                                    <p:commandButton value="Anterior"
+                                        action="/resources/pages/rrl/bandejaReasignarRecursoRevocacion.jsf?faces-redirect=true"
+                                        process="@this" />
+                                </c:when>
+                                <c:otherwise>
+                                    <p:commandButton value="Anterior" action="#{bandejaController.inicializarBandeja}"
+                                        process="@this" />
+                                </c:otherwise>
+                            </c:choose></td>
+                    </tr>
+                    <tr>
+                        <td><h:outputText value="N&uacute;mero de Asunto " /></td>
+                        <td><h:outputText value="#{msg['vuj.fechaRecepcion']}" /></td>
+                        <td><h:outputText value="Fecha Vencimiento " /></td>
+                    </tr>
+                    <tr>
+                        <td><p:inputText id="numeroAsunto" readonly="true"
+                                value="#{turnarRecursoRevocacionController.datosBandejaTareaDTO.numeroAsunto}">
+                            </p:inputText></td>
+                        <td><p:inputText readonly="true"
+                                value="#{turnarRecursoRevocacionController.tramite.fechaRecepcion}"
+                                id="fechaRecepcionInput">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText></td>
+                        <td><p:inputText value="#{turnarRecursoRevocacionController.tramite.fechaVencimiento}"
+                                id="fechaInicio" readonly="true">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText></td>
+                        <c:if test="#{turnarRecursoRevocacionController.datosBandejaTareaDTO.oficialia}">
+                            <td align="right" width="100%"><p:commandButton value="#{msg['vuj.boton.rechazar']}"
+                                    actionListener="#{turnarRecursoRevocacionController.activaDialogo}"
+                                    update=":turnarForm:confirmarDialogo" /></td>
+                        </c:if>
+                    </tr>
+                </table>
+
+                <p:panel id="turnarTablePanel">
+                    <p:dataTable selection="#{turnarRecursoRevocacionController.seleccionAbogadoDTO}" var="abogado"
+                        value="#{turnarRecursoRevocacionController.abogadoDataModel}" id="turnarTable"
+                        emptyMessage="#{msg['vuj.grid.abogadoVacio']}">
+
+                        <p:column selectionMode="single" disabledSelection="#{not dr:isNumber(abogado.numPendientes)}" style="width:2%" />
+
+                        <p:column headerText="Nombre del Abogado">
+                            <h:outputText value="#{abogado.nombreAbogado}" id="nombreAbogadoTable" />
+                        </p:column>
+
+                        <p:column headerText="RFC">
+                            <h:outputText value="#{abogado.rfc}" id="rfcTable" />
+                        </p:column>
+
+                        <p:column headerText="N&uacute;mero de Asuntos Pendientes">
+                            <h:outputText value="#{abogado.numPendientes}" id="numeroPendientesTable" />
+                        </p:column>
+
+                    </p:dataTable>
+                    <pe:tooltip for="turnarTable" value="#{msg['atender.requerimiento.seleccionarAbogado']}"
+                        mouseTracking="true" adjustX="20" adjustY="20" />
+                </p:panel>
+                <br />
+                <h:panelGrid columns="1" styleClass="panelMontoStyle" style="float:right;">
+                    <p:commandButton style="margin-left:15px" value="#{msg['vuj.boton.asignar']}" ajax="false"
+                        action="#{turnarRecursoRevocacionController.siguienteSinFirmar}"
+                        rendered="#{turnarRecursoRevocacionController.hayAbogadosTurnar}" />
+                </h:panelGrid>
+                <br />
+                <br />
+
+                <p:panel>
+                    <p:confirmDialog closable="false" global="false"
+                        message="#{msg['op.validaciones.confirmaRechazoAsunto']}"
+                        visible="#{turnarRecursoRevocacionController.activaDialogo}" id="confirmarDialogo"
+                        widgetVar="confirmarAccion" showEffect="fade">
+                        <p:panelGrid columns="2" styleClass="noBorder" style="float:right;">
+                            <p:column>
+                                <p:commandButton oncomplete="confirmarAccion.hide()" value="Si"
+                                    process="@this,confirmarDialogo" ajax="false"
+                                    action="#{turnarRecursoRevocacionController.rechazarAsunto}"
+                                    styleClass="ui-confirmdialog-yes" icon="ui-icon-check" update="@form" />
+                            </p:column>
+                            <p:column>
+                                <p:commandButton value="No" oncomplete="confirmarAccion.hide()"
+                                    process="@this,confirmarDialogo"
+                                    action="#{turnarRecursoRevocacionController.noConfirma}"
+                                    styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                            </p:column>
+                        </p:panelGrid>
+                    </p:confirmDialog>
+                </p:panel>
+
+                <p:panel id="panelObservacion" rendered="#{!turnarRecursoRevocacionController.reasignar}">
+                    <p:panelGrid styleClass="noBorder">
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="#{msg['oficialia.cal.observaciones']}:"></p:outputLabel>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:inputTextarea value="#{turnarRecursoRevocacionController.turnaDTO.observacion}"
+                                    cols="100" rows="3" maxlength="2000" size="500" style="resize: none"
+                                    id="descripcionObservacion" />
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:panel>
+
+            </h:form>
+
+            <ui:decorate template="../consultas/consulta.xhtml">
+            </ui:decorate>
+
+        </p:panel>
+        <h:outputScript name='/js/calendar_es.js' target="head" />
+
+    </ui:define>
+</ui:composition>
+
+</html>

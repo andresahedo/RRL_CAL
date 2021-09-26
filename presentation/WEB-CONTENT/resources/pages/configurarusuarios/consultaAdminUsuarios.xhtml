@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+    <style type="text/css">
+.ui-selectonemenu-panel {
+    width: 50px
+}
+
+.ui-panel {
+    width: #{sessionScope.tamanioApp}px;
+    border-style:none !important;
+}
+.ui-panelgrid td {
+    border-style: none;
+}
+
+.ui-panelgrid tr {
+    border-style: none;
+}
+
+.ui-widget {
+    font-family: Arial, sans-serif !important;
+    font-size: 11px !important;
+}
+</style>
+</h:head>
+
+<p:panel id="enc">
+    <ui:include src="/resources/pages/configurarusuarios/encabezado.xhtml" />
+</p:panel>
+
+<h:body>
+
+    <h:form id="form">
+        <p:panel id="msgPanel">
+            <p:messages id="messages" showDetail="true" globalOnly="true">
+                <p:message showDetail="true" rendered=""></p:message>
+            </p:messages>
+        </p:panel>
+        <p:panel id="panelMensajeTareasPendientes"
+            rendered="#{administrarUsuariosConsultaController.renderedMensajeTarea}">
+            <div class="ui-messages ui-widget" id="errorConcepto">
+                <div class="ui-messages-info ui-corner-all">
+                    <span class="ui-messages-info-icon"></span>
+                    <ul>
+                        <li><span class="ui-messages-info-detail" /> <h:outputText
+                                value="El usuario tiene tareas pendientes" style="color:#3A87AD" /></li>
+                    </ul>
+                </div>
+            </div>
+        </p:panel>
+        <p:panel id="panelUsuarios">
+            <p:panel header="#{msg['usuarios.asignar.tramites.encabezadoPanel']}" style="text-align:center" />
+            <p:panelGrid>
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.admin.nombre']}" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.admin.apellidoPaterno']}" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.admin.apellidoMaterno']}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:inputText value="#{administrarUsuariosConsultaController.datosEmpleado.nombre}"
+                            maxlength="13" readonly="true" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText value="#{administrarUsuariosConsultaController.datosEmpleado.apellidoPaterno}"
+                            maxlength="13" readonly="true" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText value="#{administrarUsuariosConsultaController.datosEmpleado.apellidoMaterno}"
+                            maxlength="13" readonly="true" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.admin.rfcEmpleado']}" id="rfcEmpleado" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.admin.rfcCorto']}" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.admin.mail']}" id="mail" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:inputText value="#{administrarUsuariosConsultaController.datosEmpleado.rfc}" maxlength="13"
+                            readonly="true" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText value="#{administrarUsuariosConsultaController.datosEmpleado.rfcCorto}"
+                            maxlength="13" readonly="true" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText value="#{administrarUsuariosConsultaController.datosEmpleado.correoElectronico}"
+                            maxlength="13" readonly="true" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.numeroEmpleado']}"
+                            id="numeroEmpleado" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:inputText value="#{administrarUsuariosConsultaController.datosEmpleado.numeroEmpleado}"
+                            maxlength="13" readonly="true" />
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+            <p:panel header="#{msg['administracion.usuarios.consulta.titulo.permisosAsignados']}"
+                style="text-align:center">
+                <p:scrollPanel mode="native"
+                    style="width:100%;height:#{administrarUsuariosConsultaController.tamanioPanel}px;"
+                    id="usuariosPanel">
+                    <p:dataTable var="usuarios" style="width:100%;"
+                        value="#{administrarUsuariosConsultaController.listaUsuarios}" id="usuariosTable"
+                        emptyMessage="#{administrarUsuariosConsultaController.mensajeBandejaVacia}">
+
+                        <p:column style="width:10%" resizable="true">
+                            <f:facet name="header">
+                                <h:outputText value="#{msg['administracion.usuarios.consulta.permiso']}" />
+                            </f:facet>
+                            <p:outputLabel value="#{usuarios.permiso}" style="white-space:pre-line;" />
+                        </p:column>
+                        <p:column style="width:11%" resizable="true">
+                            <f:facet name="header">
+                                <h:outputText value="#{msg['usuarios.tramite']}" />
+                            </f:facet>
+                            <p:outputLabel value="#{usuarios.tipoTramite}" style="white-space:pre-line;" />
+                        </p:column>
+
+                        <p:column style="width:11%" resizable="true">
+                            <f:facet name="header">
+                                <h:outputText value="#{msg['administracion.usuarios.consulta.modalidad']}" />
+                            </f:facet>
+                            <p:outputLabel value="#{usuarios.modalidad}" style="white-space:pre-line;" />
+                        </p:column>
+
+                        <p:column style="width:9%;text-align: center" resizable="true">
+                            <f:facet name="header">
+                                <h:outputText value="#{msg['administracion.usuarios.consulta.responsable']}" />
+                            </f:facet>
+                            <p:outputLabel value="#{usuarios.responsableMsg}" />
+                        </p:column>
+
+                    </p:dataTable>
+                </p:scrollPanel>
+            </p:panel>
+            <p:panelGrid id="buttonPanelAsign" style="float:right;">
+                <p:row>
+                    <p:column>
+                        <p:commandButton value="#{msg['usuarios.asignar.tramites']}" ajax="true"
+                            disabled="#{administrarUsuariosConsultaController.disabled}"
+                            actionListener="#{administrarUsuariosConsultaController.asignarTramites}"></p:commandButton>
+                    </p:column>
+                    <p:column>
+                        <p:commandButton value="#{msg['usuarios.asignar.tramites.reasignar']}" ajax="true"
+                            actionListener="#{administrarUsuariosConsultaController.reasignarTareas}"
+                            disabled="#{administrarUsuariosConsultaController.blnActivarReasignador}"></p:commandButton>
+                    </p:column>
+                    <p:column>
+                        <p:commandButton value="#{msg['usuarios.asignar.tramites.regresar']}" ajax="true"
+                            actionListener="#{administrarUsuariosConsultaController.back}" process="@this"></p:commandButton>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+
+        </p:panel>
+    </h:form>
+</h:body>
+</html>

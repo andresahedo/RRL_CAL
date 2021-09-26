@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="acuseTerminosYCondiciones" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2b78305a-a355-43b3-8a16-9b77bfa32d72">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<scriptlet name="QRCodeScriptlet" class="mx.gob.sat.siat.juridica.base.web.controller.bean.scriplet.QRCodeScriptlet"/>
+	<parameter name="idSolicitud" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BASE_PATH" class="java.lang.String"/>
+	<parameter name="FILE_SEPARATOR" class="java.lang.String"/>
+	<parameter name="cadenaOriginal" class="java.lang.String"/>
+	<parameter name="paramSello" class="java.lang.String"/>
+	<parameter name="cadenaOriginalSIAT" class="java.lang.String"/>
+	<parameter name="paramSelloSIAT" class="java.lang.String"/>
+	<parameter name="QR_VALUE" class="java.lang.String"/>
+	<parameter name="URLVERIFICACION" class="java.lang.String"/>
+	<parameter name="urlEncodedRfc" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT TIPOTRAM.DESCSERVICIO,
+  PERSONASOL.NOMBRE
+  || ' '
+  || PERSONASOL.APELLIDOPATERNO
+  || ' '
+  || PERSONASOL.APELLIDOMATERNO AS nombre,
+  PERSONASOL.RAZONSOCIAL,
+  PERSONASOL.RFC,
+  PERSONACAP.NOMBRE
+  || ' '
+  || PERSONACAP.APELLIDOPATERNO
+  || ' '
+  || PERSONACAP.APELLIDOMATERNO AS nombreCap,
+  PERSONACAP.RAZONSOCIAL AS razonSocialCap,
+  PERSONACAP.RFC AS rfcCap,
+  soli.IDROLCAPTURISTA       AS rolCapturista,
+  TO_CHAR(TRAM.FECRECEPCION, 'DD/MM/YYYY') AS fecRecepcion,
+  TO_CHAR(TRAM.FECRECEPCION, 'HH24:MI') AS horaRecepcion,
+  TRAM.IDTRAMITE
+FROM RVCT_TRAMITE TRAM
+LEFT JOIN RVCT_SOLPERSONA PERSONASOL
+ON PERSONASOL.IDSOLICITUD = TRAM.IDSOLICITUD
+LEFT JOIN RVCT_SOLICITUD soli
+ON soli.IDSOLICITUD = TRAM.IDSOLICITUD
+LEFT JOIN RVCP_PERSONA PERSONACAP
+ON soli.idpersonasolicitante = personaCap.idpersona
+LEFT JOIN RVCC_TIPOTRAMITE TIPOTRAM
+ON TIPOTRAM.IDTIPOTRAMITE        = soli.IDTIPOTRAMITE
+WHERE TRAM.IDSOLICITUD           = $P{idSolicitud}
+AND PERSONASOL.IDETIPOPERSONASOL = 'TIPERS.SL']]>
+	</queryString>
+	<field name="DESCSERVICIO" class="java.lang.String"/>
+	<field name="NOMBRE" class="java.lang.String"/>
+	<field name="RAZONSOCIAL" class="java.lang.String"/>
+	<field name="RFC" class="java.lang.String"/>
+	<field name="NOMBRECAP" class="java.lang.String"/>
+	<field name="RAZONSOCIALCAP" class="java.lang.String"/>
+	<field name="RFCCAP" class="java.lang.String"/>
+	<field name="ROLCAPTURISTA" class="java.lang.String"/>
+	<field name="FECRECEPCION" class="java.lang.String"/>
+	<field name="HORARECEPCION" class="java.lang.String"/>
+	<field name="IDTRAMITE" class="java.lang.String"/>
+	<variable name="QR_CODE_WIDTH" class="java.lang.Integer">
+		<variableExpression><![CDATA[110]]></variableExpression>
+	</variable>
+	<variable name="QR_CODE_HEIGHT" class="java.lang.Integer">
+		<variableExpression><![CDATA[110]]></variableExpression>
+	</variable>
+	<variable name="QR_CODE_IMAGE" class="java.lang.Object"/>
+	<variable name="QR_CODE_VALUE" class="java.lang.String">
+		<variableExpression><![CDATA[$P{URLVERIFICACION}+$P{urlEncodedRfc}+"_"+$F{IDTRAMITE}+"_"+$P{QR_VALUE}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="114" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="94" width="555" height="20" uuid="88c4626c-226c-40ed-be33-1e8e92678884"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Acuse de Aceptación de Términos y Condiciones]]></text>
+			</staticText>
+			<image>
+				<reportElement x="17" y="0" width="233" height="86" uuid="8bdc1af1-b958-47d2-99d9-4afd3ce1e926"/>
+				<imageExpression><![CDATA[$P{BASE_PATH}+$P{FILE_SEPARATOR}+"SHCP.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="391" y="14" width="177" height="40" uuid="cb2494e9-6e3a-46fe-9d07-e2be80eb437b"/>
+				<imageExpression><![CDATA[$P{BASE_PATH}+$P{FILE_SEPARATOR}+"SAT.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<detail>
+		<band height="458" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="false">
+				<reportElement positionType="Float" x="0" y="0" width="555" height="458" uuid="0a22ecbb-db4b-491b-a68d-6888248d5886"/>
+				<textElement markup="none"/>
+				<textFieldExpression><![CDATA["\n"+"Las condiciones generales que integran el servicio proporcionado por el Sistema de Recurso de Revocación en Línea, del Servicio de Administración Tributaria, se regirá por los siguientes Términos y Condiciones de Uso. El usuario podrá consultar la versión vigente de las mismas en este portal.\n\n\n"+
+"1.	DEFINICIONES.\n\n"+
+
+"En lo sucesivo se entenderá para efectos de este documento como:\n\n"+
+"a) Sistema: Sistema de Recurso de Revocación en Línea.\n"+
+"b) Usuario: Contribuyente que hará uso del servicio del Sistema de Recurso de Revocación en Línea.\n"+
+"c) SAT: Servicio de Administración Tributaria, como prestador del servicio para la presentación del Recurso de Revocación en Línea.\n"+
+"d) RFC: Registro Federal de Contribuyentes.\n\n\n"+
+
+"2.	TÉRMINOS.\n\n"+
+
+"El usuario reconoce y acepta:\n\n"+
+
+"a) Que será el único responsable de la información y datos que integre en la aplicación del Sistema.\n"+
+"b) Su responsabilidad de verificar que el contenido de los archivos electrónicos que adjunte al Sistema sea congruente con el de los ofrecidos en el propio Sistema, así como que la descripción que hace de cada uno de ellos sea la correcta.\n"+
+"c) Su responsabilidad de verificar que el archivo electrónico que contiene la promoción incluida en el Sistema, cumpla con los requisitos que para tal efecto señala el Código Fiscal de la Federación.\n"+
+"d) Su responsabilidad de controlar la consulta que realice directamente de expedientes electrónicos como promovente en el Recurso de Revocación, así como la que hagan sus representantes o autorizados.\n"+
+"e) Que hará un debido uso de los archivos de los expedientes electrónicos en los que tiene interés jurídico, y que, después de ser consultados, guarde en su computadora o cualquier otro dispositivo de almacenamiento.\n"+
+"f) Que el uso del Sistema es gratuito por lo que deberá abstenerse de realizar cualquier actividad que tenga como finalidad la obtención de cualquier lucro.\n"+
+"g) Que proporcionará en la pantalla de registro del Recurso de Revocación y de promociones, según sea el caso, información personal, veraz, correcta y actualizada.\n"+
+"h) Que utilizará el Sistema de manera responsable y exclusivamente para la promoción y consulta de expedientes de Recurso de Revocación, de conformidad con las presentes condiciones de uso, así como cualquier otro ordenamiento aplicable.\n"+
+"i) Su responsabilidad por el uso y resguardo de la clave privada, certificado y contraseña de la Firma Electrónica Avanzada para ingresar al Sistema.\n"+
+"j) Que, al pretender ingresar al Sistema, si no proporciona su clave privada, certificado o contraseña de la Firma Electrónica Avanzada, o lo hace de manera incorrecta en cinco ocasiones consecutivas, se bloqueará el acceso al mismo por un periodo de 30 minutos, contados a partir del último intento.\n"+
+"k) Que los derechos patrimoniales, incluido el diseño lógico conceptual, imagen, presentación, funcionalidad, los programas informáticos, logotipos y nombres, bajo los cuales opera el Sistema, son propiedad del SAT y están protegidos por las leyes aplicables a derechos de autor y propiedad intelectual; y que conforme a dicha legislación tiene la obligación de no modificar, rentar, arrendar, prestar, vender, distribuir o crear obras derivadas en base al Sistema, ya sea en todo o en parte, con o sin fines de lucro, con excepción a lo expresamente autorizado por el SAT.\n"+
+"l) Que no se genera una obligación para el SAT, de ofrecer funcionalidades distintas o adicionales a las proporcionadas por el servicio del Sistema.\n\n\n"+
+"El SAT manifiesta que:\n\n\n"+
+"- Los datos personales recabados del usuario serán incorporados y protegidos en sus sistemas, de conformidad con los Lineamientos de Protección de Datos Personales y con las diversas disposiciones fiscales y legales sobre la confidencialidad y protección de datos.\n"+
+"- No almacena, ni conoce el contenido de la clave privada y/o de su contraseña de la Firma Electrónica Avanzada utilizados en el servicio.\n"+
+"- El usuario podrá corregir y/o actualizar sus datos personales, para ello, deberá realizar el trámite que corresponda a través del Portal del SAT o, en su caso, acudir directamente a la Administración Desconcentrada de Servicios al Contribuyente de su preferencia.\n"+
+"- La información que el Usuario visualiza, al capturar su Recurso de Revocación, deberá ser la que haya manifestado ante el Registro Federal de Contribuyentes; la modificación, abreviación o cualquier otra alteración a la misma, queda bajo su responsabilidad, en el entendido de que para efectos del presente medio de defensa sólo se considerará válida la información previamente proporcionada ante el RFC.\n"+
+"- Por caso fortuito o de fuerza mayor se entenderá todo acontecimiento o circunstancia inevitable, más allá del control razonable, que le impida ofrecer el servicio del Sistema.\n\n"+
+
+"3.	IDIOMA DEL SERVICIO\n\n"+
+
+"El idioma del servicio proporcionado a través del Sistema será el español empleado en la República Mexicana.\n\n"+
+
+"4.	RESERVAS DE DERECHOS\n\n"+
+
+"El SAT, se reserva el derecho de modificar, adicionar o eliminar éstas condiciones de uso o de establecer nuevos términos y condiciones de uso, así como el de modificar en cualquier momento el Sistema o cualquier parte del mismo.\n\n"+
+
+"5.	CONDICIONES\n\n"+
+
+"El servicio estará disponible en el portal del SAT www.sat.gob.mx, en el apartado \"Buzón Tributario\" y previa operación, el usuario deberá autenticarse con su contraseña o con su Firma Electrónica Avanzada.\n\n"+
+
+"El usuario acepta las condiciones de operación y límites de responsabilidad del SAT en su calidad de prestador del servicio electrónico, por lo que reconoce mediante el firmado electrónico a través de su Firma Electrónica Avanzada, la aceptación de este documento, como prueba fehaciente de la aprobación de todo lo especificado en el mismo."+"\n\n"
+]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="50">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="50" uuid="9a9b1353-238f-4501-be95-2e8186681516"/>
+				<textElement markup="none">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{ROLCAPTURISTA}.equals("solicitante")?
+("Nombre del Promovente: "+($F{RAZONSOCIAL}!=null ? $F{RAZONSOCIAL}: $F{NOMBRE}) +"\n"+
+"RFC del Promovente: "+ $F{RFC}+"\n"):
+("Nombre del Oficial de Partes: "+($F{RAZONSOCIALCAP}!=null ? $F{RAZONSOCIALCAP}: $F{NOMBRECAP}) +"\n"+
+"RFC del Oficial de Partes: "+ $F{RFCCAP}+"\n"))+
+"Fecha y Hora de Firmado de la Promoción: "+$F{FECRECEPCION}+","+$F{HORARECEPCION}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="226">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="38" width="555" height="45" uuid="6a86201c-df8a-4084-bfd1-3187b901c137"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[La promoción ha sido firmada mediante el uso de la Firma Electrónica Avanzada amparada por un certificado vigente, de conformidad con los artículos 17-D, 17-E, 17-I, 17-K y 18 del Código Fiscal de la Federación. Todo documento enviado se recibe sin prejuzgar su integridad y será sujeto a revisión.
+
+]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="0" y="0" width="555" height="20" uuid="d2794c0b-342c-404d-8732-9667973a7d61"/>
+				<textElement markup="html">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{ROLCAPTURISTA}.equals("solicitante")?"<b>Cadena Original de la Firma del Contribuyente:</b><br>":"<b>Cadena Original de la Firma del del Oficial de Partes:</b><br>")+
+($P{cadenaOriginal}!=null?$P{cadenaOriginal}:"")+"<br><br>"+
+($F{ROLCAPTURISTA}.equals("solicitante")?"<b>Sello Digital del Contribuyente:</b><br>":"<b>Sello Digital del Oficial de Partes:</b><br>")+
+($P{paramSello}!=null?$P{paramSello}:"")+"<br><br>"+
+($F{ROLCAPTURISTA}.equals("solicitante")?"<b>Cadena Original </b><br>":"<b>Cadena Original SIAT-Jurídico: </b><br>")
++
+($P{cadenaOriginalSIAT}!=null?$P{cadenaOriginalSIAT}:"")+"<br><br>"+
+($F{ROLCAPTURISTA}.equals("solicitante")?"<b>Sello digital que autentica el documento:<b><br>":"<b>Sello Digital SIAT-Jurídico:<b><br>")
++
+
+($P{paramSelloSIAT}!=null?$P{paramSelloSIAT}:"")]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame">
+				<reportElement positionType="Float" x="0" y="96" width="133" height="130" uuid="e6122276-dfd2-41bf-8ff4-ac7ebd232542"/>
+				<imageExpression><![CDATA[$V{QR_CODE_IMAGE}]]></imageExpression>
+			</image>
+		</band>
+	</detail>
+</jasperReport>

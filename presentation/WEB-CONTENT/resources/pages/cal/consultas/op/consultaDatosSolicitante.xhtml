@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <style type="text/css">
+.panelMontoStyle td {
+    border-style: hidden !important;
+}
+
+.panelContent td {
+    border: black solid 1px !important;
+}
+</style>
+
+    <p:panel id="panelSolicitante1" styleClass="panelMontoStyle" style="width:100%">
+        <table>
+            <tr>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.rfc']}" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.estadoContribuyente']}" /></td>
+                <c:choose>
+                    <c:when test="#{atenderObservacionCALOPController.banderaRazonSocial}">
+                        <td><p:outputLabel value="#{msg['vuj.solicitante.razonSocial']}" /></td>
+                    </c:when>
+                    <c:otherwise>
+                    </c:otherwise>
+                </c:choose>
+
+            </tr>
+            <tr>
+                <td><p:inputText value="#{atenderObservacionCALOPController.datosSolicitud.rfcContribuyente}"
+                        disabled="true" /></td>
+                <td><p:inputText value="#{atenderObservacionCALOPController.datosSolicitud.estadoContribuyente}"
+                        disabled="true" /></td>
+                <c:choose>
+                    <c:when test="#{atenderObservacionCALOPController.banderaRazonSocial}">
+                        <td><p:inputText value="#{atenderObservacionCALOPController.datosSolicitud.razonSocial}"
+                                disabled="true" style="width:195%" /></td>
+                    </c:when>
+                    <c:otherwise>
+                    </c:otherwise>
+                </c:choose>
+            </tr>
+
+            <c:choose>
+                <c:when test="#{atenderObservacionCALOPController.banderaRazonSocial}">
+                    <tr>
+                    </tr>
+                </c:when>
+                <c:otherwise>
+                    <tr>
+                        <td><p:outputLabel value="#{msg['vuj.solicitante.apellidoPaterno']}" /></td>
+                        <td><p:outputLabel value="#{msg['vuj.solicitante.apellidoMaterno']}" /></td>
+                        <td><p:outputLabel value="#{msg['vuj.solicitante.nombre']}" /></td>
+                    </tr>
+                    <tr>
+                        <td><p:inputText
+                                value="#{atenderObservacionCALOPController.datosSolicitud.apellidoPaterno}"
+                                disabled="true" /></td>
+                        <td><p:inputText
+                                value="#{atenderObservacionCALOPController.datosSolicitud.apellidoMaterno}"
+                                disabled="true" /></td>
+                        <td><p:inputText value="#{atenderObservacionCALOPController.datosSolicitud.nombre}"
+                                disabled="true" /></td>
+                    </tr>
+                </c:otherwise>
+            </c:choose>
+
+        </table>
+    </p:panel>
+
+    <p:panel id="panelSolicitante2" styleClass="panelMontoStyle" style="width:100%">
+        <table>
+            <tr>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.calle']} " /> <h:graphicImage
+                        id="ayudaIdCalle" url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdCalle"
+                        value="#{msg['contribuyente.calle']}" adjustX="20" adjustY="20" mouseTracking="true"
+                        showEffect="fade" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.numeroExterior']} " /> <h:graphicImage
+                        id="ayudaIdNexterior" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+                        for="ayudaIdNexterior" value="#{msg['contribuyente.num.exterior']}" adjustX="20" adjustY="20"
+                        mouseTracking="true" showEffect="fade" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.numeroInterior']} " /> <h:graphicImage
+                        id="ayudaIdNinterior" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+                        for="ayudaIdNinterior" value="#{msg['contribuyente.num.interior']}" adjustX="20" adjustY="20"
+                        mouseTracking="true" showEffect="fade" /></td>
+
+            </tr>
+            <tr>
+
+                <td><p:inputText id="inputCalle" value="#{atenderObservacionCALOPController.datosSolicitud.calle}"
+                        disabled="true" /></td>
+                <td><p:inputText id="inputNumExterior"
+                        value="#{atenderObservacionCALOPController.datosSolicitud.numeroExterior}" disabled="true" /></td>
+                <td><p:inputText id="inputNumInterior"
+                        value="#{atenderObservacionCALOPController.datosSolicitud.numeroInterior}" disabled="true" /></td>
+            </tr>
+            <tr>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.colonia']} " /> <h:graphicImage
+                        id="ayudaIdCol" url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdCol"
+                        value="#{msg['contribuyente.colonia']}" adjustX="20" adjustY="20" mouseTracking="true"
+                        showEffect="fade" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.delegacionMunicipio']} " /> <h:graphicImage
+                        id="ayudaIdDel" url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdDel"
+                        value="#{msg['contribuyente.delegacion']}" adjustX="20" adjustY="20" mouseTracking="true"
+                        showEffect="fade" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.estado']} " /> <h:graphicImage
+                        id="ayudaIdEdo" url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdEdo"
+                        value="#{msg['contribuyente.estado']}" adjustX="20" adjustY="20" mouseTracking="true"
+                        showEffect="fade" /></td>
+            </tr>
+            <tr>
+                <td><p:inputText value="#{atenderObservacionCALOPController.datosSolicitud.colonia}"
+                        disabled="true" /></td>
+                <td><p:inputText value="#{atenderObservacionCALOPController.datosSolicitud.delegacionMunicipio}"
+                        disabled="true" /></td>
+                <td><p:inputText value="#{atenderObservacionCALOPController.datosSolicitud.estado}" disabled="true" /></td>
+            </tr>
+            <tr>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.codigoPostal']} " /> <h:graphicImage
+                        id="ayudaIdcp" url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdcp"
+                        value="#{msg['contribuyente.cp']}" adjustX="20" adjustY="20" mouseTracking="true"
+                        showEffect="fade" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.telefono']} " /> <h:graphicImage
+                        id="ayudaIdTel" url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdTel"
+                        value="#{msg['contribuyente.tel']}" adjustX="20" adjustY="20" mouseTracking="true"
+                        showEffect="fade" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.correoElectronico']} " /> <h:graphicImage
+                        id="ayudaIdMail" url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdMail"
+                        value="#{msg['contribuyente.correo']}" adjustX="20" adjustY="20" mouseTracking="true"
+                        showEffect="fade" /></td>
+            </tr>
+            <tr>
+                <td><p:inputText value="#{atenderObservacionCALOPController.datosSolicitud.codigoPostal}"
+                        disabled="true" /></td>
+                <td><p:inputText value="#{atenderObservacionCALOPController.datosSolicitud.telefono}"
+                        disabled="true" /></td>
+                <td><p:inputTextarea rows="#{atenderObservacionCALOPController.rowsCorreo}" id="inputCorreo"
+                        value="#{atenderObservacionCALOPController.datosSolicitud.correoElectronico}" disabled="true" /></td>
+            </tr>
+
+            <tr>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.representanteLegal']} " /> <h:graphicImage
+                        id="ayudaIdRep" url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdRep"
+                        value="#{msg['contribuyente.representanteLegal']}" adjustX="20" adjustY="20"
+                        mouseTracking="true" showEffect="fade" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.administracionLocal']} " /> <h:graphicImage
+                        id="ayudaIdLocal" url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaIdLocal"
+                        value="#{msg['contribuyente.administracion']}" adjustX="20" adjustY="20" mouseTracking="true"
+                        showEffect="fade" /></td>
+
+
+            </tr>
+            <tr>
+                <td><p:inputText value="#{atenderObservacionCALOPController.datosSolicitud.representanteLegal}"
+                        disabled="true" /></td>
+
+                <td><p:inputText id="inputAdmonLocalNombre"
+                        value="#{atenderObservacionCALOPController.datosSolicitud.nombreAdministracionLocal}"
+                        disabled="true" /></td>
+            </tr>
+        </table>
+    </p:panel>
+
+</ui:composition>

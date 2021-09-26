@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core">
+    <h:form enctype="multipart/form-data" id="formaDocumentos">
+        <p:panel header="Documentos Seleccionados" style="margin-bottom:10px;">
+            <p:dataTable id="tablaDoc" var="documento" value="#{consultasAutorizacionesController.listaDocumentos}"
+                emptyMessage="#{msg['vuj.grid.vacio']}" rowIndexVar="rowIndex" resizableColumns="true"
+                paginator="true" rows="10">
+                <p:column headerText="Tipo de Documento" style="width:280px">
+                    <h:outputText value="#{documento.tipoDocumento}" id="tipoDoc" />
+                    <pe:tooltip for="tipoDoc" value="#{documento.tipoDocumento}" mouseTracking="true" adjustX="20"
+                        adjustY="20" />
+                </p:column>
+                <p:column headerText="Nombre del Archivo" style="width:280px">
+                    <h:outputText value="#{documento.nombre}" />
+                </p:column>
+                <p:column headerText="#{msg['vuj.documento.tamanioDocumento']}" style="width:80px;white-space:pre-line;"
+                    resizable="false">
+                    <h:outputText value="---">
+                    </h:outputText>
+                </p:column>
+                <p:column style="width:150px" headerText="Ver">
+                    <p:commandButton id="linkVer" value="Ver" ajax="false" update="@this"
+                        actionListener="#{consultasAutorizacionesController.descargarDocumento}">
+                        <f:attribute name="documentoParametro" value="#{documento}" />
+                        <p:fileDownload value="#{consultasAutorizacionesController.archivoDescarga}" />
+                    </p:commandButton>
+                    <p:tooltip for="linkVer" value="#{msg['contribuyente.ver.documento']}" />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+
+        <p:panel header="Documentos Seleccionados" style="margin-bottom:10px;">
+            <p:dataTable id="tablaDocumentos" var="documento"
+                value="#{consultasAutorizacionesController.documentoDataModel}" emptyMessage="#{msg['vuj.grid.vacio']}"
+                rowIndexVar="rowIndex" resizableColumns="true" paginator="true" rows="10">
+                <p:column headerText="Tipo de Documento" style="width:280px">
+                    <h:outputText value="#{documento.tipoDocumento}" id="tipoDoc" />
+                    <pe:tooltip for="tipoDoc" value="#{documento.tipoDocumento}" mouseTracking="true" adjustX="20"
+                        adjustY="20" />
+                </p:column>
+                <p:column headerText="Nombre del Archivo" style="width:280px">
+                    <h:outputText value="#{documento.nombre}" />
+                </p:column>
+                <p:column headerText="#{msg['vuj.documento.tamanioDocumento']}" style="width:80px;white-space:pre-line;"
+                    resizable="false">
+                    <h:outputText value="---">
+                    </h:outputText>
+                </p:column>
+                <p:column style="width:150px" headerText="Ver">
+                    <p:commandButton id="linkVer" value="Ver" update="@this" ajax="false"
+                        actionListener="#{consultasAutorizacionesController.descargarDocumento}">
+                        <f:attribute name="documentoParametro" value="#{documento}" />
+                        <p:fileDownload value="#{consultasAutorizacionesController.archivoDescarga}" />
+                    </p:commandButton>
+                    <p:tooltip for="linkVer" value="#{msg['contribuyente.ver.documento']}" />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+    </h:form>
+</ui:composition>

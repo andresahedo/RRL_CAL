@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <style type="text/css">
+.noBorder td {
+    border-style: hidden !important;
+}
+
+.ui-panel {
+    border-style: none !important;
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+</style>
+        <h:outputStylesheet library="css" name="azure.css" />
+    </h:head>
+    <h:body>
+        <h:form id="folioForm">
+
+            <p:panel id="msgPanelRes">
+                <p:messages id="messagesRes" showDetail="true" globalOnly="true" />
+            </p:panel>
+
+            <p:panel id="datosFuncionario" style="border-style: hidden !important;">
+                <p:panelGrid columnClasses="2" styleClass="noBorder">
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.funcionario']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText maxlength="500" readonly="true"
+                                value="#{registroFolioOPController.userProfile.nombreCompleto}" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText maxlength="13" value="#{registroFolioOPController.userProfile.rfc}"
+                                readonly="true" id="rfcFuncionarioInput" />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </p:panel>
+
+            <p:panel header="ASUNTO" style="text-align:center;border-style: hidden !important;" />
+            <p:panel>
+                <p:panelGrid columns="1" styleClass="noBorder" style="float:right;">
+                    <p:column>
+                        <p:commandButton value="#{msg['vuj.boton.adjuntar']}" update="@form"
+                            actionListener="#{registroFolioOPController.adjuntarDocumento}" />
+                    </p:column>
+                </p:panelGrid>
+
+                <p:panelGrid columnClasses="2" styleClass="noBorder">
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="#{msg['oficialia.bandeja.consulta.numeroAsunto']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputLabel value="#{msg['oficialia.bandeja.consulta.estadoTramite']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText value="#{registroFolioOPController.dbdto.numeroAsunto}" readonly="true" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{registroFolioOPController.dbdto.estadoProcesal}" readonly="true" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="#{msg['oficialia.registro.folio.rfcPromovente']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputLabel value="#{msg['oficialia.registro.folio.nombrePromovente']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText value="#{registroFolioOPController.dbdto.rfcSolicitante}" readonly="true" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{registroFolioOPController.dbdto.nombrePersonaAsignada}"
+                                readonly="true" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="#{msg['oficialia.registro.folio.folio']}" maxlength="13" />
+                            <p:outputLabel value=" * " style="color:red" />
+                        </p:column>
+                        <p:column>
+                            <h:outputLabel value="#{msg['oficialia.registro.folio.fechaApertura']}" />
+                            <p:outputLabel value=" * " style="color:red" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputMask id="folio" value="#{registroFolioOPController.folio}" required="true"
+                                requiredMessage="#{errmsg['op.validaciones.folio']}" maxlength="11" mask="9?9999999999"
+                                size="20" />
+                            <p:message for="folio" display="text" />
+                        </p:column>
+                        <p:column>
+                            <p:calendar id="fecha" pattern="dd/MM/yyyy" locale="es" readonlyInput="true" required="true"
+                                requiredMessage="#{errmsg['op.validaciones.fechaApertura']}" navigator="true"
+                                value="#{registroFolioOPController.fechaApertura}"
+                                maxdate="#{registroFolioOPController.fechaMax}" />
+                            <p:message for="fecha" display="text" />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </p:panel>
+        </h:form>
+    </h:body>
+</ui:composition>

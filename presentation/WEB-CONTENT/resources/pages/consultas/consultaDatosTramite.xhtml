@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <p:panel id="oficialia" visible="#{consultasController.datosBandejaTareaDTO.oficialia}">
+        <p:outputLabel value="#{msg['rrl.consulta.oficialia']}" style="color:red; font-weight: bold;" />
+    </p:panel>
+
+    <p:panelGrid styleClass="panelMontoStyle">
+        <p:row>
+            <p:column colspan="2">
+                <p:outputLabel value="Autoridad Emisora" />
+                <p:outputLabel value=" * " style="color:red" />
+            </p:column>
+            <p:column>
+                <h:outputText value="#{msg['ca.bandejaConsulta.fechaRecepcion']}" />
+            </p:column>
+        </p:row>
+        <p:row>
+            <p:column colspan="2">
+                <p:inputText value="#{consultasController.datosSolicitud.nombreAutoridadEmisora}" disabled="true"
+                    size="45" />
+            </p:column>
+            <p:column>
+                <p:calendar pattern="dd/MM/yyyy" id="fechaVencimiento" readonly="true" disabled="true"
+                    value="#{consultasController.tramite.fechaRecepcion}" />
+            </p:column>
+        </p:row>
+    </p:panelGrid>
+
+</ui:composition>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Observacion</title>
+    <style type="text/css">
+.ui-panelgrid td {
+    border-style: none;
+}
+
+.ui-panelgrid tr {
+    border-style: none;
+}
+</style>
+</h:head>
+
+
+<h:body>
+    <h:form id="observacionForm">
+        <p:panel id="funcionarioPanel" style="width:#{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};">
+            <p:panelGrid styleClass="noBorder" columns="3" cellpadding="5" style="border-style: hidden !important;">
+                <h:outputText value="#{msg['vuj.resol.funcionario']}" />
+                <h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" />
+                <h:outputText value="#{msg['vuj.resol.estadoProcesal']}" />
+
+                <p:inputText maxlength="500" readonly="true" id="funcionarioInput"
+                    value="#{generarObservacionCALController.nombreFuncionario}" />
+                <p:inputText maxlength="13" value="#{generarObservacionCALController.userProfile.rfc}" readonly="true"
+                    id="rfcFuncionarioInput" />
+                <p:inputText maxlength="32" readonly="true"
+                    value="#{generarObservacionCALController.datosBandejaTareaDTO.estadoProcesal}"
+                    id="estadoProcesalInput" />
+
+                <h:outputText value="#{msg['vuj.resol.numAsunto']}" />
+                <h:outputText value="#{msg['vuj.fechaRecepcion']}" />
+                <h:outputText value="#{msg['vuj.resol.fechaVenc']}" />
+
+                <p:inputText readonly="true" maxlength="13"
+                    value="#{generarObservacionCALController.datosBandejaTareaDTO.numeroAsunto}" id="numAsuntoInput" />
+                <p:inputText readonly="true" value="#{generarObservacionCALController.tramite.fechaRecepcion}"
+                    id="fechaRecepcionInput">
+                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                </p:inputText>
+                <p:inputText readonly="true" value="#{generarObservacionCALController.tramite.fechaVencimiento}"
+                    id="fechaVencimientoInput">
+                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                </p:inputText>
+            </p:panelGrid>
+            <p:panel id="navegationPanel" header="#{msg['observarAsunto.titulo']}">
+                <p:panelGrid styleClass="noBorder" columns="3" cellpadding="5"
+                    style="float:right;border-style: hidden !important;">
+                    <p:commandButton value="#{msg['vuj.boton.anterior']}" process="@this"
+                        action="#{generarObservacionCALController.anterior}">
+
+                    </p:commandButton>
+                    <p:commandButton value="#{msg['vuj.boton.observar']}" update="@form"
+                        action="#{generarObservacionCALController.observar}">
+
+                    </p:commandButton>
+
+                </p:panelGrid>
+
+                <br />
+                <br />
+
+                <h:outputText value="#{msg['observarAsunto.observacion']}" />
+                <p:outputLabel style="color:red"> * </p:outputLabel>
+                <br />
+                <br />
+                <p:inputTextarea value="#{generarObservacionCALController.observacion.observacionDesc}" cols="100"
+                    rows="3" maxlength="1000" size="500" style="resize: none" id="descripcionObservacion"
+                    required="true" />
+                <p:message display="text" for="descripcionObservacion" />
+
+
+            </p:panel>
+        </p:panel>
+    </h:form>
+
+</h:body>
+
+</html>

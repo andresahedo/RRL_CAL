@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core">
+
+    <p:dialog header="Fin de sesi&oacute;n" widgetVar="sesionDialog" minHeight="40" closable="false" resizable="false"
+        modal="true">
+
+        <h:outputText value="Su sesi&oacute;n est&aacute; a punto de finalizar." />
+        <br></br>
+        <h:outputText value="Para mantenerla debe dar clic en el bot&oacute;n Continuar sesi&oacute;n." />
+        <br></br>
+        <p align="center">
+            <p:commandButton value="Continuar sesi&oacute;n" type="button" styleClass="ui-confirmdialog-no"
+                onclick="reiniciarTimer();sesionDialog.hide();document.getElementById('mantenersesion').src = document.getElementById('mantenersesion').src;">
+                
+            </p:commandButton>
+        </p>
+    </p:dialog>
+
+    <p:dialog header="Fin de sesi&oacute;n" widgetVar="sesionFinalizadaDialog" minHeight="40" closable="false"
+        resizable="false" modal="true">
+        <br></br>
+        <h:outputText value="Su sesi&oacute;n ha finalizado." />
+        <br></br>
+        <h:outputText value="Es necesario que reingrese al portal." />
+        <br></br>
+    </p:dialog>
+    <h:inputHidden value="#{autenticacionController.tiempoAvisoSesion}" id="tiempoAvisoSesion" />
+    <h:inputHidden value="#{autenticacionController.tiempoEsperaAviso}" id="tiempoEsperaAviso" />
+    <h:outputScript name='/js/sesion.js' target="head" />
+
+	
+	<iframe src="#{request.contextPath}/resources/pages/home/mantenerSesion.jsf" id="mantenersesion" width="0" height="0" frameBorder="0"></iframe>
+</ui:composition>
+
+

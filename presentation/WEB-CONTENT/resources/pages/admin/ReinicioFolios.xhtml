@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+
+        <style type="text/css">
+.ui-selectonemenu-panel {
+	width: 50px
+}
+</style>
+
+    </h:head>
+
+    <h:body>
+
+	<f:event type="preRenderView" listener="#{reinicioFoliosController.validaAcceso}" />
+        <h:form>
+		Secuencia: <h:outputText id="errorMsg" value="#{reinicioFoliosController.secuenciaActual}" />
+		
+            <h:panelGrid columns="2" id="loginsPanel" style="margin-top:20px">
+
+				<p:commandButton action="#{reinicioFoliosController.calcularFolio}" value="GenerarSecuencia" id="calcula" ajax="false" />
+				<p:commandButton action="#{reinicioFoliosController.reiniciarFolios}" value="Reiniciar" id="reiniciar" ajax="false" />
+			
+            </h:panelGrid>
+        </h:form>
+		
+		
+    </h:body>
+</ui:composition>

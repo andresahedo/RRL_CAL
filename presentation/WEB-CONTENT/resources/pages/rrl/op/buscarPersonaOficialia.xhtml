@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core">
+
+
+
+    <h:head>
+        <style type="text/css">
+.noBorder td {
+    border-style: none !important
+}
+
+.noBorder tr {
+    border-style: none !important
+}
+
+.ui-panel {
+    border-style: none !important;
+    width: #{sessionScope.tamanioBuzon}#{sessionScope.tipoTamanioBuzon};
+}
+</style>
+    </h:head>
+
+    <h:body>
+
+
+
+
+
+        <h:form id="formBuscar" onkeypress="if (event.keyCode == 13) { return false; }">
+
+            <p:panel id="panelMensajes">
+
+
+                <p:messages id="messages" showDetail="true" globalOnly="true" />
+            </p:panel>
+
+            <p:panel id="panelFuncionario" styleClass="noBorder">
+                <p:ajaxStatus onstart="statusDialog.show();" oncomplete="statusDialog.hide();" />
+                <p:dialog modal="true" widgetVar="statusDialog" resizable="false"
+                    header="#{msg['vuj.estatus.procesando']}" draggable="false" closable="false">
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+                </p:dialog>
+
+                <p:panelGrid columns="2" style="width:100%;">
+                    <p:row>
+                        <p:outputLabel value="Funcionario"></p:outputLabel>
+                    </p:row>
+                    <p:row>
+                        <p:outputLabel value="RFC Funcionario"></p:outputLabel>
+                    </p:row>
+                    <p:row>
+                        <p:inputText value="#{buscarSolicitanteRRLController.userProfile.nombreCompleto}"
+                            disabled="true"></p:inputText>
+                    </p:row>
+                    <p:row>
+                        <p:inputText value="#{buscarSolicitanteRRLController.userProfile.rfc}" disabled="true"></p:inputText>
+                    </p:row>
+                    <p:spacer></p:spacer>
+                    <p:row>
+                        <div align="right">
+                            <p:commandButton id="botonSiguiente" value="Siguiente"
+                                rendered="#{buscarSolicitanteRRLController.botonSiguiente}"
+                                actionListener="#{buscarSolicitanteRRLController.continuarRegistro}" ajax="false">
+                            </p:commandButton>
+                        </div>
+                    </p:row>
+                </p:panelGrid>
+
+            </p:panel>
+            <p:panel id="panelBuscarRegistrar">
+                <p:panel id="panelBusqueda" header="#{msg['oficialia.consulta.panel.solicitante']}"
+                    styleClass="noBorder">
+
+                    <p:panelGrid columns="2" style="width:100%;">
+
+                        <p:row>
+                            <p:outputLabel value="Tipo de Persona"></p:outputLabel>
+                            <p:outputLabel value=" *" style="color:red"></p:outputLabel>
+                        </p:row>
+                        <p:spacer></p:spacer>
+
+                        <p:row>
+                            <p:selectOneMenu required="true" id="comboTipoPersona"
+                                value="#{buscarSolicitanteRRLController.tipoPersonaSeleccionada}" filter="true"
+                                filterMatchMode="contains" requiredMessage="#{msg['oficialia.busqueda.mensaje.campos']}">
+                                <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}"></f:selectItem>
+                                <f:selectItems value="#{buscarSolicitanteRRLController.comboTiposPersona}"
+                                    var="tipoPersona" itemLabel="#{tipoPersona.descripcion}"
+                                    itemValue="#{tipoPersona.clave}"></f:selectItems>
+                            </p:selectOneMenu>
+                            <p:message for="comboTipoPersona" showDetail="true" display="text"></p:message>
+                        </p:row>
+                        <p:spacer></p:spacer>
+
+
+                        <p:row>
+                            <p:outputLabel value="Registro Federal de Contribuyentes"></p:outputLabel>
+                            <p:outputLabel value=" *" style="color:red"></p:outputLabel>
+                        </p:row>
+                        <p:spacer></p:spacer>
+
+                        <p:row>
+                            <p:inputText value="#{buscarSolicitanteRRLController.personaSolicitud.rfc}"
+                                required="#{buscarSolicitanteRRLController.blnRfc}" id="rfcBuscar"
+                                requiredMessage="#{msg['oficilia.mensaje.filtro.busqueda']}" maxlength="13">
+
+                            </p:inputText>
+                            <p:message for="rfcBuscar" showDetail="true" display="text"></p:message>
+                        </p:row>
+
+                        <p:row>
+                            <p:commandButton id="botonBuscar" style="float:right" value="Buscar"
+                                process="@this, rfcBuscar, comboTipoPersona"
+                                action="#{buscarSolicitanteRRLController.buscarPersonaSolicitante}"
+                                update=":formBuscar:panelMensajes, :formBuscar:panelBuscarRegistrar, :formBuscar:panelFuncionario, :formBuscar:panelDatosSolicitante">
+
+                            </p:commandButton>
+                            <p:commandButton style="float:right"
+                                rendered="#{buscarSolicitanteRRLController.blnRegistrar}" id="botonRegistrar"
+                                update=":formBuscar:panelBuscarRegistrar, :formBuscar:panelMensajes"
+                                disabled="#{buscarSolicitanteRRLController.blnPanelRegistro}"
+                                value="#{msg['oficialia.registrar.boton']}"
+                                action="#{buscarSolicitanteRRLController.iniciarRegistro}" process="@this"></p:commandButton>
+
+                        </p:row>
+                    </p:panelGrid>
+
+                </p:panel>
+
+
+                <p:panel id="panelDatosSolicitante" header="#{msg['oficialia.consulta.panel.datossolicitante']}"
+                    styleClass="noBorder" rendered="#{buscarSolicitanteRRLController.blnMostrarPanelConsulta}">
+
+                    <p:panelGrid columns="3">
+
+                        <p:row>
+                            <p:outputLabel value="#{msg['oficialia.registro.contribuyente.rfc']}"></p:outputLabel>
+                        </p:row>
+
+                        <p:spacer></p:spacer>
+                        <p:spacer></p:spacer>
+                        <p:row>
+                            <p:inputText value="#{buscarSolicitanteRRLController.personaSolicitud.rfc}" readonly="true"></p:inputText>
+                        </p:row>
+                        <p:spacer></p:spacer>
+                        <p:spacer rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}"></p:spacer>
+                        <p:spacer rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}"></p:spacer>
+                        <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}">
+                            <p:outputLabel value="#{msg['oficialia.registro.contribuyente.razonsocial']}"
+                                rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}"></p:outputLabel>
+                        </p:row>
+                        <p:spacer rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}"></p:spacer>
+                        <p:spacer rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}"></p:spacer>
+                        <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}">
+                            <p:outputLabel value="#{msg['oficialia.registro.contribuyente.apellidopat']}"
+                                rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}"></p:outputLabel>
+                        </p:row>
+                        <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}">
+                            <p:outputLabel value="#{msg['oficialia.registro.contribuyente.apellidomat']}"
+                                rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}"></p:outputLabel>
+                        </p:row>
+                        <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}">
+                            <p:outputLabel value="#{msg['oficialia.registro.contribuyente.nombre']}"
+                                rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}"></p:outputLabel>
+                        </p:row>
+                        <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}">
+                            <p:inputText value="#{buscarSolicitanteRRLController.personaSolicitud.razonSocial}"
+                                rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}" readonly="true"></p:inputText>
+                        </p:row>
+                        <p:spacer rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}"></p:spacer>
+                        <p:spacer rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}"></p:spacer>
+                        <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}">
+                            <p:inputText value="#{buscarSolicitanteRRLController.personaSolicitud.apellidoPaterno}"
+                                rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}" readonly="true"></p:inputText>
+                        </p:row>
+                        <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}">
+                            <p:inputText value="#{buscarSolicitanteRRLController.personaSolicitud.apellidoMaterno}"
+                                rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}" readonly="true"></p:inputText>
+                        </p:row>
+                        <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}">
+                            <p:inputText value="#{buscarSolicitanteRRLController.personaSolicitud.nombre}"
+                                rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}" readonly="true"></p:inputText>
+                        </p:row>
+                        <p:row>
+                            <p:outputLabel value="#{msg['oficialia.registro.contribuyente.calle']}" readonly="true"></p:outputLabel>
+                        </p:row>
+                        <p:row>
+                            <p:outputLabel value="#{msg['oficialia.registro.contribuyente.numeroexterior']}"
+                                readonly="true"></p:outputLabel>
+                        </p:row>
+                        <p:row>
+                            <p:outputLabel value="#{msg['oficialia.registro.contribuyente.numerointerior']}"
+                                readonly="true"></p:outputLabel>
+                        </p:row>
+                        <p:row>
+                            <p:inputText value="#{buscarSolicitanteRRLController.personaSolicitud.domicilio.calle}"
+                                readonly="true"></p:inputText>
+                        </p:row>
+                        <p:row>
+                            <p:inputText
+                                value="#{buscarSolicitanteRRLController.personaSolicitud.domicilio.numeroExterior}"
+                                readonly="true"></p:inputText>
+                        </p:row>
+                        <p:row>
+                            <p:inputText
+                                value="#{buscarSolicitanteRRLController.personaSolicitud.domicilio.numeroInterior}"
+                                readonly="true"></p:inputText>
+                        </p:row>
+                        <p:row>
+                            <p:outputLabel value="#{msg['oficialia.registro.contribuyente.colonia']}"></p:outputLabel>
+                        </p:row>
+
+                        <p:row>
+                            <p:outputLabel value="#{msg['oficialia.registro.contribuyente.delegacion']}"></p:outputLabel>
+                        </p:row>
+
+                        <p:row>
+                            <p:outputLabel value="#{msg['oficialia.registro.contribuyente.pais']}"></p:outputLabel>
+                        </p:row>
+                        <p:row>
+                            <p:inputText value="#{buscarSolicitanteRRLController.personaSolicitud.domicilio.colonia}"
+                                readonly="true"></p:inputText>
+                        </p:row>
+                        <p:row>
+                            <p:inputText
+                                value="#{buscarSolicitanteRRLController.personaSolicitud.domicilio.delegacionMunicipio}"
+                                readonly="true"></p:inputText>
+                        </p:row>
+                        <p:row>
+                            <p:inputText value="#{buscarSolicitanteRRLController.paisDTO.nombre}" readonly="true"></p:inputText>
+                        </p:row>
+                        <p:row>
+                            <p:outputLabel value="#{msg['oficialia.registro.contribuyente.codigopostal']}"></p:outputLabel>
+                        </p:row>
+
+                        <p:row>
+                            <p:outputLabel value="#{msg['oficialia.registro.contribuyente.telefono']}"></p:outputLabel>
+                        </p:row>
+
+                        <p:row>
+                            <p:outputLabel value="#{msg['oficialia.registro.contribuyente.correo']}"></p:outputLabel>
+                        </p:row>
+                        <p:row>
+                            <p:inputText
+                                value="#{buscarSolicitanteRRLController.personaSolicitud.domicilio.codigoPostal}"
+                                readonly="true"></p:inputText>
+                        </p:row>
+                        <p:row>
+                            <p:inputText value="#{buscarSolicitanteRRLController.personaSolicitud.domicilio.telefono}"
+                                readonly="true"></p:inputText>
+                        </p:row>
+                        <p:row>
+                            <p:inputText
+                                value="#{buscarSolicitanteRRLController.personaSolicitud.domicilio.correoElectronico}"
+                                readonly="#{buscarSolicitanteRRLController.blnCorreo}"></p:inputText>
+                        </p:row>
+
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel id="panelRegistroPersona" rendered="#{buscarSolicitanteRRLController.blnPanelRegistro}"
+                    styleClass="noBorder" header="#{msg['oficial.registro.contribuyente.panel']}">
+                    <p:panel id="panelRegistro" styleClass="noBorder" style="width:100%;">
+
+
+                        <p:panelGrid columns="4" styleClass="Border" style="width:100%;">
+
+                            <p:row>
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.rfc']}"></p:outputLabel>
+                                <p:outputLabel value=" *" style="color:red"></p:outputLabel>
+                            </p:row>
+                            <p:row>
+                                <p:selectBooleanCheckbox id="checkExtranjero"
+                                    value="#{buscarSolicitanteRRLController.personaSolicitud.blnExtranjero}"
+                                    disabled="false" style="align:right;"
+                                    itemLabel="#{msg['oficialia.registro.contribuyente.extranjero']}">
+                                    <p:ajax event="change" update="inputRfcReg" />
+                                </p:selectBooleanCheckbox>
+                            </p:row>
+                            <p:row>
+
+                            </p:row>
+                            <p:row>
+                                <div align="right">
+                                    <p:commandButton value="Guardar"
+                                        actionListener="#{buscarSolicitanteRRLController.guardarPersonaRegistrada}"
+                                        update=":formBuscar:panelBuscarRegistrar, :formBuscar:panelFuncionario, :formBuscar:panelMensajes, :formBuscar:panelRegistro, :formBuscar:panelRegPer"
+                                        process=":formBuscar:panelRegistroPersona"></p:commandButton>
+                                </div>
+                            </p:row>
+
+                            <p:row>
+                                <p:inputText id="inputRfcReg"
+                                    value="#{buscarSolicitanteRRLController.personaSolicitud.rfc}" maxlength="13"
+                                    required="true">
+                                    <f:attribute name="msgRFC" value="#{msg['oficialia.mensaje.validaRfc']}" />
+                                    <f:validator validatorId="rfcValidator"
+                                        disabled="#{buscarSolicitanteRRLController.personaSolicitud.blnExtranjero}" />
+                                </p:inputText>
+                                <p:message for="inputRfcReg" display="text" showDetail="true"></p:message>
+
+                            </p:row>
+                            <p:spacer></p:spacer>
+                            <p:spacer></p:spacer>
+                            <p:spacer></p:spacer>
+
+                            <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}">
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.razonsocial']}"
+                                    rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}"></p:outputLabel>
+                                <p:outputLabel value=" *" style="color:red"></p:outputLabel>
+                            </p:row>
+                            <p:spacer rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}"></p:spacer>
+                            <p:spacer rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}"></p:spacer>
+                            <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}">
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.apellidopat']}"
+                                    rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}"></p:outputLabel>
+                                <p:outputLabel value=" *" style="color:red"></p:outputLabel>
+                            </p:row>
+                            <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}">
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.apellidomat']}"
+                                    rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}"></p:outputLabel>
+                                <p:outputLabel value=" *" style="color:red"></p:outputLabel>
+                            </p:row>
+                            <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}">
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.nombre']}"
+                                    rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}"></p:outputLabel>
+                                <p:outputLabel value=" *" style="color:red"></p:outputLabel>
+                            </p:row>
+                            <p:spacer></p:spacer>
+                            <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}">
+                                <p:inputText id="inputRazonSocial"
+                                    value="#{buscarSolicitanteRRLController.personaSolicitud.razonSocial}"
+                                    maxlength="254" rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}"></p:inputText>
+
+                            </p:row>
+                            <p:spacer rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}"></p:spacer>
+                            <p:spacer rendered="#{buscarSolicitanteRRLController.blnPersonaMoral}"></p:spacer>
+
+                            <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}">
+                                <p:inputText id="inputApPaterno"
+                                    value="#{buscarSolicitanteRRLController.personaSolicitud.apellidoPaterno}"
+                                    maxlength="200" rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}"
+                                    required="true"></p:inputText>
+                                <p:message for="inputApPaterno" display="text" showDetail="true"></p:message>
+                            </p:row>
+                            <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}">
+                                <p:inputText value="#{buscarSolicitanteRRLController.personaSolicitud.apellidoMaterno}"
+                                    id="inputApMaterno" required="true" maxlength="200"
+                                    rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}"></p:inputText>
+                                <p:message for="inputApMaterno" display="text" showDetail="true"></p:message>
+                            </p:row>
+                            <p:row rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}">
+                                <p:inputText id="inputNombreSolicitante"
+                                    value="#{buscarSolicitanteRRLController.personaSolicitud.nombre}" maxlength="200"
+                                    rendered="#{buscarSolicitanteRRLController.blnPersonaFisica}" required="true"></p:inputText>
+                                <p:message for="inputNombreSolicitante" display="text" showDetail="true"></p:message>
+                            </p:row>
+                        </p:panelGrid>
+                    </p:panel>
+                    <p:panelGrid columns="3" styleClass="noBorder">
+                        <p:spacer></p:spacer>
+                        <p:spacer></p:spacer>
+                        <p:spacer></p:spacer>
+                        <p:spacer></p:spacer>
+                        <p:spacer></p:spacer>
+                        <p:spacer></p:spacer>
+                        <p:row>
+                            <h:outputLabel value="#{msg['oficialia.aviso.captura.solicitante']}"></h:outputLabel>
+                        </p:row>
+                        <p:spacer></p:spacer>
+                        <p:spacer></p:spacer>
+                        <p:spacer></p:spacer>
+                        <p:spacer></p:spacer>
+                        <p:spacer></p:spacer>
+                        <p:spacer></p:spacer>
+                    </p:panelGrid>
+
+
+
+                    <p:panel id="panelRegPer" styleClass="noBorder">
+                        <p:panelGrid columns="3" styleClass="noBorder">
+                            <p:row>
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.codigopostal']}"></p:outputLabel>
+                               
+                            </p:row>
+                            <p:row>
+                                <p:outputLabel value="Entidad Federativa">
+                                </p:outputLabel>
+                                <p:outputLabel value=" *" style="color:red"></p:outputLabel>
+                            </p:row>
+                            <p:row>
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.delegacion']}"></p:outputLabel>
+                                <p:outputLabel value=" *" style="color:red"></p:outputLabel>
+                            </p:row>
+
+
+
+                            <p:row>
+                                <p:inputText id="inputCodigoPostal"
+                                    value="#{buscarSolicitanteRRLController.domicilio.codigoPostal}" maxlength="12"
+                             >
+                                    <p:ajax event="blur" update="panelRegPer"
+                                        listener="#{buscarSolicitanteRRLController.buscarDireccionPorCP}"></p:ajax>
+                                </p:inputText>
+                                <p:message for="inputCodigoPostal" display="text" showDetail="true"></p:message>
+                            </p:row>
+
+                            <p:row>
+                                <p:selectOneMenu id="comboEstados"
+                                    value="#{buscarSolicitanteRRLController.estadoSelecDTO.clave}" required="true"
+                                    filter="true" filterMatchMode="contains">
+                                    <f:selectItem itemLabel="--SELECCIONE--" itemValue=""></f:selectItem>
+                                    <f:selectItems value="#{buscarSolicitanteRRLController.estados}" var="estado"
+                                        itemLabel="#{estado.nombre}" itemValue="#{estado.clave}"></f:selectItems>
+                                    <p:ajax update="comboDelegacion" event="change"
+                                        listener="#{buscarSolicitanteRRLController.cargarComboDelegaciones}" />
+                                </p:selectOneMenu>
+                                <p:message for="comboEstados" display="text" showDetail="true"></p:message>
+                            </p:row>
+
+
+                            <p:row>
+                                <p:selectOneMenu id="comboDelegacion"
+                                    value="#{buscarSolicitanteRRLController.delegacionSelectedDTO.clave}" filter="true"
+                                    filterMatchMode="contains" required="true">
+                                    <f:selectItem itemLabel="--SELECCIONE--" itemValue=""></f:selectItem>
+                                    <f:selectItems value="#{buscarSolicitanteRRLController.delegaciones}"
+                                        var="delegacion" itemLabel="#{delegacion.nombre}"
+                                        itemValue="#{delegacion.clave}"></f:selectItems>
+                                    <p:ajax update="comboLocalidad" event="change"
+                                        listener="#{buscarSolicitanteRRLController.cargarComboLocalidades}" />
+                                </p:selectOneMenu>
+                                <p:message for="comboDelegacion" display="text" showDetail="true"></p:message>
+                            </p:row>
+
+
+                            <p:row>
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.localidad']}"></p:outputLabel>
+                                <p:outputLabel value=" *" style="color:red"></p:outputLabel>
+                            </p:row>
+                            <p:row>
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.colonia']}"></p:outputLabel>
+                                <p:outputLabel value=" *" style="color:red"></p:outputLabel>
+                            </p:row>
+                            <p:row>
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.pais']}"></p:outputLabel>
+                                 <p:outputLabel value=" *" style="color:red"></p:outputLabel>
+                            </p:row>
+
+
+                            <p:row>
+                                <p:selectOneMenu id="comboLocalidad"
+                                    value="#{buscarSolicitanteRRLController.localidadDTO.clave}" filter="true"
+                                    filterMatchMode="contains" required="true">
+                                    <f:selectItem itemLabel="--SELECCIONE--" itemValue=""></f:selectItem>
+                                    <f:selectItems value="#{buscarSolicitanteRRLController.localidades}" var="localidad"
+                                        itemLabel="#{localidad.nombre}" itemValue="#{localidad.clave}"></f:selectItems>
+                                    <p:ajax update="comboColonia" event="change"
+                                        listener="#{buscarSolicitanteRRLController.cargarComboColonias}" />
+                                </p:selectOneMenu>
+                                <p:message for="comboLocalidad" display="text"></p:message>
+                            </p:row>
+
+                            <p:row>
+                                <p:selectOneMenu id="comboColonia"
+                                    value="#{buscarSolicitanteRRLController.coloniaDTO.clave}" filter="true"
+                                    filterMatchMode="contains" required="true">
+                                    <f:selectItem itemLabel="--SELECCIONE--" itemValue=""></f:selectItem>
+                                    <f:selectItems value="#{buscarSolicitanteRRLController.colonias}" var="colonia"
+                                        itemLabel="#{colonia.nombre}" itemValue="#{colonia.clave}">
+                                    </f:selectItems>
+                                </p:selectOneMenu>
+                                <p:message for="comboColonia" display="text" showDetail="true"></p:message>
+                            </p:row>
+                            <p:row>
+                                <p:inputText id="inputPais" value="#{buscarSolicitanteRRLController.paisDTO.nombre}"
+                                    disabled="true"></p:inputText>
+                            </p:row>
+
+                            <p:row>
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.calle']}"></p:outputLabel>
+                                <p:outputLabel value=" *" style="color:red"></p:outputLabel>
+                            </p:row>
+                            <p:row>
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.numeroexterior']}"></p:outputLabel>
+                                <p:outputLabel value=" *" style="color:red"></p:outputLabel>
+                            </p:row>
+                            <p:row>
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.numerointerior']}"></p:outputLabel>
+                            </p:row>
+
+                            <p:row>
+                                <p:inputText id="inputCalle"
+                                    value="#{buscarSolicitanteRRLController.personaSolicitud.domicilio.calle}"
+                                    maxlength="100" required="true"></p:inputText>
+                                <p:message for="inputCalle" display="text" showDetail="true"></p:message>
+                            </p:row>
+                            <p:row>
+                                <p:inputMask id="inputNumExterior"
+                                    value="#{buscarSolicitanteRRLController.personaSolicitud.domicilio.numeroExterior}"
+                                    maxlength="55" required="true"
+                                    mask="9?999999999999999999999999999999999999999999999999999999" />
+                                <p:message for="inputNumExterior" display="text" showDetail="true"></p:message>
+                            </p:row>
+                            <p:row>
+                                <p:inputText
+                                    value="#{buscarSolicitanteRRLController.personaSolicitud.domicilio.numeroInterior}"
+                                    maxlength="55" />
+                            </p:row>
+
+                            <p:row>
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.telefono']}"></p:outputLabel>
+                            </p:row>
+                            <p:row>
+                                <p:outputLabel value="#{msg['oficialia.registro.contribuyente.correo']}"></p:outputLabel>
+                            </p:row>
+                            <p:spacer></p:spacer>
+
+                            <p:row>
+                                <p:inputMask
+                                    value="#{buscarSolicitanteRRLController.personaSolicitud.domicilio.telefono}"
+                                    maxlength="30" mask="9?99999999999999999999999999999" />
+                            </p:row>
+                            <p:row>
+                                <p:inputText id="inputCorreo"
+                                    value="#{buscarSolicitanteRRLController.personaSolicitud.domicilio.correoElectronico}"
+                                    maxlength="320">
+                                </p:inputText>
+                                <p:message for="inputCorreo" display="text"></p:message>
+                            </p:row>
+
+                        </p:panelGrid>
+
+                    </p:panel>
+
+                </p:panel>
+
+            </p:panel>
+        </h:form>
+
+
+
+
+    </h:body>
+</ui:composition>

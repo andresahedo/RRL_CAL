@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <style type="text/css">
+.panelMontoStyle td {
+    border-style: hidden !important;
+}
+
+.panelContent td {
+    border: black solid 0px !important;
+}
+</style>
+
+    <p:panel id="panel1Title" header="#{msg['vuj.tab.solicitante']}" style="width:100%">
+        <p:panelGrid id="panelSolicitante1" styleClass="panelMontoStyle" style="border-style: hidden !important;">
+            <p:row>
+                <p:column>
+                    <p:outputLabel value="#{msg['vuj.solicitante.rfc']}" />
+                </p:column>
+                <p:column>
+					<p:outputLabel value="#{msg['vuj.solicitante.estadoContribuyente']}"/>
+				</p:column>
+                <c:choose>
+                    <c:when test="#{solicitudControllerOficialia.banderaRazonSocial}">
+                        <p:column>
+                            <p:outputLabel value="#{msg['vuj.solicitante.razonSocial']}" />
+                        </p:column>
+                        <p:column>
+                        </p:column>
+                    </c:when>
+                    <c:otherwise>
+                        <p:column>
+                        </p:column>
+                        <p:column>
+                        </p:column>
+                    </c:otherwise>
+                </c:choose>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <p:inputText value="#{solicitudControllerOficialia.datosSolicitud.rfcContribuyente}" readonly="true"
+                        id="rfcContribuyente" />
+                </p:column>
+                <p:column>
+						<p:inputText value="#{solicitudControllerOficialia.datosSolicitud.estadoContribuyente}" readonly="true" id="estadoContribuyente"/>
+					</p:column>
+                <c:choose>
+                    <c:when test="#{solicitudControllerOficialia.banderaRazonSocial==true}">
+                        <p:column>
+                            <p:inputText value="#{solicitudControllerOficialia.datosSolicitud.razonSocial}"
+                                readonly="true" style="width:208%" />
+                        </p:column>
+                        <p:column>
+                        </p:column>
+                    </c:when>
+                    <c:otherwise test="#{solicitudControllerOficialia.banderaRazonSocial==false}">
+                        <p:column>
+                        </p:column>
+                        <p:column>
+                        </p:column>
+                    </c:otherwise>
+                </c:choose>
+            </p:row>
+            <c:choose>
+                <c:when test="#{solicitudControllerOficialia.banderaRazonSocial==false}">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['vuj.solicitante.apellidoPaterno']}" />
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="#{msg['vuj.solicitante.apellidoMaterno']}" />
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="#{msg['vuj.solicitante.nombre']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText value="#{solicitudControllerOficialia.datosSolicitud.apellidoPaterno}"
+                                readonly="true" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{solicitudControllerOficialia.datosSolicitud.apellidoMaterno}"
+                                readonly="true" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{solicitudControllerOficialia.datosSolicitud.nombre}" readonly="true" />
+                        </p:column>
+                    </p:row>
+                </c:when>
+            </c:choose>
+        </p:panelGrid>
+        <br />
+        <br />
+        <br />
+
+        <p:panel id="panelDomicilioSolicitante" header="#{msg['rrl.promocion.domicilio.solicitante']}"
+            style="width:100%">
+            <p:panelGrid id="panelSolicitante2" styleClass="panelMontoStyle">
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msg['vuj.solicitante.domicilio.calle']} " />
+                        <h:graphicImage id="ayudaIdCalle" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdCalle" value="#{msg['contribuyente.calle']}" adjustX="20" adjustY="20"
+                            mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['vuj.solicitante.domicilio.numeroExterior']} " />
+                        <h:graphicImage id="ayudaIdNexterior" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdNexterior" value="#{msg['contribuyente.num.exterior']}" adjustX="20"
+                            adjustY="20" mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['vuj.solicitante.domicilio.numeroInterior']} " />
+                        <h:graphicImage id="ayudaIdNinterior" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdNinterior" value="#{msg['contribuyente.num.interior']}" adjustX="20"
+                            adjustY="20" mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:inputText id="inputCalle" value="#{solicitudControllerOficialia.datosSolicitud.calle}"
+                            readonly="true" disabled="false" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText id="inputNumExterior"
+                            value="#{solicitudControllerOficialia.datosSolicitud.numeroExterior}" disabled="false"
+                            readonly="true" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText id="inputNumInterior"
+                            value="#{solicitudControllerOficialia.datosSolicitud.numeroInterior}" disabled="false"
+                            readonly="true" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msg['vuj.solicitante.domicilio.colonia']} " />
+                        <h:graphicImage id="ayudaIdCol" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdCol" value="#{msg['contribuyente.colonia']}" adjustX="20" adjustY="20"
+                            mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['vuj.solicitante.domicilio.delegacionMunicipio']} " />
+                        <h:graphicImage id="ayudaIdDel" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdDel" value="#{msg['contribuyente.delegacion']}" adjustX="20"
+                            adjustY="20" mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['vuj.solicitante.domicilio.estado']} " />
+                        <h:graphicImage id="ayudaIdEdo" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdEdo" value="#{msg['contribuyente.estado']}" adjustX="20" adjustY="20"
+                            mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:inputText id="inputColonia" value="#{solicitudControllerOficialia.datosSolicitud.colonia}"
+                            disabled="false" readonly="true" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText id="inputDelegMunicipio"
+                            value="#{solicitudControllerOficialia.datosSolicitud.delegacionMunicipio}" disabled="false"
+                            readonly="true" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText id="inputEstado" value="#{solicitudControllerOficialia.datosSolicitud.estado}"
+                            disabled="false" readonly="true" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msg['vuj.solicitante.domicilio.codigoPostal']} " />
+                        <h:graphicImage id="ayudaIdcp" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdcp" value="#{msg['contribuyente.cp']}" adjustX="20" adjustY="20"
+                            mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['vuj.solicitante.domicilio.telefono']} " />
+                        <h:graphicImage id="ayudaIdTel" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdTel" value="#{msg['contribuyente.tel']}" adjustX="20" adjustY="20"
+                            mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['vuj.solicitante.domicilio.correoElectronico']} " />
+                        <h:graphicImage id="ayudaIdMail" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdMail" value="#{msg['contribuyente.correo']}" adjustX="20" adjustY="20"
+                            mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:inputText id="inputCP" value="#{solicitudControllerOficialia.datosSolicitud.codigoPostal}"
+                            disabled="false" readonly="true" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText id="inputTel" value="#{solicitudControllerOficialia.datosSolicitud.telefono}"
+                            disabled="false" readonly="true" />
+                    </p:column>
+                    <p:column>
+                        <p:inputTextarea rows="#{solicitudController.rowsCorreo}" id="inputCorreo"
+                            value="#{solicitudControllerOficialia.datosSolicitud.correoElectronico}" disabled="false"
+                            readonly="true" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msg['vuj.solicitante.representanteLegal']} " />
+                        <h:graphicImage id="ayudaIdRep" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdRep" value="#{msg['contribuyente.representanteLegal']}" adjustX="20"
+                            adjustY="20" mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['vuj.solicitante.administracionLocal']} " />
+                        <h:graphicImage id="ayudaIdLocal" url="/resources/css/images/ayuda.png" />
+                        <pe:tooltip for="ayudaIdLocal" value="#{msg['contribuyente.administracion']}" adjustX="20"
+                            adjustY="20" mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{msg['vuj.solicitante.pais']} " />
+                    </p:column>
+
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:inputText id="inputRepresentanteLegal"
+                            value="#{solicitudControllerOficialia.datosSolicitud.representanteLegal}" disabled="false"
+                            readonly="true" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText id="inputAdmonLocalNombre"
+                            value="#{solicitudControllerOficialia.datosSolicitud.nombreAdministracionLocal}"
+                            disabled="false" readonly="true" />
+                        <h:inputHidden id="inputAdmonLocal"
+                            value="#{solicitudControllerOficialia.datosSolicitud.administracionLocal}" disabled="false"
+                            readonly="true" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText id="inputPaisNombre"
+                            value="#{solicitudControllerOficialia.datosSolicitud.paisNombre}" disabled="false"
+                            readonly="true" />
+
+                        <h:inputHidden id="inputPais" value="#{solicitudControllerOficialia.datosSolicitud.paisCve}"
+                            disabled="false" readonly="true" />
+                    </p:column>
+
+
+                </p:row>
+            </p:panelGrid>
+        </p:panel>
+
+    </p:panel>
+
+
+
+    <p:panel id="panel2Title" header="#{msg['vuj.tab.promocion']}" style="width:100%">
+        <p:outputLabel value="#{msg['vuj.camposObligatorios']}" style="color:red" />
+
+        <p:panelGrid styleClass="panelMontoStyle">
+            <p:row>
+                <p:column colspan="2">
+
+                    <p:outputLabel value="#{msg['vuj.autoridadEmisora']}" />
+                    <p:outputLabel value="* " style="color:red" />
+                    <h:graphicImage id="ayudaIdEmisora" url="/resources/css/images/ayuda.png" />
+                    <pe:tooltip for="ayudaIdEmisora" value="#{msg['contribuyente.autoridadEmisora']}" adjustX="20"
+                        adjustY="20" mouseTracking="true" showEffect="fade" />
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column colspan="2">
+                    <p:selectOneMenu effect="fade" id="idAutoridadEmisora" filter="true" filterMatchMode="contains"
+                        value="#{solicitudControllerOficialia.datosSolicitud.idAutoridadEmisora}" required="true"
+                        valueChangeListener="#{solicitudController.cambiarAutoridadEmisora}">
+
+                        <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                        <f:selectItems value="#{solicitudControllerOficialia.listaUnidadesEmisoras}" var="unidades"
+                            itemLabel="#{unidades.descripcion}" itemValue="#{unidades.clave}" />
+                        <p:ajax event="valueChange" immediate="true" process="@this" />
+                    </p:selectOneMenu>
+                    <p:message for="documento" display="text"></p:message>
+                </p:column>
+
+            </p:row>
+        </p:panelGrid>
+        <br />
+        <br />
+        <div>
+            <h:outputLabel value="#{msg['rrl.captura.solicitud.datos']}"></h:outputLabel>
+        </div>
+    </p:panel>
+
+
+    <h:outputScript name='/js/calendar_es.js' target="head" />
+
+
+</ui:composition>

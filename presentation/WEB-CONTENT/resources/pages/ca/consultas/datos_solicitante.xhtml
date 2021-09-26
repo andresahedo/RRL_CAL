@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</h:head>
+<h:body>
+
+    <p:panel id="panelSolicitante1">
+        <table cellpadding="5">
+            <tr>
+                <td><h:outputText value="#{msg['vuj.solicitante.rfc']} " /></td>
+                <td><h:outputText value="#{msg['vuj.solicitante.estadoContribuyente']} " /></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.solicitante.rfc}" readonly="true" /></td>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.solicitante.estadoContribuyente}" readonly="true" /></td>
+                <td></td>
+            </tr>
+        </table>
+
+        <table cellpadding="5">
+            <tr>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.nombre']}" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.apellidoPaterno']}" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.apellidoMaterno']}" /></td>
+            </tr>
+            <tr>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.solicitante.nombre}"
+                        readonly="true" /></td>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.solicitante.apellidoPaterno}"
+                        readonly="true" /></td>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.solicitante.apellidoMaterno}"
+                        readonly="true" /></td>
+            </tr>
+        </table>
+    </p:panel>
+
+    <p:panel id="panelSolicitante2" header="#{msg['vuj.solicitante.domicilioContribuyente']}">
+        <table cellpadding="5">
+            <tr>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.calle']}" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.numeroExterior']}" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.numeroInterior']}" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.colonia']}" /></td>
+            </tr>
+            <tr>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.solicitante.domicilio.calle}"
+                        readonly="true" /></td>
+                <td><p:inputText
+                        value="#{registroSolicitudCAController.solicitud.solicitante.domicilio.numeroExterior}"
+                        readonly="true" /></td>
+                <td><p:inputText
+                        value="#{registroSolicitudCAController.solicitud.solicitante.domicilio.numeroInterior}"
+                        readonly="true" /></td>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.solicitante.domicilio.colonia}"
+                        readonly="true" /></td>
+            </tr>
+        </table>
+        <table cellpadding="5">
+            <tr>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.delegacionMunicipio']}" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.estado']}" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.codigoPostal']}" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.telefono']}" /></td>
+            </tr>
+            <tr>
+                <td><p:inputText
+                        value="#{registroSolicitudCAController.solicitud.solicitante.domicilio.delegacionMunicipio}"
+                        readonly="true" /></td>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.solicitante.domicilio.estado}"
+                        readonly="true" /></td>
+                <td><p:inputText
+                        value="#{registroSolicitudCAController.solicitud.solicitante.domicilio.codigoPostal}"
+                        readonly="true" /></td>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.solicitante.domicilio.telefono}"
+                        readonly="true" /></td>
+            </tr>
+        </table>
+        <table cellpadding="5">
+            <tr>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.domicilio.correoElectronico']}" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.representanteLegal']}" /></td>
+                <td><p:outputLabel value="#{msg['vuj.solicitante.administracionLocal']}" /></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><p:inputTextarea
+                        value="#{registroSolicitudCAController.solicitud.solicitante.domicilio.correoElectronico}"
+                        readonly="true" /></td>
+                <td><p:inputText
+                        value="#{registroSolicitudCAController.solicitud.solicitante.domicilio.representanteLegal}"
+                        readonly="true" /></td>
+                <td><p:inputText
+                        value="#{registroSolicitudCAController.solicitud.solicitante.domicilio.administracionLocal}"
+                        readonly="true" /></td>
+                <td></td>
+            </tr>
+        </table>
+    </p:panel>
+
+</h:body>
+</html>

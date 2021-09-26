@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <h:head>
+        <f:event listener="#{seleccionTramiteController.validaAccesoProcesoMenu}" type="preRenderView" />
+    </h:head>
+    <h:body>
+        <style type="text/css">
+.ui-panel {
+    border-style: none !important;
+    width: #{sessionScope.tamanioBuzon}#{sessionScope.tipoTamanioBuzon};
+}
+</style>
+        <h:form id="selectregistro">
+            <p:panel header="#{msg['oficialia.seleccion.tramite']}">
+                <div align="center">
+                    <table id="selectTable">
+                        <tr>
+                            <td><p:panel style="width:100%">
+                                    <table>
+                                        <tr>
+                                            <td style="width: 210px"><p:commandButton
+                                                    value="#{msg['solicitud.registro.rrl']}"
+                                                    action="/resources/pages/rrl/op/buscarPersonaOficialia.jsf?faces-redirect=true"
+                                                    style="width: 200px; height: 30px;" /></td>
+                                        </tr>
+                                    </table>
+                                </p:panel></td>
+                            <td><p:panel style="width:100%">
+                                    <table>
+                                        <tr>
+                                            <td style="width: 210px"><p:commandButton
+                                                    value="#{msg['solicitud.registro.cal']}"
+                                                    actionListener="#{seleccionTramiteController.registroPromocionCALOficialia}"
+                                                    style="width: 200px; height: 30px;" /></td>
+                                        </tr>
+                                    </table>
+                                </p:panel></td>
+                        </tr>
+                    </table>
+                </div>
+            </p:panel>
+        </h:form>
+    </h:body>
+</ui:composition>

@@ -1,0 +1,57 @@
+@CHARSET "ISO-8859-1";
+
+.tPaso1 {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_1_rrl_default.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso2 {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_2_rrl_default.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso3 {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_3_rrl_default.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso4 {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_4_rrl_default.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso1.ui-state-highlight {
+    background: url(#{request.contextPath}/resources/css/images/Paso_1_rrl_activo.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso2.ui-state-highlight {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_2_rrl_activo.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso3.ui-state-highlight {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_3_rrl_activo.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}
+
+.tPaso4.ui-state-highlight {
+    background-image: url(#{request.contextPath}/resources/css/images/Paso_4_rrl_activo.png) !important;
+    background-repeat: no-repeat !important;
+    width: 141px;
+    height: 70px;
+}

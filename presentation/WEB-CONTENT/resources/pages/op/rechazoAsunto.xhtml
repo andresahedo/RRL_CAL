@@ -1,0 +1,120 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <style type="text/css">
+.noBorder td {
+    border-style: hidden !important;
+}
+
+.ui-panel {
+    border-style: none !important;
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+</style>
+    </h:head>
+
+    <h:body>
+        <h:form id="rechazarForm">
+
+            <p:panel id="msgPanelRes">
+                <p:messages id="messagesRes" showDetail="true" globalOnly="true" autoUpdate="true" />
+            </p:panel>
+
+            <p:panel styleClass="noBorder">
+                <p:panelGrid columns="1" styleClass="noBorder" style="float:right;">
+                    <p:column>
+                        <p:commandButton id="firma" value="#{msg['vuj.boton.firmar']}"
+                            actionListener="#{turnarRecursoRevocacionController.firmaRechazo}" update="@form"
+                            ajax="false" />
+                    </p:column>
+                </p:panelGrid>
+            </p:panel>
+
+            <p:panel id="datosGenerales" style="border-style: hidden !important;">
+                <p:panelGrid styleClass="noBorder">
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.funcionario']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.numAsunto']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText readonly="true"
+                                value="#{turnarRecursoRevocacionController.userProfile.nombreCompleto}" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText readonly="true" value="#{turnarRecursoRevocacionController.userProfile.rfc}" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText readonly="true"
+                                value="#{turnarRecursoRevocacionController.datosBandejaTareaDTO.numeroAsunto}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{msg['oficialia.rechazo.asunto.fechaRecepcion']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['oficialia.rechazo.asunto.fechaVencimiento']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['oficialia.rechazo.asunto.estadoProcesal']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText readonly="true"
+                                value="#{turnarRecursoRevocacionController.tramite.fechaRecepcion}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText>
+                        </p:column>
+                        <p:column>
+                            <p:inputText readonly="true"
+                                value="#{turnarRecursoRevocacionController.tramite.fechaVencimiento}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText>
+                        </p:column>
+                        <p:column>
+                            <p:inputText readonly="true"
+                                value="#{turnarRecursoRevocacionController.tramite.estadoProcesal}" />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </p:panel>
+
+            <p:panel id="motivoRechazo" header="#{msg['oficialia.rechazo.asunto.encabezado']}"
+                style="text-align:center;border-style: hidden !important;" />
+            <p:panel style="border-style: hidden !important;">
+                <p:panelGrid styleClass="noBorder">
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{msg['oficialia.rechazo.asunto.seleccionMotivo']}" />
+                            <p:outputLabel style="color:red">*</p:outputLabel>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:selectOneMenu id="motivo" widgetVar="motivosCom" style="width:400px;"
+                                value="#{turnarRecursoRevocacionController.cveMotivo}" filter="true"
+                                filterMatchMode="contains">
+                                <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                                <f:selectItems value="#{turnarRecursoRevocacionController.motivoCombo}" var="motivo"
+                                    itemLabel="#{motivo.descripcion}" itemValue="#{motivo.clave}" />
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </p:panel>
+        </h:form>
+    </h:body>
+
+</ui:composition>

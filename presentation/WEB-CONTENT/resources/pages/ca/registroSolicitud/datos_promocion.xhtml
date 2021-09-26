@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</h:head>
+
+<h:body>
+
+    <p:panel id="panelPromocion1">
+        <table cellpadding="5">
+            <tr>
+                <td><h:outputLabel value="#{msg['vuj.autoridadEmisora']}" /> <p:outputLabel value=" *"
+                        style="color:red" /></td>
+            </tr>
+            <tr>
+                <td><p:selectOneMenu effect="fade" id="unidadEmisoraSelect" filter="true"
+                        filterMatchMode="contains" value="#{registroSolicitudCAController.solicitud.claveUnidadEmisora}"
+                        required="true" requiredMessage="#{errmsg['ca.solicitud.promocion.required.autoridadEmisora']}"
+                        style="width:250px ;">
+                        <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                        <f:selectItems value="#{registroSolicitudCAController.listaAutoridadesEmisoras}"
+                            var="unidadEmisora" itemLabel="#{unidadEmisora.descripcion}"
+                            itemValue="#{unidadEmisora.clave}" />
+                    </p:selectOneMenu></td>
+            </tr>
+        </table>
+    </p:panel>
+
+    <p:panel id="panelPromocion2" header="#{msg['ca.tabCaptura.personasOir.recibir.notificaciones']}">
+        <table cellpadding="5">
+            <tr>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.paorn.rfc']}" /></td>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.paorn.email']}" /></td>
+            </tr>
+            <tr>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.rfcPAORN}" maxlength="15"
+                        size="30" /></td>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.mailPAORN}" maxlength="320"
+                        size="100">
+                        <f:validator validatorId="eMailValidator" />
+                    </p:inputText></td>
+            </tr>
+        </table>
+    </p:panel>
+
+    <p:panel id="panelPromocion3" header="#{msg['ca.captura.solicitud.residenteExtranjero']}">
+        <table cellpadding="5">
+            <tr>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.residenteExtranjero.nombre']}" /></td>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.residenteExtranjero.apellidoPaterno']}" /></td>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.residenteExtranjero.apellidoMaterno']}" /></td>
+            </tr>
+            <tr>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.nombreResidente}" maxlength="200"
+                        size="30" /></td>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.apellidoPaternoResidente}"
+                        maxlength="200" size="30" /></td>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.apellidoMaternoResidente}"
+                        maxlength="200" size="30" /></td>
+            </tr>
+        </table>
+        <table cellpadding="5">
+            <tr>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.residenteExtranjero.rfc.nif']}" /></td>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.residenteExtranjero.direccion']}" /></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.rfcResidente}" maxlength="20"
+                        size="30" /></td>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.direccion}" maxlength="1000"
+                        size="100" /></td>
+                <td></td>
+            </tr>
+        </table>
+    </p:panel>
+
+    <p:panel id="panelPromocion4" header="#{msg['vuj.tab.promocion']}">
+        <table cellpadding="5">
+            <tr>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.granContribuyente']}" /> <p:outputLabel
+                        value=" *" style="color:red" /></td>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.montoOperacion']}" /> ($) <p:outputLabel
+                        value=" *" style="color:red" /></td>
+            </tr>
+            <tr>
+                <td><p:selectOneMenu effect="fade" id="granContribuyenteSelect" filter="true"
+                        filterMatchMode="contains" value="#{registroSolicitudCAController.solicitud.granContribuyete}"
+                        required="true" requiredMessage="#{errmsg['ca.solicitud.promocion.required.granContribuyente']}">
+                        <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                        <f:selectItems value="#{registroSolicitudCAController.listaGranContribuyente}"
+                            var="gContribuyente" itemLabel="#{gContribuyente.descripcion}"
+                            itemValue="#{gContribuyente.clave}" />
+                    </p:selectOneMenu></td>
+                <td><p:inputText value="#{registroSolicitudCAController.solicitud.monto}" maxlength="16" size="20"
+                        required="true" requiredMessage="#{errmsg['ca.solicitud.promocion.required.montoOperacion']}">
+                        <f:validator validatorId="montoEnteroValidator" />
+                    </p:inputText></td>
+            </tr>
+        </table>
+
+        <table cellpadding="5">
+            <tr>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.actividadInteresado']}" /> <p:outputLabel
+                        value=" *" style="color:red" /></td>
+            </tr>
+            <tr>
+                <td><p:inputTextarea value="#{registroSolicitudCAController.solicitud.actividadInteresado}"
+                        cols="100" rows="3" maxlength="500" size="500" style='height:50px;' required="true"
+                        requiredMessage="#{errmsg['ca.solicitud.promocion.required.actividadInteresado']}" /></td>
+            </tr>
+            <tr>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.hechosCircunstancias']}" /> <p:outputLabel
+                        value=" *" style="color:red" /></td>
+            </tr>
+            <tr>
+                <td><p:inputTextarea value="#{registroSolicitudCAController.solicitud.hechosCircunstancias}"
+                        cols="100" rows="3" maxlength="3800" size="3800" style='height:50px;' required="true"
+                        requiredMessage="#{errmsg['ca.solicitud.promocion.required.hechosCircunstancias']}" /></td>
+            </tr>
+            <tr>
+                <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.razonNegocio']}" /> <p:outputLabel
+                        value=" *" style="color:red" /></td>
+            </tr>
+            <tr>
+                <td><p:inputTextarea value="#{registroSolicitudCAController.solicitud.razonNegocio}" cols="100"
+                        rows="3" maxlength="3800" size="3800" style='height:50px;' required="true"
+                        requiredMessage="#{errmsg['ca.solicitud.promocion.required.razonNegocio']}" /></td>
+            </tr>
+        </table>
+
+        <table cellpadding="1">
+            <tr>
+                <td colspan="4"><p:selectBooleanCheckbox id="blnManifiesto1" binding="#{blnManifiesto1}"
+                        widgetVar="varBlnManifiesto1" value="#{registroSolicitudCAController.solicitud.manifiesto1}"
+                        onchange="validarSeccionMediosDefensa()" /></td>
+                <td><p:outputLabel value="#{msg['ca.captura.solicitud.promocion.manifiesto1']}" /></td>
+            </tr>
+        </table>
+        <div id="divMediosDefensa">
+            <table cellpadding="5">
+                <tr>
+                    <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.mediosDefensa']}" /> <p:outputLabel
+                            value=" *" style="color:red" /></td>
+                    <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.numeroAsunto']}" /> <p:outputLabel
+                            value=" *" style="color:red" /></td>
+                    <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.sentidoResolucion']}" /> <p:outputLabel
+                            value=" *" style="color:red" /></td>
+                    <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.autoridad']}" /> <p:outputLabel
+                            value=" *" style="color:red" /></td>
+                </tr>
+                <tr>
+                    <td><p:selectOneMenu effect="fade" id="mediosDefensaSelect" widgetVar="comboMediosDefensa"
+                            filter="true" filterMatchMode="contains"
+                            value="#{registroSolicitudCAController.solicitud.claveMedioDefensa}" style="width:250px ;">
+                            <f:selectItem itemValue=" " itemLabel="#{msg['vuj.combo.seleccione']}" />
+                            <f:selectItems value="#{registroSolicitudCAController.listaMediosDefensa}" var="mDefensa"
+                                itemLabel="#{mDefensa.descripcion}" itemValue="#{mDefensa.clave}" />
+                            <f:validator validatorId="mediosDefensaCAValidator" />
+                            <f:attribute name="manifiestoUno" value="#{blnManifiesto1}" />
+                        </p:selectOneMenu></td>
+                    <td><p:inputText value="#{registroSolicitudCAController.solicitud.numeroAsunto}"
+                            id="numeroAsuntoText" maxlength="30" size="35">
+                            <f:validator validatorId="numeroAsuntoCAValidator" />
+                            <f:attribute name="manifiestoUno" value="#{blnManifiesto1}" />
+                        </p:inputText></td>
+                    <td><p:selectOneMenu effect="fade" id="sentidoResolucionSelect"
+                            widgetVar="comboSentidoResolucion" filter="true" filterMatchMode="contains"
+                            value="#{registroSolicitudCAController.solicitud.claveSentidoResolucion}"
+                            style="width:250px ;">
+                            <f:selectItem itemValue=" " itemLabel="#{msg['vuj.combo.seleccione']}" />
+                            <f:selectItems value="#{registroSolicitudCAController.listaSentidosResolucion}"
+                                var="sResolucion" itemLabel="#{sResolucion.descripcion}"
+                                itemValue="#{sResolucion.clave}" />
+                            <f:validator validatorId="sentidosResolucionCAValidator" />
+                            <f:attribute name="manifiestoUno" value="#{blnManifiesto1}" />
+                        </p:selectOneMenu></td>
+                    <td><p:selectOneMenu effect="fade" id="autoridadSelect" widgetVar="comboAutoridad"
+                            filter="true" filterMatchMode="contains"
+                            value="#{registroSolicitudCAController.solicitud.claveAutoridad}" style="width:250px ;">
+                            <f:selectItem itemValue=" " itemLabel="#{msg['vuj.combo.seleccione']}" />
+                            <f:selectItems value="#{registroSolicitudCAController.listaAutoridad}" var="autoridad"
+                                itemLabel="#{autoridad.descripcion}" itemValue="#{autoridad.clave}" />
+                            <f:validator validatorId="autoridadCAValidator" />
+                            <f:attribute name="manifiestoUno" value="#{blnManifiesto1}" />
+                        </p:selectOneMenu></td>
+                </tr>
+            </table>
+        </div>
+
+        <table cellpadding="1">
+            <tr>
+                <td><p:selectBooleanCheckbox id="blnManifiesto2" binding="#{blnManifiesto2}"
+                        widgetVar="varBlnManifiesto2" value="#{registroSolicitudCAController.solicitud.manifiesto2}"
+                        onchange="validarSeccionEjercicio()" /></td>
+                <td><p:outputLabel value="#{msg['ca.captura.solicitud.promocion.manifiesto2']}" /></td>
+            </tr>
+        </table>
+        <div id="divEjercicioFisca">
+            <table cellpadding="5">
+                <tr>
+                    <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.periodosContribuciones']}" />
+                        <p:outputLabel value=" *" style="color:red" /></td>
+                </tr>
+                <tr>
+                    <td><p:inputTextarea value="#{registroSolicitudCAController.solicitud.periodosContribuciones}"
+                            id="testAreaPeriodosContribuciones" cols="100" rows="3" maxlength="3800" size="3800"
+                            style='height:50px;'>
+                            <f:validator validatorId="periodoCAValidator" />
+                            <f:attribute name="manifiestoDos" value="#{blnManifiesto2}" />
+                        </p:inputTextarea></td>
+                </tr>
+                <tr>
+                    <td><h:outputLabel value="#{msg['ca.captura.solicitud.promocion.plazo']}" /> <p:outputLabel
+                            value=" *" style="color:red" /></td>
+                </tr>
+                <tr>
+                    <td><p:selectOneMenu effect="fade" id="plazoSelect" widgetVar="comboPlazos" filter="true"
+                            filterMatchMode="contains" value="#{registroSolicitudCAController.solicitud.plazo}"
+                            style="width:200px ;">
+                            <f:selectItem itemValue=" " itemLabel="#{msg['vuj.combo.seleccione']}" />
+                            <f:selectItems value="#{registroSolicitudCAController.listaPlazo}" var="plazo"
+                                itemLabel="#{plazo.descripcion}" itemValue="#{plazo.clave}" />
+                            <f:validator validatorId="plazoCAValidator" />
+                            <f:attribute name="manifiestoDos" value="#{blnManifiesto2}" />
+                        </p:selectOneMenu></td>
+                </tr>
+            </table>
+        </div>
+    </p:panel>
+
+    <script type="text/javascript">
+				
+				$(document).ready(function() {
+					ocultarMediosDefensa();
+					ocultarEjercicio();					
+				});
+				
+				function validarSeccionMediosDefensa() {
+					var chkMedio = ''+varBlnManifiesto1.isChecked();
+					if(chkMedio=='true'){
+						mostrarMediosDefensa();						
+					}else{
+						ocultarMediosDefensa();						
+					}					
+				}
+				
+				function validarSeccionEjercicio() {
+					var chkMedio = ''+varBlnManifiesto2.isChecked();
+					if(chkMedio=='true'){
+						mostrarEjercicio();
+					}else{
+						ocultarEjercicio();
+					}					
+				}
+				
+				function mostrarMediosDefensa(){
+					$('#divMediosDefensa').show();
+				}
+				
+				function mostrarEjercicio(){
+					$('#divEjercicioFisca').show();
+				}
+				
+				function ocultarMediosDefensa(){
+					comboMediosDefensa.selectValue(" ");
+					comboSentidoResolucion.selectValue(" ");
+					comboAutoridad.selectValue(" ");
+					$('#solicitudForm\\:tabSolicitud\\:numeroAsuntoText').val('');
+					$('#divMediosDefensa').hide();
+				}
+				
+				function ocultarEjercicio(){
+					$('#divEjercicioFisca').hide();										
+					$('#solicitudForm\\:tabSolicitud\\:testAreaPeriodosContribuciones').val('');
+					comboPlazos.selectValue(" ");					
+				}
+				
+			</script>
+</h:body>
+</html>

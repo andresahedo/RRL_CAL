@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="formatoSolicitudProm_PersAutNot" pageWidth="572" pageHeight="752" whenNoDataType="BlankPage" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="999bf4c2-9532-4f9b-8e39-cb318db84153">
+	<property name="ireport.zoom" value="1.4641000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="idSolicitud" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT PersonaAutorizada.RFC,
+  PersonaAutorizada.TELEFONO,
+  PersonaAutorizada.NOMBRE,
+  PersonaAutorizada.APELLIDOPATERNO,
+  PersonaAutorizada.APELLIDOMATERNO,
+  PersonaAutorizada.IDETIPOPERSONASOL,
+  PersonaAutorizada.IDSOLICITUD
+FROM RVCT_SOLPERSONA PersonaAutorizada
+WHERE PersonaAutorizada.IDETIPOPERSONASOL = 'TIPERS.NOT'
+AND PersonaAutorizada.IDSOLICITUD         = $P{idSolicitud}]]>
+	</queryString>
+	<field name="RFC" class="java.lang.String"/>
+	<field name="TELEFONO" class="java.lang.String"/>
+	<field name="NOMBRE" class="java.lang.String"/>
+	<field name="APELLIDOPATERNO" class="java.lang.String"/>
+	<field name="APELLIDOMATERNO" class="java.lang.String"/>
+	<field name="IDETIPOPERSONASOL" class="java.lang.String"/>
+	<field name="IDSOLICITUD" class="java.math.BigDecimal"/>
+	<columnHeader>
+		<band height="41" splitType="Stretch">
+			<frame>
+				<reportElement uuid="e918c755-f7ba-4c34-95b2-6084aa431d5b" x="0" y="20" width="508" height="20"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+			</frame>
+			<frame>
+				<reportElement uuid="3e781bb4-a429-4001-9c66-37e7a88182e1" x="0" y="21" width="221" height="20"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<staticText>
+					<reportElement uuid="7a553e4b-452a-446a-bdc9-5844501fb725" x="3" y="0" width="100" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Nombre]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement uuid="fa7114bf-f947-4709-a40e-5fca8fe45ed5" x="221" y="21" width="114" height="20"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<staticText>
+					<reportElement uuid="7a553e4b-452a-446a-bdc9-5844501fb725" x="14" y="0" width="100" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[RFC]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement uuid="670fe649-822f-4e24-91eb-0cfc6a11d1b3" x="335" y="21" width="173" height="20"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<staticText>
+					<reportElement uuid="7a553e4b-452a-446a-bdc9-5844501fb725" x="11" y="0" width="100" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Teléfono]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement uuid="eb4c0289-a46b-450a-9df2-7fdf6076a6d5" x="0" y="1" width="508" height="20"/>
+			</frame>
+			<textField>
+				<reportElement uuid="4876e721-d0eb-4405-af18-2700ae443e96" x="0" y="0" width="508" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Persona(s) autorizada(s) para oír notificaciones"]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<frame>
+				<reportElement uuid="e918c755-f7ba-4c34-95b2-6084aa431d5b" x="0" y="0" width="508" height="23"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textField>
+					<reportElement uuid="94e38c8b-c018-4560-ac2f-2196b728a952" x="223" y="0" width="111" height="20"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{RFC}==null?"":$F{RFC})]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement uuid="94e38c8b-c018-4560-ac2f-2196b728a952" x="2" y="0" width="209" height="20"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{NOMBRE}==null?"":$F{NOMBRE})+" "+($F{APELLIDOPATERNO}==null?"":$F{APELLIDOPATERNO})+" "+($F{APELLIDOMATERNO}==null?"":$F{APELLIDOMATERNO})]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement uuid="94e38c8b-c018-4560-ac2f-2196b728a952" x="336" y="1" width="172" height="20"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{TELEFONO}==null?"":$F{TELEFONO})]]></textFieldExpression>
+				</textField>
+				<frame>
+					<reportElement uuid="670fe649-822f-4e24-91eb-0cfc6a11d1b3" stretchType="RelativeToBandHeight" x="335" y="0" width="172" height="23"/>
+					<box>
+						<leftPen lineWidth="1.0"/>
+					</box>
+				</frame>
+				<frame>
+					<reportElement uuid="fa7114bf-f947-4709-a40e-5fca8fe45ed5" stretchType="RelativeToBandHeight" x="221" y="0" width="114" height="23"/>
+					<box>
+						<leftPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+				</frame>
+				<frame>
+					<reportElement uuid="3e781bb4-a429-4001-9c66-37e7a88182e1" stretchType="RelativeToBandHeight" x="0" y="0" width="221" height="23"/>
+					<box>
+						<rightPen lineWidth="1.0"/>
+					</box>
+				</frame>
+			</frame>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch">
+			<frame>
+				<reportElement uuid="e918c755-f7ba-4c34-95b2-6084aa431d5b" x="0" y="-1" width="508" height="1"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+			</frame>
+		</band>
+	</columnFooter>
+	<noData>
+		<band height="44">
+			<frame>
+				<reportElement uuid="e918c755-f7ba-4c34-95b2-6084aa431d5b" x="0" y="20" width="508" height="23"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<frame>
+					<reportElement uuid="670fe649-822f-4e24-91eb-0cfc6a11d1b3" x="335" y="0" width="173" height="23"/>
+					<box>
+						<leftPen lineWidth="1.0"/>
+					</box>
+				</frame>
+				<frame>
+					<reportElement uuid="fa7114bf-f947-4709-a40e-5fca8fe45ed5" x="221" y="0" width="114" height="23"/>
+					<box>
+						<leftPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+				</frame>
+				<frame>
+					<reportElement uuid="3e781bb4-a429-4001-9c66-37e7a88182e1" x="0" y="0" width="221" height="23"/>
+					<box>
+						<rightPen lineWidth="1.0"/>
+					</box>
+				</frame>
+			</frame>
+			<frame>
+				<reportElement uuid="e918c755-f7ba-4c34-95b2-6084aa431d5b" x="0" y="0" width="508" height="20"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<frame>
+					<reportElement uuid="3e781bb4-a429-4001-9c66-37e7a88182e1" x="0" y="0" width="221" height="20"/>
+					<box>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<staticText>
+						<reportElement uuid="7a553e4b-452a-446a-bdc9-5844501fb725" x="12" y="0" width="100" height="20"/>
+						<textElement verticalAlignment="Middle">
+							<font isBold="true"/>
+						</textElement>
+						<text><![CDATA[Nombre]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement uuid="fa7114bf-f947-4709-a40e-5fca8fe45ed5" x="221" y="0" width="114" height="20"/>
+					<box>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<staticText>
+						<reportElement uuid="7a553e4b-452a-446a-bdc9-5844501fb725" x="14" y="0" width="100" height="20"/>
+						<textElement verticalAlignment="Middle">
+							<font isBold="true"/>
+						</textElement>
+						<text><![CDATA[RFC]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement uuid="670fe649-822f-4e24-91eb-0cfc6a11d1b3" x="335" y="0" width="173" height="20"/>
+					<box>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<staticText>
+						<reportElement uuid="7a553e4b-452a-446a-bdc9-5844501fb725" x="11" y="0" width="100" height="20"/>
+						<textElement verticalAlignment="Middle">
+							<font isBold="true"/>
+						</textElement>
+						<text><![CDATA[Teléfono]]></text>
+					</staticText>
+				</frame>
+			</frame>
+		</band>
+	</noData>
+</jasperReport>

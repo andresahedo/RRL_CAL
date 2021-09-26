@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <h:body>
+        <h:outputScript name='/js/calendar_es.js' target="head" />
+
+        <h:outputText escape="false" value="&lt;!--[if !IE 8]&gt; --&gt;" />
+        <style type="text/css">
+.noBorder tr {
+    border-style: hidden !important;
+}
+</style>
+        <h:outputText escape="false" value="&lt;!-- &lt;![endif]--&gt;" />
+        <style type="text/css">
+.noBorder td {
+    border-style: hidden !important;
+}
+
+.ui-chkbox-all {
+    visibility: hidden;
+}
+</style>
+
+        <style type="text/css">
+.noResize {
+    resize: none;
+}
+</style>
+
+        <p:panel id="panelPromo6" header="#{msg['ca.captura.solicitud.promocion.hechosPlanteados']}" style="width:100%">
+        </p:panel>
+        <p:panel id="panelPromocion6" style="width:100%">
+            <p:panelGrid id="hechosPlanteados" columns="2" styleClass="noBorder">
+                <p:row>
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.cboHechosPlanteados']}" />
+                    <p:outputLabel value=" *" style="color:red">
+                        <h:graphicImage id="ayudaHechosPlan" url="/resources/css/images/ayuda.png" />
+                    </p:outputLabel>
+                    <pe:tooltip for="ayudaHechosPlan" value="#{msg['cal.reg.promocion.hechosplan.indicar']}">
+                    </pe:tooltip>
+                </p:row>
+                <p:spacer></p:spacer>
+                <p:row>
+                    <p:selectOneMenu effect="fade" id="cboHechosPlanteadosSelect" filter="true"
+                        filterMatchMode="contains"
+                        value="#{registroSolicitudCALOPController.solicitud.hechosCircunstanciasPrevPlanteadas}"
+                        required="true" requiredMessage="#{errmsg['ca.solicitud.promocion.required.hechosPlanteados']}">
+                        <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                        <f:selectItems value="#{registroSolicitudCALOPController.listaGranContribuyente}"
+                            var="hechosCircPrevPlan" itemLabel="#{hechosCircPrevPlan.descripcion}"
+                            itemValue="#{hechosCircPrevPlan.clave}" />
+                        <p:ajax event="change" listener="#{registroSolicitudCALOPController.validaHechosCirc}"
+                            update="hechosPlanteadosInfo" />
+                    </p:selectOneMenu>
+                </p:row>
+                <p:spacer></p:spacer>
+                <p:row>
+                    <p:panelGrid id="hechosPlanteadosInfo" columns="2" styleClass="noBorder">
+                        <p:row>
+                            <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.autoridad']}"
+                                rendered="#{registroSolicitudCALOPController.hechosCirc}">
+                                <h:graphicImage id="ayudaHechosAutoridad" url="/resources/css/images/ayuda.png" />
+                            </h:outputLabel>
+                            <pe:tooltip for="ayudaHechosAutoridad"
+                                value="#{msg['cal.reg.promocion.hechosplan.autoridad']}"></pe:tooltip>
+                        </p:row>
+                        <p:row>
+                            <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.fechaPromocion']}"
+                                rendered="#{registroSolicitudCALOPController.hechosCirc}">
+                                <h:graphicImage id="ayudaHechosFecha" url="/resources/css/images/ayuda.png" />
+                            </h:outputLabel>
+                            <pe:tooltip for="ayudaHechosFecha" value="#{msg['cal.reg.promocion.hechosplan.fechaPromo']}"></pe:tooltip>
+                        </p:row>
+                        <p:row>
+                            <p:selectOneMenu effect="fade" id="autoridadSelect" widgetVar="comboAutoridad" filter="true"
+                                filterMatchMode="contains"
+                                value="#{registroSolicitudCALOPController.solicitud.claveAutoridad}"
+                                style="width:250px ;" rendered="#{registroSolicitudCALOPController.hechosCirc}">
+                                <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                <f:selectItems value="#{registroSolicitudCALOPController.listaAutoridad}"
+                                    var="autoridad" itemLabel="#{autoridad.descripcion}" itemValue="#{autoridad.clave}" />
+                            </p:selectOneMenu>
+                        </p:row>
+
+                        <p:calendar pattern="dd/MM/yyyy" locale="es" navigator="true"
+                            rendered="#{registroSolicitudCALOPController.hechosCirc}" id="fechaInicio"
+                            value="#{registroSolicitudCALOPController.solicitud.fechaPromocion}"
+                            maxdate="#{registroSolicitudCALOPController.maxDate}" readonlyInput="true" />
+                    </p:panelGrid>
+                </p:row>
+            </p:panelGrid>
+        </p:panel>
+        <p:panel id="panelPromo7" header="#{msg['ca.captura.solicitud.promocion.mediosPlanteados']}" style="width:100%">
+        </p:panel>
+        <p:panel id="panelPromocion7" style="width:100%">
+            <p:panelGrid id="mediosPlanteados" styleClass="noBorder" columns="2">
+
+
+                <p:column colspan="4">
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.cboMediosPlanteados']}" />
+                    <p:outputLabel value=" *" style="color:red">
+                        <h:graphicImage id="ayudaMediosPlan" url="/resources/css/images/ayuda.png" />
+                    </p:outputLabel>
+                    <pe:tooltip for="ayudaMediosPlan" value="#{msg['cal.reg.promocion.mediosplan.indicar']}"></pe:tooltip>
+                </p:column>
+
+                <p:spacer></p:spacer>
+                <p:spacer></p:spacer>
+                <p:spacer></p:spacer>
+
+                <p:column>
+                    <p:selectOneMenu effect="fade" id="cboMediosDefensaSelect" filter="true" filterMatchMode="contains"
+                        value="#{registroSolicitudCALOPController.solicitud.hechosCircunstanciasMatMedios}"
+                        required="#{registroSolicitudCALOPController.requeridoPrincipal}"
+                        requiredMessage="#{errmsg['ca.solicitud.promocion.required.mediosPlanteados']}">
+                        <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                        <f:selectItems value="#{registroSolicitudCALOPController.listaGranContribuyente}"
+                            var="hechosCircMatMed" itemLabel="#{hechosCircMatMed.descripcion}"
+                            itemValue="#{hechosCircMatMed.clave}" />
+                        <p:ajax event="change" listener="#{registroSolicitudCALOPController.validaMediosDefensa}"
+                            update="mediosPlanteadosInfo" />
+                    </p:selectOneMenu>
+                </p:column>
+
+                <p:spacer></p:spacer>
+                <p:spacer></p:spacer>
+                <p:spacer></p:spacer>
+
+                <p:column>
+                    <p:panelGrid id="mediosPlanteadosInfo" styleClass="noBorder" columns="2">
+                        <p:column>
+                            <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.mediosDefensa']}"
+                                rendered="#{registroSolicitudCALOPController.mediosDefensa}" />
+                            <p:outputLabel value=" *" style="color:red"
+                                rendered="#{registroSolicitudCALOPController.mediosDefensa}">
+                                <h:graphicImage id="ayudaMediosDef" url="/resources/css/images/ayuda.png" />
+                            </p:outputLabel>
+                            <pe:tooltip for="ayudaMediosDef" value="#{msg['cal.reg.promocion.mediosplan.meddefensa']}"></pe:tooltip>
+                        </p:column>
+
+                        <p:column>
+                            <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.numeroAsunto']}"
+                                rendered="#{registroSolicitudCALOPController.mediosDefensa}" />
+                            <p:outputLabel value=" *" style="color:red"
+                                rendered="#{registroSolicitudCALOPController.mediosDefensa}">
+                                <h:graphicImage id="ayudaMediosNumAsunto" url="/resources/css/images/ayuda.png" />
+                            </p:outputLabel>
+                            <pe:tooltip for="ayudaMediosNumAsunto"
+                                value="#{msg['cal.reg.promocion.mediosplan.numasunto']}"></pe:tooltip>
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu effect="fade" id="mediosDefensaSelect" widgetVar="comboMediosDefensa"
+                                filter="true" filterMatchMode="contains"
+                                rendered="#{registroSolicitudCALOPController.mediosDefensa}"
+                                value="#{registroSolicitudCALOPController.solicitud.claveMedioDefensa}"
+                                style="width:250px ;" required="#{registroSolicitudCALOPController.requeridoPrincipal}"
+                                requiredMessage="#{errmsg['ca.solicitud.promocion.required.mediosDefensa']}">
+                                <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                <f:selectItems value="#{registroSolicitudCALOPController.listaMediosDefensa}"
+                                    var="mDefensa" itemLabel="#{mDefensa.descripcion}" itemValue="#{mDefensa.clave}" />
+                                <p:ajax event="change" listener="#{registroSolicitudCALOPController.cargaSentidosResol}"
+                                    update="panelPromocion7" />
+                            </p:selectOneMenu>
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{registroSolicitudCALOPController.solicitud.numeroAsunto}"
+                                rendered="#{registroSolicitudCALOPController.mediosDefensa}" id="numeroAsuntoText"
+                                maxlength="20" size="35"
+                                required="#{registroSolicitudCALOPController.requeridoPrincipal}"
+                                requiredMessage="#{errmsg['ca.solicitud.promocion.required.numeroAsunto']}">
+                                <f:attribute name="msgValidacion"
+                                    value="#{errmsg['cal.solicitud.promocion.validation.actividadesHechosRazones']}" />
+                                <f:validator validatorId="caracteresEspecialesValidator" />
+                            </p:inputText>
+                        </p:column>
+                        <p:column>
+                            <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.sentidoResolucion']}"
+                                rendered="#{registroSolicitudCALOPController.mediosDefensa}" />
+                            <p:outputLabel value=" *" style="color:red"
+                                rendered="#{registroSolicitudCALOPController.mediosDefensa}">
+                                <h:graphicImage id="ayudaMediosSentidoResol" url="/resources/css/images/ayuda.png" />
+                            </p:outputLabel>
+                            <pe:tooltip for="ayudaMediosSentidoResol"
+                                value="#{msg['cal.reg.promocion.mediosplan.sentidoresol']}"></pe:tooltip>
+                        </p:column>
+                        <p:column>
+                            <h:outputLabel value="#{msg['cal.captura.solicitud.promocion.autoridad']}"
+                                rendered="#{registroSolicitudCALOPController.mediosDefensa}" />
+                            <p:outputLabel value=" *" style="color:red"
+                                rendered="#{registroSolicitudCALOPController.mediosDefensa}">
+                                <h:graphicImage id="ayudaMediosAutoridad" url="/resources/css/images/ayuda.png" />
+                            </p:outputLabel>
+                            <pe:tooltip for="ayudaMediosAutoridad"
+                                value="#{msg['cal.reg.promocion.mediosplan.autoridad']}"></pe:tooltip>
+                        </p:column>
+
+
+
+                        <p:column>
+                            <p:selectOneMenu effect="fade" id="sentidoResolucionSelect"
+                                rendered="#{registroSolicitudCALOPController.mediosDefensa}"
+                                widgetVar="comboSentidoResolucion" filter="true" filterMatchMode="contains"
+                                value="#{registroSolicitudCALOPController.solicitud.claveSentidoResolucion}"
+                                style="width:250px ;" required="#{registroSolicitudCALOPController.requeridoPrincipal}"
+                                requiredMessage="#{errmsg['ca.solicitud.promocion.required.sentidoResolucion']}">
+                                <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                <f:selectItems value="#{registroSolicitudCALOPController.listaSentidosResolucion}"
+                                    var="sResolucion" itemLabel="#{sResolucion.descripcion}"
+                                    itemValue="#{sResolucion.clave}" />
+                            </p:selectOneMenu>
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{registroSolicitudCALOPController.solicitud.descripcionAutoridad}"
+                                rendered="#{registroSolicitudCALOPController.mediosDefensa}"
+                                id="descripcionAutoridadText" maxlength="250" size="35"
+                                required="#{registroSolicitudCALOPController.requeridoPrincipal}"
+                                requiredMessage="#{errmsg['ca.solicitud.promocion.required.autoridadConocioAsunto']}">
+                                <f:attribute name="msgValidacion"
+                                    value="#{errmsg['cal.solicitud.promocion.validation.actividadesHechosRazones']}" />
+                                <f:validator validatorId="caracteresEspecialesValidator" />
+                            </p:inputText>
+                        </p:column>
+                    </p:panelGrid>
+                </p:column>
+
+            </p:panelGrid>
+        </p:panel>
+        <p:panel id="panelPromo8" header="#{msg['ca.captura.solicitud.promocion.sujetoEjercicio']}" style="width:100%">
+            <pe:tooltip for="panelPromo8" value="#{msg['cal.reg.promocion.sujeto.ejercicio']}" atPosition="topCenter"></pe:tooltip>
+        </p:panel>
+        <p:panel id="panelPromocion8" style="width:100%">
+            <p:panelGrid id="sujetoEjercicio" columns="2" styleClass="noBorder">
+                <p:row>
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.cboSujetoEjercicio']}" />
+                    <p:outputLabel value=" *" style="color:red">
+                        <h:graphicImage id="ayudaSujetoSelect" url="/resources/css/images/ayuda.png" />
+                    </p:outputLabel>
+                    <pe:tooltip for="ayudaSujetoSelect" value="#{msg['cal.reg.promocion.sujeto.indicar']}"></pe:tooltip>
+                </p:row>
+                <p:spacer></p:spacer>
+                <p:row>
+                    <p:selectOneMenu effect="fade" id="cboSujetoEjercicioSelect" filter="true"
+                        filterMatchMode="contains"
+                        value="#{registroSolicitudCALOPController.solicitud.contribuyenteSujetoEjercicio}"
+                        required="#{registroSolicitudCALOPController.requeridoPrincipal}"
+                        requiredMessage="#{errmsg['ca.solicitud.promocion.required.sujetoEjercicio']}">
+                        <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                        <f:selectItems value="#{registroSolicitudCALOPController.listaGranContribuyente}"
+                            var="hechosCircPrevPlan" itemLabel="#{hechosCircPrevPlan.descripcion}"
+                            itemValue="#{hechosCircPrevPlan.clave}" />
+                        <p:ajax event="change" listener="#{registroSolicitudCALOPController.validaSujetoEjercicio}"
+                            update="sujetoEjercicioInfo" />
+                    </p:selectOneMenu>
+                </p:row>
+                <p:spacer></p:spacer>
+                <p:row>
+                    <p:panelGrid id="sujetoEjercicioInfo" styleClass="noBorder" columns="2">
+                        <p:row>
+                            <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.periodosContribuciones']}"
+                                rendered="#{registroSolicitudCALOPController.sujetoEjercicio}" />
+                            <p:outputLabel value=" *" style="color:red"
+                                rendered="#{registroSolicitudCALOPController.sujetoEjercicio}">
+                                <h:graphicImage id="ayudaSujetoPeriodos" url="/resources/css/images/ayuda.png" />
+                            </p:outputLabel>
+                            <pe:tooltip for="ayudaSujetoPeriodos" value="#{msg['cal.reg.promocion.sujeto.periodos']}"></pe:tooltip>
+                        </p:row>
+                        <p:spacer rendered="#{registroSolicitudCALOPController.sujetoEjercicio}"></p:spacer>
+                        <p:row>
+                            <p:scrollPanel mode="native" style="border-style: hidden !important;">
+                                <p:inputTextarea
+                                    value="#{registroSolicitudCALOPController.solicitud.periodosContribuciones}"
+                                    rendered="#{registroSolicitudCALOPController.sujetoEjercicio}" autoResize="false"
+                                    id="testAreaPeriodosContribuciones" cols="100" rows="3" maxlength="3800" size="3800"
+                                    styleClass="noResize" style='height:50px;'
+                                    required="#{registroSolicitudCALOPController.requeridoPrincipal}"
+                                    requiredMessage="#{errmsg['ca.solicitud.promocion.required.periodos']}">
+                                    <f:attribute name="msgValidacion"
+                                        value="#{errmsg['cal.solicitud.promocion.validation.actividadesHechosRazones']}" />
+                                    <f:validator validatorId="caracteresEspecialesValidator" />
+                                </p:inputTextarea>
+                            </p:scrollPanel>
+                        </p:row>
+                        <p:spacer></p:spacer>
+                        <p:row>
+                            <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.plazo']}"
+                                rendered="#{registroSolicitudCALOPController.sujetoEjercicio}" />
+                            <p:outputLabel value=" *" style="color:red"
+                                rendered="#{registroSolicitudCALOPController.sujetoEjercicio}">
+                                <h:graphicImage id="ayudaSujetoPlazo" url="/resources/css/images/ayuda.png" />
+                            </p:outputLabel>
+                            <pe:tooltip for="ayudaSujetoPlazo" value="#{msg['cal.reg.promocion.sujeto.plazo']}"></pe:tooltip>
+                        </p:row>
+                        <p:spacer rendered="#{registroSolicitudCALOPController.sujetoEjercicio}"></p:spacer>
+                        <p:row>
+                            <p:selectOneMenu effect="fade" id="plazoSelect" widgetVar="comboPlazos" filter="true"
+                                filterMatchMode="contains"
+                                rendered="#{registroSolicitudCALOPController.sujetoEjercicio}"
+                                value="#{registroSolicitudCALOPController.solicitud.plazo}" style="width:200px ;"
+                                required="#{registroSolicitudCALOPController.requeridoPrincipal}"
+                                requiredMessage="#{errmsg['ca.solicitud.promocion.required.plazo']}">
+                                <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                <f:selectItems value="#{registroSolicitudCALOPController.listaPlazo}" var="plazo"
+                                    itemLabel="#{plazo.descripcion}" itemValue="#{plazo.clave}" />
+                            </p:selectOneMenu>
+                        </p:row>
+                        <p:spacer rendered="#{registroSolicitudCALOPController.sujetoEjercicio}"></p:spacer>
+                        <p:row>
+                            <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.autoridadRevisando']}"
+                                rendered="#{registroSolicitudCALOPController.sujetoEjercicio}">
+                                <h:graphicImage id="ayudaSujetoAutoridad" url="/resources/css/images/ayuda.png" />
+                            </h:outputLabel>
+                            <pe:tooltip for="ayudaSujetoAutoridad" value="#{msg['cal.reg.promocion.sujeto.autoridad']}"></pe:tooltip>
+                        </p:row>
+                        <p:spacer rendered="#{registroSolicitudCALOPController.sujetoEjercicio}"></p:spacer>
+                        <p:row>
+                            <p:selectOneMenu effect="fade" id="autoridadRevisandoSelect"
+                                widgetVar="comboAutoridadRevisando" filter="true" filterMatchMode="contains"
+                                rendered="#{registroSolicitudCALOPController.sujetoEjercicio}"
+                                value="#{registroSolicitudCALOPController.solicitud.claveAutoridadRevisando}"
+                                style="width:250px ;">
+                                <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                <f:selectItems value="#{registroSolicitudCALOPController.listaAutoridad}"
+                                    var="autoridadRevisando" itemLabel="#{autoridadRevisando.descripcion}"
+                                    itemValue="#{autoridadRevisando.clave}" />
+                            </p:selectOneMenu>
+                        </p:row>
+                    </p:panelGrid>
+                </p:row>
+            </p:panelGrid>
+        </p:panel>
+        <p:panel id="panelPromo9" header="#{msg['ca.captura.solicitud.promocion.clasificacionArancelaria']}"
+            style="width:100%" rendered="#{registroSolicitudCALOPController.clasificacionArancelaria}">
+            <pe:tooltip for="panelPromo9" value="#{msg['cal.reg.promocion.clasificacion.arancelaria']}"
+                atPosition="topCenter"></pe:tooltip>
+        </p:panel>
+        <p:panel id="panelPromocion9" style="width:100%"
+            rendered="#{registroSolicitudCALOPController.clasificacionArancelaria}">
+            <p:panelGrid id="clasificacionArancelaria" columns="3" styleClass="noBorder">
+
+
+
+                <p:row>
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.tipoClasificacion']}" />
+                    <p:outputLabel value=" *" style="color:red">
+                        <h:graphicImage id="ayudatipoClasificacion" url="/resources/css/images/ayuda.png" />
+                    </p:outputLabel>
+                    <pe:tooltip for="ayudatipoClasificacion" value="#{msg['cal.reg.promocion.clasificacion.tipo']}"></pe:tooltip>
+                </p:row>
+                <p:spacer></p:spacer>
+                <p:spacer></p:spacer>
+                <p:row>
+                    <p:selectOneMenu effect="fade" id="cboClasificacionArancelariaSelect" filter="true"
+                        filterMatchMode="contains"
+                        value="#{registroSolicitudCALOPController.solicitud.tipoClasificacion}"
+                        required="#{registroSolicitudCALOPController.requeridoPrincipal}"
+                        requiredMessage="#{errmsg['ca.solicitud.promocion.validation.tipoClasificacion']}">
+                        <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                        <f:selectItems value="#{registroSolicitudCALOPController.listaTipoClasificacion}"
+                            var="tipoClasificacion" itemLabel="#{tipoClasificacion.descripcion}"
+                            itemValue="#{tipoClasificacion.clave}" />
+                        <p:ajax listener="#{registroSolicitudCALOPController.validaTipoClasificacion}"
+                            update="panelPromocion9,panelPromocion10" />
+                    </p:selectOneMenu>
+                </p:row>
+                <p:spacer></p:spacer>
+                <p:spacer></p:spacer>
+                <p:row>
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.descripcionMercancia']}" />
+                    <p:outputLabel value=" *" style="color:red">
+                        <h:graphicImage id="ayudapromDescripMercancia" url="/resources/css/images/ayuda.png" />
+                    </p:outputLabel>
+                    <pe:tooltip for="ayudapromDescripMercancia"
+                        value="#{msg['cal.reg.promocion.clasificacion.descmercancia']}"></pe:tooltip>
+                </p:row>
+                <p:spacer></p:spacer>
+                <p:spacer></p:spacer>
+                <p:row>
+                    <p:scrollPanel mode="native" style="border-style: hidden !important;">
+                        <p:inputTextarea value="#{registroSolicitudCALOPController.solicitud.descripcionMercancia}"
+                            styleClass="noResize" autoResize="false" id="descripcionMercancia" cols="100" rows="3"
+                            maxlength="500" size="500" style='height:50px;'
+                            required="#{registroSolicitudCALOPController.requeridoPrincipal}"
+                            requiredMessage="#{errmsg['ca.solicitud.promocion.required.descripcionMercancia']}">
+                            <f:attribute name="msgValidacion"
+                                value="#{errmsg['cal.solicitud.promocion.validation.actividadesHechosRazones']}" />
+                            <f:validator validatorId="caracteresEspecialesValidator" />
+                        </p:inputTextarea>
+                    </p:scrollPanel>
+                </p:row>
+                <p:spacer rendered="#{registroSolicitudCALOPController.tipoClasificacionArancelariaCombo}"></p:spacer>
+                <p:spacer rendered="#{registroSolicitudCALOPController.tipoClasificacionArancelariaCombo}"></p:spacer>
+                <p:row rendered="#{registroSolicitudCALOPController.tipoClasificacionArancelariaCombo}">
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.fraccionAplicable']}"
+                        rendered="#{registroSolicitudCALOPController.tipoClasificacionArancelariaCombo}" />
+                    <p:outputLabel value=" *" style="color:red">
+                        <h:graphicImage id="ayudapromFraccion" url="/resources/css/images/ayuda.png" />
+                    </p:outputLabel>
+                    <pe:tooltip for="ayudapromFraccion" value="#{msg['cal.reg.promocion.clasificacion.fraccionduda']}"></pe:tooltip>
+                </p:row>
+                <p:spacer></p:spacer>
+                <p:spacer></p:spacer>
+                <p:row>
+                    <p:inputMask value="#{registroSolicitudCALOPController.solicitud.fraccionAplicable}"
+                        id="fraccionAplicableText" maxlength="8" size="20" mask="9999.99.99"
+                        rendered="#{registroSolicitudCALOPController.tipoClasificacionArancelariaCombo}" required="true"
+                        requiredMessage="#{errmsg['ca.solicitud.promocion.required.fraccionAplicable']}" />
+                </p:row>
+                <p:spacer></p:spacer>
+                <p:spacer></p:spacer>
+                <p:row rendered="#{registroSolicitudCALOPController.tipoClasificacionArancelariaCombo}">
+                    <h:outputLabel value="#{msg['ca.captura.solicitud.promocion.fraccionDuda']}"
+                        rendered="#{registroSolicitudCALOPController.tipoClasificacionArancelariaCombo}" />
+                    <p:outputLabel value=" *" style="color:red">
+                        <h:graphicImage id="ayudapromFraccionDuda" url="/resources/css/images/ayuda.png" />
+                    </p:outputLabel>
+                    <pe:tooltip for="ayudapromFraccionDuda"
+                        value="#{msg['cal.reg.promocion.clasificacion.fraccionaplicable']}"></pe:tooltip>
+                </p:row>
+                <p:spacer></p:spacer>
+                <p:spacer></p:spacer>
+                <p:row>
+                    <p:inputMask
+                        value="#{registroSolicitudCALOPController.fraccionArancelariaDudaDTO.fraccionArancelaria}"
+                        id="fraccionDudaText" maxlength="10" size="20" mask="9999.99.99"
+                        requiredMessage="#{errmsg['ca.solicitud.promocion.required.fraccionDuda']}"
+                        rendered="#{registroSolicitudCALOPController.tipoClasificacionArancelariaCombo}" />
+                </p:row>
+            </p:panelGrid>
+            <p:panel id="botonesFraccionDuda" style="border:hidden;height:30px;width:100%">
+                <p:commandButton style="float:right;" id="eliminarFraccDuda" value="#{msg['vuj.boton.eliminar']}"
+                    update="panelPromocion10, :FIELForm:botonesFraccionDuda"
+                    disabled="#{!registroSolicitudCALOPController.eliminarVisibleFraccDuda}" oncomplete="remChckAll();"
+                    actionListener="#{registroSolicitudCALOPController.eliminarFraccionDuda}"
+                    process="@this,panelPromocion10"
+                    rendered="#{registroSolicitudCALOPController.tipoClasificacionArancelariaCombo}" />
+                <p:commandButton style="float:right;"
+                    actionListener="#{registroSolicitudCALOPController.agregarFraccionDuda}" id="agregarFraccDuda"
+                    value="Agregar" update="fraccionDudaText,panelPromocion10,:FIELForm:msgPanel" ajax="true"
+                    process="@this,fraccionDudaText"
+                    rendered="#{registroSolicitudCALOPController.tipoClasificacionArancelariaCombo}"
+                    oncomplete="cambiaEstado(); remChckAll();">
+                    <p:ajax event="click" listener="#{registroSolicitudCALOPController.cambiaRequerido}" />
+                </p:commandButton>
+            </p:panel>
+        </p:panel>
+        <p:panel id="panelPromocion10" style="width:100%"
+            rendered="#{registroSolicitudCALOPController.clasificacionArancelaria}">
+            <p:dataTable paginator="true" rows="10"
+                selection="#{registroSolicitudCALOPController.fraccionesDudaEliminar}" rowIndexVar="rowIndex"
+                var="fraccAraDuda" emptyMessage="#{msg['vuj.grid.vacio']}"
+                rowKey="#{fraccAraDuda.idFraccionArancelaria}"
+                value="#{registroSolicitudCALOPController.fraccionArancelariaDudaDataModel}" id="fraccAraDudaTable"
+                rendered="#{registroSolicitudCALOPController.tipoClasificacionArancelariaCombo}">
+                <p:ajax event="rowSelectCheckbox" update="fraccAraDudaTable,:FIELForm:eliminarFraccDuda"
+                    listener="#{registroSolicitudCALOPController.rowSelectCheckboxFraccDuda}" async="false"
+                    oncomplete="remChckAll();" />
+                <p:ajax event="rowSelect" update="fraccAraDudaTable,:FIELForm:eliminarFraccDuda"
+                    listener="#{registroSolicitudCALOPController.rowSelectCheckboxFraccDuda}" async="false"
+                    oncomplete="remChckAll();" />
+                <p:ajax event="rowUnselectCheckbox" update="fraccAraDudaTable,:FIELForm:eliminarFraccDuda"
+                    listener="#{registroSolicitudCALOPController.rowUnselectCheckboxFraccDuda}" async="false"
+                    oncomplete="remChckAll();" />
+
+                <p:column headerText="#{msg['ca.captura.solicitud.promocion.fraccionDudaTable']}" filterBy="fraccDu"
+                    resizable="false">
+                    <h:outputText value="#{fraccAraDuda.fraccionArancelaria}" id="nombre" />
+                </p:column>
+                <p:column selectionMode="multiple" style="width:2%" headerText="#{msg['vuj.grid.columnaEliminar']}"
+                    resizable="false" />
+            </p:dataTable>
+            <style type="text/css">
+.ui-chkbox-all {
+    visibility: hidden;
+    height: 22px !important;
+}
+
+.ui-column-filter {
+    visibility: hidden;
+}
+</style>
+        </p:panel>
+    </h:body>
+
+    <script type="text/javascript">
+
+	$( document ).ready(function() {
+	    remChckAll();
+    })
+	
+	function remChckAll(){
+		var checkAllBoxes = document.querySelectorAll(".ui-chkbox-all");
+		if (checkAllBoxes.length != 0){
+			checkAllBoxes[0].remove();
+		}
+	}
+</script>
+
+
+</ui:composition>

@@ -1,0 +1,268 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>mx.gob.sat.siat.juridica</groupId>
+        <artifactId>juridica</artifactId>
+        <version>-SNAPSHOT</version>
+    </parent>
+    <artifactId>juridica-domain</artifactId>
+    <packaging>jar</packaging>
+    <name>VUJ - RRL - domain</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- Juridica deps -->
+        <dependency>
+            <groupId>mx.gob.sat.siat.juridica</groupId>
+            <artifactId>juridica-infrastructure</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
+
+        <!-- SIAT deps -->
+        <dependency>
+            <groupId>mx.gob.sat.siat.juridica</groupId>
+            <artifactId>juridica-singleton</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mx.gob.sat.sgi</groupId>
+            <artifactId>ClienteSelladora</artifactId>
+        </dependency>
+
+
+
+        <!-- SIAT deps -->
+        <dependency>
+            <groupId>mx.gob.sat</groupId>
+            <artifactId>siatbitacora</artifactId>
+        </dependency>
+
+        <!-- Idc deps -->
+        <dependency>
+            <groupId>com.softtek</groupId>
+            <artifactId>idcProxy</artifactId>
+            <version>2.0.5</version>
+        </dependency>
+
+        <!-- NyV deps -->
+        <dependency>
+            <groupId>mx.gob.sat.siat.nyv</groupId>
+            <artifactId>nyv-xsistema-cliente</artifactId>
+            <version>0.1.3</version>
+        </dependency>
+
+        <!-- Spring deps -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+        </dependency>
+
+
+        <!-- AscpectJ deps -->
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>aspectj-aspectjweaver</artifactId>
+        </dependency>
+
+        <!-- ORM deps -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>hibernate-ehcache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.0-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>oscache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>ehcache-core</artifactId>
+        </dependency>
+
+        <!-- Logging deps -->
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+        <!-- Test deps -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+
+        <!-- Oracle -->
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>oracle</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>weblogic</groupId>
+            <artifactId>weblogic</artifactId>
+
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.spec.javax.jms</groupId>
+            <artifactId>jboss-jms-api_1.1_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>${primefaces.version}</version>
+        </dependency>
+
+        <!-- Jasperreports -->
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>jasperreports</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>itext</artifactId>
+            <version>2.1.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>softtek</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <outputDirectory>${project.build.directory}/classes</outputDirectory>
+        <testOutputDirectory>${project.build.directory}/test-classes</testOutputDirectory>
+        <sourceDirectory>${project.basedir}/src</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/test</testSourceDirectory>
+        <finalName>juridica-domain</finalName>
+
+        <resources>
+            <resource>
+                <directory>${project.basedir}/support</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${resources.dir}</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${config.dir}</directory>
+                <targetPath>applicationContext/</targetPath>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/test</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>${testResources.dir}</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </testResource>
+        </testResources>
+
+    </build>
+</project>

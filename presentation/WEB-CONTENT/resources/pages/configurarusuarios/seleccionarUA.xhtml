@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<h:head>
+    <style type="text/css">
+.noBorder td {
+    border-style: none !important
+}
+
+.noBorder tr {
+    border-style: none !important
+}
+
+.ui-panel {
+    border-style: none !important;
+    width: #{sessionScope.tamanioApp}px;
+}
+.ui-panelgrid td {
+    border-style: none;
+}
+
+.ui-panelgrid tr {
+    border-style: none;
+}
+
+.ui-panel-titlebar {
+    text-align: center;
+}
+
+.ui-selectonemenu-panel {
+    width: 60%;
+}
+</style>
+
+    <p:panel id="msgPanel">
+        <p:messages id="messages" showDetail="true" globalOnly="true">
+            <p:message showDetail="true" rendered=""></p:message>
+        </p:messages>
+    </p:panel>
+</h:head>
+
+<h:body>
+    <h:form id="seleccionUnidadAU" style="float:left;">
+        <p:panel id="encabezado" style="border-style: none !important;">
+            <p:panelGrid id="datosEncabezado" style="width:100%" columns="3">
+                <p:outputLabel value="#{msg['vuj.resol.rfcFuncionario']}" />
+                <p:outputLabel value="#{msg['vuj.resol.funcionario']}" />
+                <p:outputLabel value="#{msg['usuarios.permiso']}" />
+
+                <p:inputText id="rfcFuncionario" value="#{seleccionarUAController.adminUsuariosDTO.rfcUsuario}"
+                    readonly="true" />
+                <p:inputText id="nombreFuncionario" value="#{seleccionarUAController.adminUsuariosDTO.nombreEmpleado}"
+                    readonly="true" />
+                <p:inputText id="permisoFuncionario" value="#{seleccionarUAController.adminUsuariosDTO.permiso}"
+                    style="width:250px" readonly="true" />
+
+            </p:panelGrid>
+        </p:panel>
+        <p:panel id="seleccionaUnidad" header="#{msg['usuarios.tramites.titulo.administrarUA']}" styleClass="noBorder">
+            <p:panelGrid columns="1">
+                <p:row>
+                    <h:outputText value="* Datos requeridos" style="color:red" />
+                </p:row>
+                <p:row>
+                    <h:outputText value="#{msg['usuarios.tramites.seleccionarUA']}" />
+                    <p:outputLabel style="color:red"> *</p:outputLabel>
+                </p:row>
+                <p:row>
+                    <p:selectOneMenu id="comboUniAdmin" value="#{seleccionarUAController.idUnidadAdmin}"
+                        valueChangeListener="#{seleccionarUAController.setNombreUnidad}" filter="true"
+                        filterMatchMode="contains" required="true" widgetVar="comboUnidad" style="width:500px"
+                        effect="fade">
+                        <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                        <f:selectItems value="#{seleccionarUAController.listaUnidadesAdministrativas}" var="unidades"
+                            itemLabel="#{unidades.descripcion}" itemValue="#{unidades.clave}" />
+                        <f:attribute name="descripcion" value="#{unidades.descripcion}" />
+                        <p:ajax event="valueChange" immediate="true" process="@this" />
+                    </p:selectOneMenu>
+                    <p:message display="text" for="comboUniAdmin" />
+                </p:row>
+            </p:panelGrid>
+            <p:panelGrid id="buttonPanel" columns="2" styleClass="noBorder" style="float:right;">
+                <p:column>
+                    <p:commandButton id="siguienteButton" actionListener="#{seleccionarUAController.siguiente}"
+                        update="@form" ajax="true" value="#{msg['vuj.boton.siguiente']}"
+                        process="@this,:seleccionUnidadAU:comboUniAdmin" />
+                </p:column>
+                <p:column>
+                    <p:commandButton id="cancelarButton" rendered="#{seleccionarUAController.inicial}"
+                        action="#{seleccionarUAController.back}" value="#{msg['vuj.boton.cancelar']}" process="@this" />
+                </p:column>
+            </p:panelGrid>
+        </p:panel>
+    </h:form>
+</h:body>
+
+</html>

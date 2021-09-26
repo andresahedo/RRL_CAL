@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="datosFirmaResolucion" pageWidth="752" pageHeight="572" orientation="Landscape" columnWidth="752" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="53ea8dc8-740d-4f11-82ff-c3000f27797d">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="idTramite" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT ADMINISTRADOR.NOMBRE
+  || ' '
+  || ADMINISTRADOR.APELLIDOPATERNO
+  || ' '
+  || ADMINISTRADOR.APELLIDOMATERNO                                  AS nombreAdmin,
+  TO_CHAR(notificacion.FECACUSENOTIFICACION, 'DD/MM/YYYY HH24:MI:SS') AS fechaNotificacion
+FROM RVCT_TRAMITE tramite
+LEFT JOIN RVCT_REQUERIMIENTO requerimiento
+ON requerimiento.IDTRAMITE = tramite.IDTRAMITE
+LEFT JOIN RVCA_REQUERIMIENTO_FIRMA requerimientoFirma
+ON requerimientoFirma.IDREQUERIMIENTO = requerimiento.IDREQUERIMIENTO
+LEFT JOIN RVCT_FIRMA firma
+ON firma.IDFIRMA = requerimientoFirma.IDFIRMA
+LEFT JOIN RVCP_PERSONA ADMINISTRADOR
+ON firma.IDUSUARIO = ADMINISTRADOR.IDUSUARIO
+INNER JOIN RVCT_NOTIFICACION notificacion
+ON requerimiento.IDREQUERIMIENTO = notificacion.IDREQUERIMIENTO
+WHERE tramite.IDTRAMITE          = $P{idTramite}]]>
+	</queryString>
+	<field name="NOMBREADMIN" class="java.lang.String"/>
+	<field name="FECHANOTIFICACION" class="java.lang.String"/>
+	<variable name="nombreFirmante" class="java.lang.String">
+		<variableExpression><![CDATA[$F{NOMBREADMIN}]]></variableExpression>
+	</variable>
+	<variable name="fechaNotificacion" class="java.lang.String">
+		<variableExpression><![CDATA[$F{FECHANOTIFICACION}!=null?$F{FECHANOTIFICACION}:""]]></variableExpression>
+	</variable>
+	<detail>
+		<band height="87" splitType="Stretch">
+			<printWhenExpression><![CDATA[false]]></printWhenExpression>
+			<textField>
+				<reportElement uuid="70eb2283-0432-40e6-afd8-d1fa689952c2" x="10" y="0" width="233" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$V{nombreFirmante}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="d96c1679-d37b-4ea9-9b3b-c6aa16c1f401" x="10" y="20" width="233" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$V{fechaNotificacion}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+    <title>#{msg['ca.title.consultaAutorizacion']}</title>
+    <style type="text/css">
+.noBorder td {
+    border-style: hidden !important;
+}
+</style>
+
+</h:head>
+<h:body>
+    <h:form id="bandejaConsultasForm">
+        <p:panel id="panelMensajes">
+            <p:messages showDetail="true" />
+        </p:panel>
+        <p:panel id="panelConsultas" header="#{msg['ca.bandejaConsulta.buscarPromocion']}">
+            <p:panelGrid columns="4">
+                <p:column>
+                    <p:outputLabel value="#{msg['ca.bandejaConsulta.numeroAsunto']} " />
+                    <h:graphicImage id="ayudaIdAsunto" url="/resources/css/images/ayuda.png" />
+                    <pe:tooltip for="ayudaIdAsunto" value="#{msg['atender.requerimiento.numeroAsunto']}" adjustX="20"
+                        adjustY="20" mouseTracking="true" showEffect="fade" />
+                </p:column>
+                <p:column>
+                    <p:outputLabel value="#{msg['ca.bandejaConsulta.fechaInicio']} " />
+                    <h:graphicImage id="ayudaIdInicio" url="/resources/css/images/ayuda.png" />
+                    <pe:tooltip for="ayudaIdInicio" value="#{msg['atender.requerimiento.fechaInicio']}" adjustX="20"
+                        adjustY="20" mouseTracking="true" showEffect="fade" />
+                </p:column>
+                <p:column>
+                    <p:outputLabel value="#{msg['ca.bandejaConsulta.fechaFin']} " />
+                    <h:graphicImage id="ayudaIdFin" url="/resources/css/images/ayuda.png" />
+                    <pe:tooltip for="ayudaIdFin" value="#{msg['atender.requerimiento.fechaFin']}" mouseTracking="true"
+                        adjustX="20" adjustY="20" showEffect="fade" />
+                </p:column>
+                <p:column>
+                    <p:outputLabel value="#{msg['ca.bandejaConsulta.tipoAsunto']} "
+                        rendered="#{bandejaConsultasAutorizacionesController.hidden}" />
+                    <h:graphicImage id="ayudaIdTipoAsunto" url="/resources/css/images/ayuda.png"
+                        rendered="#{bandejaConsultasAutorizacionesController.hidden}" />
+                    <pe:tooltip for="ayudaIdTipoAsunto" value="#{msg['atender.requerimiento.tipoAsunto']}"
+                        mouseTracking="true" adjustX="20" adjustY="20" showEffect="fade"
+                        rendered="#{bandejaConsultasAutorizacionesController.hidden}" />
+                </p:column>
+                <p:column>
+                    <p:spacer rendered="#{!bandejaConsultasAutorizacionesController.hidden}" styleClass="noBorder" />
+                    <p:inputText value="#{bandejaConsultasAutorizacionesController.filtroBandejaTareaDTO.numeroAsunto}"
+                        id="numeroAsunto" maxlength="13" />
+                </p:column>
+                <p:column>
+                    <p:calendar pattern="dd/MM/yyyy" locale="es" navigator="true" id="fechaInicio"
+                        value="#{bandejaConsultasAutorizacionesController.filtroBandejaTareaDTO.fechaInicio}"
+                        readonlyInput="true" maxdate="#{bandejaConsultasAutorizacionesController.maxFechaInicio}">
+                        <p:ajax event="dateSelect" listener="#{bandejaConsultasAutorizacionesController.rangoMaxFechas}"
+                            update="fechaFin" />
+                    </p:calendar>
+                </p:column>
+                <p:column>
+                    <p:calendar pattern="dd/MM/yyyy" locale="es" navigator="true" id="fechaFin"
+                        mindate="#{bandejaConsultasAutorizacionesController.minFechaFin}"
+                        value="#{bandejaConsultasAutorizacionesController.filtroBandejaTareaDTO.fechaFin}"
+                        readonlyInput="true" maxdate="#{bandejaConsultasAutorizacionesController.maxFechaInicio}">
+                        <f:attribute name="startDate"
+                            value="#{bandejaConsultasAutorizacionesController.filtroBandejaTareaDTO.fechaInicio}" />
+                        <f:attribute name="msgFechaFin"
+                            value="#{bandejaConsultasAutorizacionesController.mensajeFechaFin}" />
+                        <f:attribute name="msgObligatorio"
+                            value="#{bandejaConsultasAutorizacionesController.mensajeFechas}" />
+                        <f:validator validatorId="calendarioValidator" />
+
+                    </p:calendar>
+                </p:column>
+                <p:column>
+                    <p:selectOneMenu effect="fade" id="tipoTramitesSelect" converter="tipoTramitesConverter"
+                        rendered="#{bandejaConsultasAutorizacionesController.hidden}" filter="true"
+                        filterMatchMode="contains"
+                        value="#{bandejaConsultasAutorizacionesController.filtroBandejaTareaDTO.tipoTramite}">
+                        <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                        <f:selectItems value="#{bandejaConsultasAutorizacionesController.catListTipoTramite}"
+                            var="tipoTramite" itemValue="#{tipoTramite}" itemLabel="#{tipoTramite.descripcion}" />
+                    </p:selectOneMenu>
+                    <p:spacer rendered="#{!bandejaConsultasAutorizacionesController.hidden}" />
+                </p:column>
+            </p:panelGrid>
+            <p:panelGrid columns="5" styleClass="noBorder">
+                <p:column>
+                    <p:outputLabel value="#{msg['ca.bandejaConsulta.estadoProcesal']} " />
+                    <h:graphicImage id="ayudaIdEstadoProc" url="/resources/css/images/ayuda.png" />
+                    <pe:tooltip for="ayudaIdEstadoProc" value="#{msg['atender.requerimiento.estadoProcesal']}"
+                        mouseTracking="true" adjustX="20" adjustY="20" showEffect="fade" />
+                </p:column>
+                <p:spacer />
+                <p:spacer />
+                <p:spacer />
+                <p:spacer />
+
+                <p:column>
+
+                    <p:selectOneMenu effect="fade" id="estadoProcesalSelect" converter="#{estadoProcesalConverter}"
+                        value="#{bandejaConsultasAutorizacionesController.filtroBandejaTareaDTO.estadoProcesal}"
+                        filter="true" filterMatchMode="contains">
+                        <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                        <f:selectItems value="#{bandejaConsultasAutorizacionesController.estadosProcesales}"
+                            var="estadoProcesal" itemValue="#{estadoProcesal}" itemLabel="#{estadoProcesal.descripcion}" />
+                    </p:selectOneMenu>
+                    <p:message display="text" for="estadoProcesalSelect" />
+                </p:column>
+                <p:column>
+                    <p:commandButton process="@this,numeroAsunto,fechaInicio,estadoProcesalSelect,tipoTramitesSelect"
+                        actionListener="#{bandejaConsultasAutorizacionesController.limpiaFiltros}"
+                        update="bandejaConsultasForm:bandejaTablePanel,bandejaConsultasForm:panelConsultas,bandejaConsultasForm:panelMensajes"
+                        value="#{msg['vuj.boton.limpiar']}" />
+                </p:column>
+                <p:column>
+                    <p:commandButton value="#{msg['vuj.boton.buscar']}"
+                        update="bandejaConsultasForm:bandejaTablePanel,bandejaConsultasForm:panelConsultas,bandejaConsultasForm:panelMensajes"
+                        actionListener="#{bandejaConsultasAutorizacionesController.buscarTramitesBandeja}" />
+                </p:column>
+                <p:spacer />
+                <p:spacer />
+            </p:panelGrid>
+        </p:panel>
+        <p:panel id="bandejaTablePanel">
+            <p:dataTable paginator="true" rows="10"
+                selection="#{bandejaConsultasAutorizacionesController.bandejaTareaDTO}" selectionMode="single"
+                var="bandeja" emptyMessage="#{msg['vuj.grid.vacio']}"
+                value="#{bandejaConsultasAutorizacionesController.bandejaDataModel}" id="bandejaTable">
+                <p:ajax event="rowDblselect" listener="#{bandejaConsultasAutorizacionesController.onRowDblClckSelect}" />
+                <p:column headerText="#{msg['ca.bandejaConsulta.numeroAsunto']}">
+                    <h:outputText value="#{bandeja.numeroAsunto}" id="numeroAsuntoTable" />
+                </p:column>
+                <p:column headerText="#{msg['ca.bandejaConsulta.tipoTramite']}">
+                    <h:outputText value="#{bandeja.tipoTramite}" id="tipoTramiteTable" />
+                </p:column>
+                <p:column headerText="#{msg['ca.bandejaConsulta.estadoProcesal']}">
+                    <h:outputText value="#{bandeja.estadoProcesal}" id="estadoProcesalTable" />
+                </p:column>
+                <p:column headerText="#{msg['ca.bandejaConsulta.fechaRecepcionPromocion']}">
+                    <h:outputText value="#{bandeja.fechaAsignacionStr}" id="fechaRecepcion" />
+                </p:column>
+            </p:dataTable>
+            <pe:tooltip for="bandejaTable" value="#{msg['atender.requerimiento.listaBandejaPendientes']}"
+                mouseTracking="true" adjustX="20" adjustY="20" showEffect="fade" />
+        </p:panel>
+    </h:form>
+    <h:outputScript name='/js/calendar_es.js' target="head" />
+</h:body>
+</html>

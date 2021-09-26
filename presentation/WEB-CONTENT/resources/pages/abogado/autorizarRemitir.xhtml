@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+
+
+        <style type="text/css">
+.resolucionImportante {
+    background-color: #d8da3d !important;
+}
+
+.ui-panel {
+    border-style: none !important;
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+</style>
+
+        <p:ajaxStatus onstart="statusDialog.show();" oncomplete="statusDialog.hide();" />
+        <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+            draggable="false" closable="false">
+            <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+        </p:dialog>
+
+
+        <h:form id="remitirForm">
+            <p:panel id="msgPanel">
+                <p:messages globalOnly="true" showDetail="true"></p:messages>
+                <h:outputText id="errorMsg" value="#{autorizarRemisionController.errorMessage}" />
+                <h:outputText id="msg" value="#{autorizarRemisionController.msg}" />
+            </p:panel>
+
+            <p:confirmDialog closable="false" global="false" message="#{msg['rrl.mensaje.documento.complementario']}"
+                visible="#{autorizarRemisionController.nuevoDocumento}" id="confirmarDialogo"
+                widgetVar="confirmarAccion" showEffect="fade">
+                <table width="100%">
+                    <tr>
+                        <td align="right"><p:commandButton oncomplete="confirmarAccion.hide()" value="Si"
+                                process="@this,confirmarDialogo"
+                                action="#{autorizarRemisionController.actualizarRemision}"
+                                styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                update=":remitirForm:msgPanel,:remitirForm:confirmarDialogo" /> <p:commandButton
+                                value="No" oncomplete="confirmarAccion.hide()" process="@this,confirmarDialogo"
+                                action="#{autorizarRemisionController.regresarPaginaAutorizacion}"
+                                styleClass="ui-confirmdialog-no" icon="ui-icon-close" /></td>
+                    </tr>
+                </table>
+            </p:confirmDialog>
+            <p:panel id="funcionarioPanel">
+                <table>
+                    <tr>
+                        <td colspan="1" align="left"><h:outputText value="#{msg['vuj.resol.funcionario']}" /></td>
+                        <td colspan="1" align="left"><h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" /></td>
+                        <td colspan="2" align="left"><h:outputText value="#{msg['vuj.resol.estadoProcesal']}" /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1"><p:inputText maxlength="500" readonly="true" id="funcionarioInput"
+                                value="#{autorizarRemisionController.userProfile.nombreCompleto}" /></td>
+                        <td colspan="1"><p:inputText maxlength="13"
+                                value="#{autorizarRemisionController.userProfile.rfc}" readonly="true"
+                                id="rfcFuncionarioInput" /></td>
+                        <td colspan="2"><p:inputText maxlength="32" readonly="true"
+                                value="#{autorizarRemisionController.tramite.estadoProcesal}" id="estadoProcesalInput" /></td>
+
+                    </tr>
+                    <tr>
+                        <td colspan="1"><h:outputText value="#{msg['vuj.resol.numAsunto']}" /></td>
+                        <td colspan="1"><h:outputText value="#{msg['vuj.fechaRecepcion']}" /></td>
+                        <td colspan="1"><h:outputText value="#{msg['vuj.resol.fechaVenc']}" /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1"><p:inputText readonly="true" maxlength="13"
+                                value="#{autorizarRemisionController.tramite.numeroAsunto}" id="numAsuntoInput" /></td>
+                        <td colspan="1"><p:inputText readonly="true"
+                                value="#{autorizarRemisionController.tramite.fechaRecepcion}" id="fechaRecepcionInput">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText></td>
+                        <td colspan="1"><p:inputText readonly="true"
+                                value="#{autorizarRemisionController.tramite.fechaVencimiento}"
+                                id="fechaVencimientoInput">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText></td>
+                    </tr>
+                    <tr>
+
+                        <td colspan="3"><p:row>
+                                <p:column>
+                                    <p:outputLabel value="#{msg['rrl.emitir.reemitir.administracion' ]}"></p:outputLabel>
+                                    <h:graphicImage id="admonRemite" url="/resources/css/images/ayuda.png" />
+                                    <pe:tooltip for="admonRemite" value="#{msg['remitir.autoridad']}">
+                                    </pe:tooltip>
+
+
+                                </p:column>
+                            </p:row></td>
+
+                    </tr>
+                    <tr>
+
+                        <td colspan="3"><p:selectOneMenu id="documento"
+                                value="#{autorizarRemisionController.unidad}" widgetVar="comboUnidades" required="true"
+                                requiredMessage="Campo requerido" filter="true" filterMatchMode="contains">
+                                <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                                <f:selectItems value="#{autorizarRemisionController.listaUnidadesEmisoras}"
+                                    var="unidades" itemLabel="#{unidades.descripcion}" itemValue="#{unidades.clave}" />
+                            </p:selectOneMenu> <p:message display="text" for="documento" /></td>
+                    </tr>
+                </table>
+                <table align="right">
+                    <tr>
+                        <td><p:commandButton id="anteriorButton"
+                                action="/resources/pages/rrl/bandeja/bandeja.jsf?faces-redirect=true" process="@this"
+                                value="#{msg['vuj.boton.anterior']}" /></td>
+                        <td colspan="2"><p:commandButton id="remitirButton" value="Siguiente" update="@form"
+                                action="#{autorizarRemisionController.anexarDocumentos}" /></td>
+                        <td><p:commandButton id="rechazarButton" onclick="rechazarRemisionDlg.show()"
+                                value="#{msg['vuj.boton.rechazar']}" /></td>
+                    </tr>
+                </table>
+            </p:panel>
+            <p:confirmDialog header="#{msg['vuj.confirmacion.header']}"
+                message="#{msg['vuj.confirmacion.rechazo.remision']}" widgetVar="rechazarRemisionDlg"
+                icon="ui-icon-alert" showEffect="fade" hideEffect="explode">
+                <table width="100%">
+                    <tr>
+                        <td align="right"><p:commandButton value="#{msg['confirm.si']}"
+                                styleClass="ui-confirmdialog-yes" icon="ui-icon-check" update="@form" process="@this"
+                                actionListener="#{autorizarRemisionController.rechazarRemision}"
+                                oncomplete="rechazarRemisionDlg.hide()" /> <p:commandButton
+                                value="#{msg['confirm.no']}" type="button" styleClass="ui-confirmdialog-no"
+                                icon="ui-icon-close" onclick="rechazarRemisionDlg.hide()" /></td>
+                    </tr>
+                </table>
+            </p:confirmDialog>
+        </h:form>
+
+        <p:panel id="solicitantePanel">
+            <ui:decorate template="/resources/pages/consultas/consulta.xhtml">
+            </ui:decorate>
+        </p:panel>
+        <h:outputScript name='/js/calendar_es.js' target="head" />
+
+
+    </ui:define>
+</ui:composition>
+
+</html>

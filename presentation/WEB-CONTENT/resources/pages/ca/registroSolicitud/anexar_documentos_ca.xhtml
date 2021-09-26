@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Anexar Documentos</title>
+</h:head>
+<h:body>
+
+    <style type="text/css">
+.ui-selectonemenu-panel {
+    width: 50px
+}
+</style>
+
+    <p:panel id="navegationPanel">
+        <table>
+            <tr>
+                <td><p:commandButton id="guardarDocumentosSolButton" value="#{msg['vuj.boton.siguiente']}"
+                        update=":msgPanel" actionListener="#{registroSolicitudCAController.guardarDocumentosSolicitud}" />
+                </td>
+            </tr>
+        </table>
+    </p:panel>
+
+    <p:panel id="msgPanel">
+        <p:messages id="messages" autoUpdate="true" showDetail="false" showSummary="true" />
+    </p:panel>
+
+    <h:form enctype="multipart/form-data;charset=UTF-8" id="formaDocumentos">
+        <h:panelGrid>
+            <p:row>
+                <p:column colspan="5">
+                    <p:outputLabel value="#{msg['vuj.documento.anexar.tipoDocumento']}">
+
+                        <h:graphicImage id="tipDocumentoT" url="/resources/css/images/ayuda.png" />
+                    </p:outputLabel>
+                    <pe:tooltip for="tipDocumentoT" mouseTracking="true" adjustX="20" adjustY="20"></pe:tooltip>
+                    <p:selectOneMenu id="documento" value="#{registroSolicitudCAController.documentoSelected}"
+                        widgetVar="comboDocs" onchange="habilitarBtnAnexar(this)" filter="true"
+                        filterMatchMode="contains">
+                        <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                        <f:selectItems value="#{registroSolicitudCAController.documentosCombo}" var="documento"
+                            itemLabel="#{documento.tipoDocumento}"
+                            itemValue="#{documento.idTipoDocumento},#{documento.tipoDocumento}" />
+                    </p:selectOneMenu>
+                    <p:commandButton id="anexarBtn" update=":formaDocumentos:display" widgetVar="anexarBtnW"
+                        disabled="true" oncomplete="anexarDialogo.show()" value="#{msg['vuj.boton.adjuntar']}" />
+                </p:column>
+            </p:row>
+        </h:panelGrid>
+
+        <h:panelGrid>
+            <p:dataTable id="tablaDocumentos" var="documento"
+                value="#{registroSolicitudCAController.documentoAdjuntarDataModel}" rowIndexVar="rowIndex"
+                resizableColumns="true" selection="#{registroSolicitudCAController.registrosEliminar}"
+                rowKey="#{documento.rutaAzure}" emptyMessage="#{msg['vuj.grid.vacio']}"
+                paginator="true" rows="10">
+                <p:column selectionMode="multiple" style="width:2%" />
+                <h:inputHidden value="#{documento.idTipoDocumento}" />
+                <h:inputHidden value="#{documento.idDocumentoSolicitud}" />
+                <h:inputHidden value="#{documento.ruta}" />
+
+                <p:column headerText="#{msg['vuj.documento.anexar.tipoDocumento']}" style="width:280px">
+                    <h:outputText value="#{documento.tipoDocumento}" id="tipoDoc" />
+                    <pe:tooltip for="tipoDoc" value="#{documento.tipoDocumento}" mouseTracking="true" adjustX="20"
+                        adjustY="20" />
+                </p:column>
+                <p:column headerText="#{msg['vuj.documento.anexar.nombreArchivo']}" style="width:280px">
+                    <h:outputText value="#{documento.nombre}" />
+                </p:column>
+                <p:column headerText="#{msg['vuj.documento.tamanioDocumento']}" style="width:80px">
+                    <h:outputText value="---">
+                    </h:outputText>
+                </p:column>
+                <p:column style="width:150px">
+                    <p:commandLink id="linkVer" value="#{msg['vuj.boton.ver']}" ajax="false"
+                        update=":formaDocumentos:tablaDocumentos"
+                        actionListener="#{registroSolicitudCAController.descargarDocumento}"
+                        disabled="#{documento.nombre eq null}">
+                        <f:attribute name="documentoParametro" value="#{documento}" />
+                        <p:fileDownload value="#{registroSolicitudCAController.archivoDescarga}" />
+                    </p:commandLink>
+                    <p:tooltip for="linkVer" value="#{msg['contribuyente.ver.documento']}" />
+                </p:column>
+            </p:dataTable>
+            <p:column>
+                <p:commandButton id="eliminarRegButton" value="#{msg['vuj.boton.eliminar']}"
+                    update=":formaDocumentos:tablaDocumentos"
+                    actionListener="#{registroSolicitudCAController.eliminarDocumentos}" />
+            </p:column>
+        </h:panelGrid>
+        <div align="center">
+            <p:outputLabel style="color:black" value=" #{msg['vuj.documento.nota']}">
+            </p:outputLabel>
+        </div>
+        <p:dialog id="dlgAnexar" widgetVar="anexarDialogo" header="#{msg['vuj.documento.anexar.tituloDialogo']}"
+            modal="true" closable="true">
+            <h:panelGrid id="display" columns="2" cellpadding="4" style="margin:0 auto;">
+                <p:fileUpload fileUploadListener="#{registroSolicitudCAController.anexarDocumento}" mode="advanced"
+                    multiple="true" required="true" update=":formaDocumentos" fileLimit="1"
+                    fileLimitMessage="#{msg['vuj.documento.anexar.soloUnDoc']}"
+                    invalidFileMessage="#{errmsg['validation.uploadfile.invalid.ca']}"
+                    label="#{msg['vuj.boton.buscar']}" uploadLabel="#{msg['vuj.boton.adjuntar']}"
+                    cancelLabel="#{msg['vuj.boton.cancelar']}" allowTypes="/(\.|\/)(pdf|PDF|jpg|JPG)$/"
+                    onstart="$('#progress').show();"
+                    oncomplete="$('#progress').hide();anexarDialogo.hide(); inicializarCombo()" />
+            </h:panelGrid>
+        </p:dialog>
+
+    </h:form>
+
+
+
+    <script type="text/javascript">  
+    			function inicializarCombo() {
+    				comboDocs.selectValue("");
+   				}
+    			function habilitarBtnAnexar(val){
+    				if(val.value == null || val.value == ""){
+    					anexarBtnW.disable();
+    				}else{
+    					anexarBtnW.enable();	
+    				}
+   				}
+		</script>
+</h:body>
+</html>

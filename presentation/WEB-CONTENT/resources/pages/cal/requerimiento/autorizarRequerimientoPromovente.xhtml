@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <style type="text/css">
+.sinBorde td {
+    border-style: hidden !important;
+}
+</style>
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    </h:head>
+    <h:body>
+        <h:form id="resolucionForm">
+            <p:panel header="#{msg['ca.requerimiento.autorizar']}">
+                <p:panelGrid id="panelGenerarReq" styleClass="sinBorde">
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.funcionario']} " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.rfcFuncionario']} " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.numAsunto']} " />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText id="idFuncionario" maxlength="600" readonly="true"
+                                value="#{autorizarRequerimientoCALController.userProfile.nombreCompleto}"
+                                disabled="true" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="idRFC" maxlength="13" readonly="true"
+                                value="#{autorizarRequerimientoCALController.userProfile.rfc}" disabled="true" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="idNumAsunto" maxlength="30" readonly="true"
+                                value="#{autorizarRequerimientoCALController.requerimiento.tramite.numeroAsunto}"
+                                disabled="true" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.fechaRecepcion']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.fechaVenc']}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{msg['vuj.resol.estadoProcesal']} " />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText id="idFechaRecep" readonly="true"
+                                value="#{autorizarRequerimientoCALController.requerimiento.tramite.fechaRecepcion}"
+                                disabled="true" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="idfechaVenc" readonly="true"
+                                value="#{autorizarRequerimientoCALController.requerimiento.tramite.fechaVencimiento}"
+                                disabled="true" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="idEstado" maxlength="250" readonly="true"
+                                value="#{autorizarRequerimientoCALController.resolucionAbogado.tramite.estadoProcesal}"
+                                disabled="true" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['rrl.requerimiento.tipoRequerimiento']}" />
+                        </p:column>
+                        <p:column>
+                        </p:column>
+                        <p:column>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText id="tipoReq"
+                                value="#{autorizarRequerimientoCALController.requerimiento.tipoRequerimiento}"
+                                disabled="true" readOnly="true" />
+                        </p:column>
+                        <p:column>
+                        </p:column>
+                        <p:column>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                <h:panelGrid>
+                    <p:row>
+                        <p:column>
+                            <p:commandButton value="#{msg['vuj.boton.siguiente']}"
+                                action="/resources/pages/cal/requerimiento/anexarDocumentos.jsf?faces-redirect=true" />
+                        </p:column>
+                    </p:row>
+                </h:panelGrid>
+            </p:panel>
+        </h:form>
+    </h:body>
+</ui:composition>

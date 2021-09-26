@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui">
+
+<body>
+
+    <style type="text/css">
+.noResize {
+    resize: none;
+}
+</style>
+
+    <h:form id="tableObservaciones">
+        <p:panel style="width:100%;">
+            <p:dataTable paginator="true" rows="5" widgetVar="tablaObservaciones"
+                value="#{consultasController.observacionesDataModel}" id="tablaObservaciones" var="observacion"
+                emptyMessage="#{msg['vuj.grid.vacio']}" resizableColumns="true"
+                selection="#{consultasController.observacionSelected}" rowKey="#{observacion.idObservacion}">
+
+                <p:ajax event="rowSelectRadio"
+                    update=":tabSolicitud:tableObservaciones, :tabSolicitud:tableObservaciones:consultaMotivoPanel"
+                    process="@all" listener="#{consultasController.onRowSelectObservacion}" />
+
+
+
+                <p:column headerText="#{msg['oficialia.consulta.observacion.fechaGeneracion']}" resizable="false">
+                    <h:outputText value="#{observacion.fechaObservacion}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                    </h:outputText>
+                </p:column>
+                <p:column resizable="false" headerText="#{msg['oficialia.consulta.observacion.fechaAtencion']}">
+                    <h:outputText value="#{observacion.fechaAtencion}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                    </h:outputText>
+                </p:column>
+                <p:column resizable="false" headerText="#{msg['oficialia.consulta.observacion.generadoPor']}">
+                    <h:outputText value="#{observacion.rfcAbogado}"></h:outputText>
+                </p:column>
+                <p:column resizable="false" headerText="#{msg['oficialia.consulta.observacion.estado']}">
+                    <h:outputText value="#{observacion.descEstado}"></h:outputText>
+                </p:column>
+
+                <p:column style="width:6%" selectionMode="single" resizable="false"
+                    headerText="#{msg['oficialia.consulta.observacion.detalle']}"></p:column>
+
+            </p:dataTable>
+
+
+
+            <p:panel id="consultaMotivoPanel" style="width:100%;"
+                header="#{msg['oficialia.consulta.observacion.detalleObservacion']}"
+                rendered="#{consultasController.blnPanelMotivo}">
+                <p:outputLabel value="#{msg['oficialia.consulta.observacion.motivo']}"></p:outputLabel>
+                <p:scrollPanel mode="native" style="border-style: hidden !important;">
+                    <p:inputTextarea value="#{consultasController.observacionSelected.observacionDesc}" rows="4"
+                        id="textAreaMotivos" cols="50" styleClass="noResize" autoResize="false" readonly="true" />
+                </p:scrollPanel>
+
+            </p:panel>
+
+
+        </p:panel>
+    </h:form>
+</body>
+</html>

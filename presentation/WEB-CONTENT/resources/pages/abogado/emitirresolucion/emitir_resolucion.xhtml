@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+
+        <style type="text/css">
+.ui-panel {
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+</style>
+        <p:ajaxStatus onstart="statusDialog.show();" oncomplete="statusDialog.hide();" />
+        <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+            draggable="false" closable="false">
+            <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+        </p:dialog>
+
+        <h:form id="resolucionForm">
+            <p:panel id="navegationPanel">
+                <table align="right">
+                    <tr>
+                        <td><p:commandButton value="#{msg['vuj.boton.anterior']}" ajax="true"
+                                action="#{emitirResolucionController.anterior}" update="@form" partialSubmit="true"
+                                process="@this" /></td>
+                        <td><p:commandButton value="#{msg['vuj.boton.terminar']}" ajax="true" update="@form"
+                                partialSubmit="true"
+                                action="#{emitirResolucionController.guardarResolucionesImpugnadas}">
+
+                            </p:commandButton></td>
+                    </tr>
+                </table>
+            </p:panel>
+            <p:panel id="funcionarioPanel">
+                <p:panel id="msgPanelRes">
+                    <p:messages id="messagesRes" showDetail="true" globalOnly="true" />
+                </p:panel>
+                <table>
+                    <tr>
+                        <td><h:outputText value="#{msg['vuj.resol.funcionario']} " /></td>
+                        <td><h:outputText value="#{msg['vuj.resol.rfcFuncionario']} " /></td>
+                        <td><h:outputText value="#{msg['vuj.resol.estadoProcesal']} " /></td>
+                    </tr>
+                    <tr>
+                        <td><p:inputText readonly="true" id="funcionarioInput"
+                                value="#{emitirResolucionController.userProfile.nombreCompleto}" /></td>
+                        <td><p:inputText readonly="true" id="rfcFuncionarioInput"
+                                value="#{emitirResolucionController.userProfile.rfc}" /></td>
+                        <td><p:inputText readonly="true" id="estadoProcesalInput"
+                                value="#{emitirResolucionController.resolucionAbogado.tramiteDTO.estadoProcesal}" /></td>
+                    </tr>
+                    <tr>
+                        <td><h:outputText value="#{msg['vuj.resol.numAsunto']} " /></td>
+                        <td><h:outputText value="#{msg['vuj.fechaRecepcion']}" /></td>
+                        <td><h:outputText value="#{msg['vuj.resol.fechaVenc']}" /></td>
+                    </tr>
+                    <tr>
+                        <td><p:inputText readonly="true" id="numAsuntoInput"
+                                value="#{emitirResolucionController.resolucionAbogado.tramiteDTO.numeroAsunto}" /></td>
+                        <td><p:inputText readonly="true"
+                                value="#{emitirResolucionController.resolucionAbogado.tramiteDTO.fechaRecepcion}"
+                                id="fechaRecepcionInput">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText></td>
+                        <td><p:inputText readonly="true" id="fechaVencimiento"
+                                value="#{emitirResolucionController.resolucionAbogado.tramiteDTO.fechaVencimiento}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText></td>
+                    </tr>
+                </table>
+
+            </p:panel>
+            <p:panel id="autorizadores">
+                <table>
+                    <tr>
+                        <td><p:outputLabel value="#{msg['vuj.camposObligatorios']} " style="color:red" /></td>
+                    </tr>
+
+                    <tr>
+                        <td><h:outputText value="#{msg['rrl.emitir.reemitir.administrador']} " /></td>
+                    </tr>
+                    <tr>
+                        <td><p:selectOneMenu id="autorizadoresSelect" widgetVar="comboAutorizadores"
+                                value="#{emitirResolucionController.selectedAutorizador}" required="true"
+                                requiredMessage="#{msg['rrl.captura.solicitud.requerido']}"
+                                converter="#{autorizadorConverter}" filter="true" filterMatchMode="contains">
+                                <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                                <f:selectItems value="#{emitirResolucionController.autorizadores}" var="autorizador"
+                                    itemLabel="#{autorizador.descripcion}" itemValue="#{autorizador}" />
+                            </p:selectOneMenu> <p:message for="autorizadoresSelect" display="text" /></td>
+                    </tr>
+                    <tr>
+                        <td><p:outputLabel value="#{msg['rrl.emision.numOficio']}"></p:outputLabel>
+                            <p:outputLabel style="color:red">*</p:outputLabel></td>
+                        <td><p:outputLabel value="#{msg['rrl.emision.fechOficio']}"></p:outputLabel>
+                            <p:outputLabel style="color:red">*</p:outputLabel></td>
+
+                    </tr>
+                    <tr>
+                        <td><p:inputText id="numOficio"
+                                value="#{emitirResolucionController.resolucionAbogado.numeroOficio}" required="true"
+                                maxlength="50">
+                            </p:inputText> <p:message for="numOficio" display="text"></p:message></td>
+                        <td><p:calendar id="fechaOficio" pattern="dd/MM/yyyy" locale="es" required="true"
+                                navigator="true" maxdate="emitirResolucionController.fechaMaxima" readonlyInput="true"
+                                value="#{emitirResolucionController.resolucionAbogado.fechaEmision}">
+                            </p:calendar> <p:message for="fechaOficio" display="text"></p:message></td>
+
+                    </tr>
+                </table>
+            </p:panel>
+
+            <p:panel id="panelRevisarDocumentos">
+                <p:confirmDialog closable="false" message="#{msg['rrl.mensaje.documento.complementario']}"
+                    visible="#{emitirResolucionController.nuevoDocumento}" id="confirmarDialog"
+                    widgetVar="confirmarAccion" showEffect="fade">
+                    <table align="right">
+                        <tr>
+                            <td><p:commandButton oncomplete="confirmarAccion.hide()" value="Si" ajax="false"
+                                    action="#{emitirResolucionController.confirmarGuardado}"
+                                    styleClass="ui-confirmdialog-yes" icon="ui-icon-check" /> <p:commandButton
+                                    value="No" oncomplete="confirmarAccion.hide()" process="@this,confirmarDialog"
+                                    action="#{emitirResolucionController.regresarPaginaEmitir}"
+                                    styleClass="ui-confirmdialog-no" icon="ui-icon-close" /></td>
+                        </tr>
+                    </table>
+                </p:confirmDialog>
+            </p:panel>
+
+
+            <p:panel id="panel" header=" #{msg['rrl.emitir.resolucion.resoluciones.impuganadas']} ">
+                <p:dataTable editable="true" editMode="cell" id="resolucionesImpuganadasTable" paginator="true" rows="5"
+                    var="resolucion" selection="#{emitirResolucionController.selectedResolucionImpugnada}"
+                    value="#{emitirResolucionController.resolucionesDataModel}" emptyMessage="#{msg['vuj.grid.vacio']}">
+                    <p:column selectionMode="single" resizable="false" />
+                    <p:column headerText="#{msg['rrl.emitir.resolucion.resolucion.impugnada']}" resizable="false">
+                        <h:outputText value="#{resolucion.resImpugnada}" />
+                    </p:column>
+                    <p:column headerText="#{msg['rrl.emitir.resolucion.resolucion.sentido']}" resizable="false">
+                        <p:selectOneMenu id="selectSentidoEmitirDisable" effect="fade" filter="true"
+                            filterMatchMode="contains" value="#{resolucion.ideSentidoResolucion}"
+                            converter="#{sentidoConverter}" style="width:100%;">
+                            <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                            <f:selectItems value="#{emitirResolucionController.sentidosResolucion}" var="sentido"
+                                itemValue="#{sentido}" itemLabel="#{sentido.descripcion}" />
+                        </p:selectOneMenu>
+                        <p:message for="selectSentidoEmitirDisable" display="text" />
+                        <pe:tooltip for="selectSentidoEmitirDisable" value="#{msg['atender.requerimiento.sentido']}"
+                            adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" />
+                    </p:column>
+                    <p:ajax event="rowSelectRadio" update=":resolucionForm:panelAgravios"
+                        listener="#{emitirResolucionController.onRowSelect}" />
+                </p:dataTable>
+
+            </p:panel>
+            <p:panel id="panelAgravios" header=" #{msg['rrl.emitir.resolucion.agravios']} "
+                visible="#{emitirResolucionController.mostrarPanelAgravios}">
+                <p:pickList id="agraviosList" value="#{emitirResolucionController.agravios}" var="agravio"
+                    itemLabel="#{agravio.descripcion}" itemValue="#{agravio}" converter="#{agravioConverter}">
+                    <p:ajax event="transfer" listener="#{emitirResolucionController.actualizarResolucionImpugnada}" />
+                    <f:facet name="sourceCaption">#{msg['rrl.emitir.resolucion.agravios.disponibles']}</f:facet>
+                    <f:facet name="targetCaption">#{msg['rrl.emitir.resolucion.agravios.agregados']}</f:facet>
+                </p:pickList>
+                <pe:tooltip for="panelAgravios" value="#{msg['atender.requerimiento.agravios']}" mouseTracking="true"
+                    adjustX="20" adjustY="20" />
+            </p:panel>
+        </h:form>
+
+        <script type="text/javascript">
+		function goBack() {
+		    window.history.go(-1)
+		}
+	</script>
+
+        <p:panel id="solicitantePanel">
+            <ui:decorate template="../../consultas/consulta.xhtml">
+            </ui:decorate>
+        </p:panel>
+        <h:outputScript name='/js/calendar_es.js' target="head" />
+
+    </ui:define>
+</ui:composition>
+
+
+</html>

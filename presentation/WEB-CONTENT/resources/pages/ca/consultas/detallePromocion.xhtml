@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+    <title>#{msg['ca.title.consultaAutorizacion']}</title>
+    <style type="text/css">
+.noBorder td {
+    border-style: hidden !important;
+}
+</style>
+</h:head>
+<h:body>
+    <h:form id="detallePromocionForm">
+        <p:panel id="panelMensajes">
+            <p:messages showDetail="true" />
+        </p:panel>
+        <p:panel id="panelDetalle">
+            <p:panelGrid columns="3" styleClass="noBorder">
+                <p:outputLabel value="#{msg['ca.bandejaConsulta.numeroAsunto']}" />
+                <p:outputLabel value="#{msg['ca.bandejaConsulta.tipoAsunto']}" />
+                <p:spacer />
+                <p:inputText value="#{detallePromocionController.tramite.numeroAsunto}" readonly="true" />
+                <p:inputText value="#{detallePromocionController.tramite.tipoTramite}" readonly="true" />
+                <p:spacer />
+                <p:outputLabel value="#{msg['ca.bandejaConsulta.fechaRecepcion']}" />
+                <p:outputLabel value="#{msg['ca.bandejaConsulta.estadoProcesal']}" />
+                <p:spacer />
+                <p:inputText value="#{detallePromocionController.tramite.fechaRecepcionStr}" readonly="true" />
+                <p:selectOneMenu effect="fade" id="estadoProcesalSelect" converter="#{estadoProcesalConverter}"
+                    disabled="#{detallePromocionController.validaUsr}" filter="true" filterMatchMode="contains"
+                    value="#{detallePromocionController.tramite.catEstadoProcesal}">
+                    <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                    <f:selectItems value="#{detallePromocionController.estadosProcesales}" var="estadoProcesal"
+                        itemValue="#{estadoProcesal}" itemLabel="#{estadoProcesal.descripcion}" />
+                </p:selectOneMenu>
+                <p:message display="text" for="estadoProcesalSelect" />
+                <p:commandButton id="modificarTramiteButton" value="#{msg['vuj.boton.guardar']}"
+                    rendered="#{!detallePromocionController.validaUsr}"
+                    actionListener="#{detallePromocionController.modificarTramite}"
+                    update=":detallePromocionForm:panelMensajes" />
+                <p:spacer rendered="#{detallePromocionController.validaUsr}" />
+                <p:spacer />
+                <p:spacer />
+            </p:panelGrid>
+        </p:panel>
+    </h:form>
+    <p:panel id="panelConsultas">
+        <ui:decorate template="consulta.xhtml">
+        </ui:decorate>
+    </p:panel>
+</h:body>
+</html>

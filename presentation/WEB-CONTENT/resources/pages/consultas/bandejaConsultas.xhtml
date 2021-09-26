@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+        <f:event listener="#{bandejaConsultasController.validaAccesoProcesoMenu}" type="preRenderView" />
+        <style type="text/css">
+.ui-panel {
+    border-style: hidden !important;
+    width: #{sessionScope.tamanioBuzon}#{sessionScope.tipoTamanioBuzon};
+}
+.ui-selectonemenu-panel {
+    width: 70%;
+}
+</style>
+        <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" />
+
+        <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+            draggable="false" closable="false">
+            <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+        </p:dialog>
+
+        <h:form id="formBandeja" onkeypress="if (event.keyCode == 13) { return false; }">
+            <p:panel id="panelMensajes" style="border-style: hidden !important;">
+                <p:messages showDetail="true" />
+            </p:panel>
+            <p:panel id="bandejaPanel" header="#{msg['rrl.buscarPromocion.title']}">
+                <table cellpadding="1">
+                    <tr>
+                        <td><h:outputText value="#{msg['rrl.buscarPromocion.numeroAsunto']} " /> <h:graphicImage
+                                id="ayudaIdNumero" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+                                for="ayudaIdNumero" value="#{msg['atender.requerimiento.numeroAsunto']}" adjustX="20"
+                                adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+                        <td><h:outputText value="#{msg['rrl.buscarPromocion.tipoAsunto']} " /> <h:graphicImage
+                                id="ayudaIdTipoAsunto" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+                                for="ayudaIdTipoAsunto" value="#{msg['rrl.buscarPromocion.tipoAsunto']}" adjustX="20"
+                                adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+                    </tr>
+                    <tr>
+                        <td><p:inputText value="#{bandejaConsultasController.filtroBandejaTareaDTO.numeroAsunto}"
+                                id="numeroAsunto" maxlength="13" /></td>
+                        <td><p:selectOneMenu effect="fade" id="tipoTramitesSelect"
+                                converter="#{tipoTramitesConverter}" styleClass="combo"
+                                value="#{bandejaConsultasController.filtroBandejaTareaDTO.tipoTramite}" filter="true"
+                                filterMatchMode="contains" style="width:250px ;">
+                                <f:selectItem itemValue="" itemLabel="#{msg['vuj.combo.seleccione']}" />
+                                <f:selectItems value="#{bandejaConsultasController.tiposTramites}" var="tipoTramite"
+                                    itemValue="#{tipoTramite}" itemLabel="#{tipoTramite.descripcion}" />
+                            </p:selectOneMenu></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><h:outputText value="#{msg['rrl.buscarPromocion.rangoFechas']}" /></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><h:outputText value="#{msg['rrl.buscarPromocion.fechaInicio']} " /> <h:graphicImage
+                                id="ayudaIdFecInicio" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+                                for="ayudaIdFecInicio" value="#{msg['atender.requerimiento.fechaInicio']}" adjustX="20"
+                                adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+                        <td><h:outputText value="#{msg['rrl.buscarPromocion.fechaFin']} " /> <h:graphicImage
+                                id="ayudaIdFecFin" url="/resources/css/images/ayuda.png" /> <pe:tooltip
+                                for="ayudaIdFecFin" value="#{msg['atender.requerimiento.fechaFin']}" adjustX="20"
+                                adjustY="20" mouseTracking="true" showEffect="fade" /></td>
+                    </tr>
+                    <tr>
+                        <td><p:calendar pattern="dd/MM/yyyy" locale="es" navigator="true" id="fechaInicio"
+                                value="#{bandejaConsultasController.filtroBandejaTareaDTO.fechaInicio}"
+                                onchange="limpiarFechaFinCalendar();" widgetVar="fechaInicioCalendar"
+                                readonlyInput="true" maxdate="#{bandejaConsultasController.maxFechaInicio}">
+                                <p:ajax event="dateSelect" listener="#{bandejaConsultasController.rangoMaxFechas}"
+                                    update="fechaFin" />
+                            </p:calendar></td>
+                        <td><p:calendar pattern="dd/MM/yyyy" locale="es" navigator="true"
+                                widgetVar="fechaFinCalendar" id="fechaFin"
+                                mindate="#{bandejaConsultasController.minFechaFin}"
+                                maxdate="#{bandejaConsultasController.maxFechaFin}"
+                                value="#{bandejaConsultasController.filtroBandejaTareaDTO.fechaFin}"
+                                readonlyInput="true">
+                                <f:attribute name="startDate" value="#{bandejaConsultasController.fechaInicio}" />
+                                <f:attribute name="msgFechaFin" value="#{bandejaConsultasController.mensajeFechaFin}" />
+                                <f:attribute name="msgObligatorio" value="#{bandejaConsultasController.mensajeFechas}" />
+
+                            </p:calendar></td>
+                    </tr>
+                </table>
+                <table width="100%">
+                    <tr>
+                        <td colspan="4" align="right"><p:commandButton value="#{msg['vuj.boton.limpiar']}"
+                                actionListener="#{bandejaConsultasController.limpiarBandeja}"
+                                process="@this, panelMensajes, bandejaTable, fechaInicio" partialSubmit="true"
+                                update="@form,:formBandeja:bandejaTablePanel, :formBandeja:bandejaPanel, :formBandeja:panelMensajes">
+                            </p:commandButton> <p:commandButton value="#{msg['vuj.boton.buscar']}"
+                                update="@form, :formBandeja:bandejaTablePanel,formBandeja:panelMensajes"
+                                actionListener="#{bandejaConsultasController.buscarTareaBandeja}">
+                            </p:commandButton></td>
+                    </tr>
+                </table>
+            </p:panel>
+            <p:panel id="bandejaTablePanel">
+                <p:dataTable paginator="true" rows="10" selection="#{bandejaConsultasController.bandejaTareaDTO}"
+                    widgetVar="bandejaSelection" selectionMode="single" var="bandeja"
+                    value="#{bandejaConsultasController.bandejaDataModel}" id="bandejaTable"
+                    emptyMessage="#{bandejaConsultasController.mensajeBandejaVacia}" resizableColumns="true">
+                    <p:ajax event="rowDblselect" listener="#{bandejaConsultasController.onRowDblClckSelect}" />
+
+                    <p:column headerText="#{msg['rrl.buscarPromocion.grid.numeroAsunto']}"
+                        style="width:7%;white-space:pre-line;text-align: center;" resizable="false">
+                        <h:outputText value="#{bandeja.numAsunto}" id="numeroAsuntoTable" />
+                    </p:column>
+
+                    <p:column headerText="#{msg['rrl.buscarPromocion.grid.tipoAsunto']}"
+                        style="width:15%;white-space:pre-line;" resizable="false">
+                        <h:outputText value="#{bandeja.descripcionTipoTramite}" id="tipoTramite" />
+                    </p:column>
+
+                    <p:column headerText="#{msg['rrl.buscarPromocion.grid.fechaAsignacion']}"
+                        style="width:12%;white-space:pre-line;text-align: center;" resizable="false">
+                        <h:outputText value="#{bandeja.fechaRecepcion}" id="tipoFechaInicio">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Estado del Asunto" resizable="false" style="width:8%;white-space:pre-line;">
+                        <h:outputText value="#{bandeja.edoToUser}" id="idEstadoProcesal" />
+                    </p:column>
+
+                </p:dataTable>
+                <pe:tooltip for="bandejaTable" value="#{msg['atender.requerimiento.listaBandejaPendientes']}"
+                    adjustX="20" adjustY="20" mouseTracking="true" showEffect="fade" />
+            </p:panel>
+
+        </h:form>
+
+        <script type="text/javascript">
+		function limpiarFechaFinCalendar() {
+    	
+		}
+		function limpiarFechaInicioCalendar() {
+    		fechaInicioCalendar.setDate(null);
+		}
+		
+		function limpiarRangoFechasCalendar() {
+			limpiarFechaFinCalendar();
+			limpiarFechaInicioCalendar();
+		}
+		
+		
+	</script>
+        <h:outputScript name='/js/calendar_es.js' target="head" />
+
+    </ui:define>
+</ui:composition>
+
+</html>
+

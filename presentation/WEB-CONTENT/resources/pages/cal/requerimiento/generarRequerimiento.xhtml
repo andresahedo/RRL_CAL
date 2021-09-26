@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" template="/WEB-INF/facelets/templates/layout.xhtml">
+
+
+
+    <ui:define name="content">
+        <style type="text/css">
+.ui-panel {
+    border-style: hidden !important;
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+</style>
+        <p:ajaxStatus onstart="statusDialog.show();" oncomplete="statusDialog.hide();" />
+        <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+            draggable="false" closable="false">
+            <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+        </p:dialog>
+
+        <p:panel id="msgPanel">
+            <p:messages id="messages" />
+        </p:panel>
+        <h:form id="requerimientoForm">
+
+            <p:panel header="#{msg['vuj.resol.generarRequerimiento']}">
+                <p:panel header="#{msg['vuj.tab.solicitante']}" style="width:100%">
+                    <h:panelGrid id="panelGenerarReq" styleClass="noBorder" columns="3">
+                        <p:row>
+                            <h:outputText value="#{msg['vuj.resol.funcionario']} " />
+                        </p:row>
+                        <p:row>
+                            <h:outputText value="#{msg['vuj.resol.rfcFuncionario']} " />
+                        </p:row>
+                        <p:row>
+                            <h:outputText value="#{msg['vuj.resol.numAsunto']} " />
+
+                        </p:row>
+                        <p:row>
+
+                            <p:inputText id="idFuncionario" maxlength="600" readonly="true"
+                                value="#{generarRequerimientoCALController.userProfile.nombreCompleto}" disabled="true" />
+                        </p:row>
+                        <p:row>
+                            <p:inputText id="idRFC" maxlength="13" readonly="true"
+                                value="#{generarRequerimientoCALController.userProfile.rfc}" disabled="true" />
+                        </p:row>
+                        <p:row>
+                            <p:inputText id="idNumAsunto" maxlength="30" readonly="true"
+                                value="#{generarRequerimientoCALController.requerimiento.tramite.numeroAsunto}"
+                                disabled="true" />
+
+                        </p:row>
+                        <p:row>
+                            <h:outputText value="#{msg['vuj.fechaRecepcion']}" />
+                        </p:row>
+                        <p:row>
+                            <h:outputText value="#{msg['vuj.resol.fechaVenc']}" />
+                        </p:row>
+                        <p:row>
+                            <h:outputText value="#{msg['vuj.resol.estadoProcesal']} " />
+                        </p:row>
+                        <p:row>
+
+                            <p:inputText id="idFechaRecep" readonly="true"
+                                value="#{generarRequerimientoCALController.requerimiento.tramite.fechaRecepcion}"
+                                disabled="true">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText>
+                        </p:row>
+                        <p:row>
+                            <p:inputText id="idfechaVenc" readonly="true"
+                                value="#{generarRequerimientoCALController.requerimiento.tramite.fechaVencimiento}"
+                                disabled="true">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:inputText>
+                        </p:row>
+                        <p:row>
+                            <p:inputText id="idEstado" maxlength="250" readonly="true"
+                                value="#{generarRequerimientoCALController.datosBandejaTareaDTO.estadoProcesal}"
+                                disabled="true" />
+
+                        </p:row>
+                    </h:panelGrid>
+                </p:panel>
+                <p:spacer />
+                <p />
+                <p:panel header="#{msg['ca.requerimiento.tituloPanel']}" id="panelRequerimientosCalTooltip"
+                    style="width:100%; border-style: hidden !important;">
+                    <pe:tooltip for="panelRequerimientosCalTooltip" value="#{msg['cal.requerimiento.tooltip.titulo']}"
+                        mouseTracking="true" adjustX="20" adjustY="20" atPosition="top left" showEffect="fade" />
+                </p:panel>
+
+                <p:panel id="panelRequerimientosCal" style="width:100%">
+                    <table>
+                        <tr>
+                            <td><h:outputText value="#{msg['campo.obligatorio']}" style="color:red" /></td>
+
+                        </tr>
+                        <tr>
+                            <td><h:outputText value="#{msg['ca.requerimiento.nombreFirma']}" /> <h:outputText
+                                    style="color:red" value=" * " /> <h:graphicImage id="ayudaNomFirma"
+                                    url="/resources/css/images/ayuda.png" /> <pe:tooltip for="ayudaNomFirma"
+                                    value="#{msg['nombre.firma']}"></pe:tooltip></td>
+
+                        </tr>
+                        <tr>
+                            <td><p:selectOneMenu id="seleccionAutorizador" widgetVar="comboAutorizadores"
+                                    filter="true" filterMatchMode="contains"
+                                    value="#{generarRequerimientoCALController.requerimiento.rfcAutorizador}"
+                                    style="width:150%;" required="true"
+                                    requiredMessage="#{msg['ca.requerimiento.campoRequerido']}"
+                                    onchange="inicializarErrores();">
+                                    <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                                    <f:selectItems value="#{generarRequerimientoCALController.listaAutorizadores}"
+                                        var="autorizador" itemLabel="#{autorizador.descripcion}"
+                                        itemValue="#{autorizador.clave}" />
+                                </p:selectOneMenu> <p:message display="text" for="seleccionAutorizador" /></td>
+
+                        </tr>
+                    </table>
+
+                    <p:panel id="panelAgregarRequerimiento" style="border-style: none;width:100%">
+                        <table cellpadding="4">
+                            <tr>
+                                <td><h:outputText value="#{msg['rrl.requerimiento.tipoRequerimiento']}" /> <h:outputText
+                                        style="color:red" value=" * " /> <h:graphicImage id="ayudaTipoRequerimiento"
+                                        url="/resources/css/images/ayuda.png" /> <pe:tooltip
+                                        for="ayudaTipoRequerimiento" value="#{msg['tipo.requerimiento']}"></pe:tooltip></td>
+                                <td><div id="divAutoridadSelectLabel">
+                                        <h:outputText value="#{msg['rrl.requerimiento.autoridadesSolicitadas']}" />
+                                        <h:outputText style="color:red" value=" * " />
+                                        <h:graphicImage id="ayudaAutoridadSol" url="/resources/css/images/ayuda.png" />
+                                        <pe:tooltip for="ayudaAutoridadSol" value="#{msg['autoridad.solicita']}"></pe:tooltip>
+                                    </div></td>
+
+                            </tr>
+                            <tr>
+                                <td width="20%"><p:selectOneMenu id="tipoRequerimientoSelect"
+                                        binding="#{tipoRequerimientoSelect}" widgetVar="comboTipoRequerimiento"
+                                        filter="true" filterMatchMode="contains"
+                                        value="#{generarRequerimientoCALController.requerimiento.claveTipoRequerimiento}"
+                                        onchange="inicializarComboAutorizades(this, '#{generarRequerimientoCALController.claveRequerimientoAutoridad}');"
+                                        style="width:100%;" required="true">
+                                        <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                                        <f:selectItems
+                                            value="#{generarRequerimientoCALController.listaTiposRequerimiento}"
+                                            var="tipoReq" itemLabel="#{tipoReq.descripcion}"
+                                            itemValue="#{tipoReq.clave}" />
+                                    </p:selectOneMenu> <p:message display="text" for="tipoRequerimientoSelect" /></td>
+                                <td width="25%"><div id="divAutoridadSelect">
+                                        <p:selectOneMenu id="autoridadSelect"
+                                            value="#{generarRequerimientoCALController.requerimiento.claveUnidadAdministrativa}"
+                                            widgetVar="comboAutoridades" filter="true" filterMatchMode="contains"
+                                            style="width:100%;" onchange="inicializarErrores();">
+                                            <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                                            <f:selectItems value="#{generarRequerimientoCALController.listaAutoridades}"
+                                                var="autoridad" itemLabel="#{autoridad.descripcion}"
+                                                itemValue="#{autoridad.clave}" />
+                                            <f:validator validatorId="generarRequerimientoCalValidator" />
+                                            <f:attribute name="tipoRequerimientoSelect"
+                                                value="#{tipoRequerimientoSelect}" />
+                                        </p:selectOneMenu>
+                                        <p:message display="text" for="autoridadSelect" />
+                                    </div></td>
+                                <td align="right" width="800px"><p:commandButton
+                                        value="#{msg['vuj.boton.agregar']}" style="float:right;"
+                                        update=":requerimientoForm:tipoRequerimientoSelect,:requerimientoForm:requerimientoTable, :requerimientoForm:autoridadSelect,:requerimientoForm:panelAgregarRequerimiento "
+                                        ajax="true" oncomplete="deshabilitarCombo();" onsuccess="deshabilitarCombo();"
+                                        process="@this,autoridadSelect,tipoRequerimientoSelect"
+                                        actionListener="#{generarRequerimientoCALController.agregarRequerimiento}">
+                                    </p:commandButton></td>
+                            </tr>
+                        </table>
+                    </p:panel>
+                    <br />
+                    <h:panelGrid>
+                        <p:dataTable id="requerimientoTable" var="req"
+                            value="#{generarRequerimientoCALController.requerimientoDataModel}" rowIndexVar="rowIndex"
+                            resizableColumns="true" selection="#{generarRequerimientoCALController.registrosEliminar}"
+                            rowKey="#{req.id}" emptyMessage="#{msg['vuj.grid.vacio']}">
+
+                            <p:ajax event="rowSelectCheckbox" update=":requerimientoForm:buttonPanel"
+                                listener="#{generarRequerimientoCALController.rowSelectCheckbox}" />
+                            <p:ajax event="rowUnselectCheckbox" update=":requerimientoForm:buttonPanel"
+                                listener="#{generarRequerimientoCALController.rowUnselectCheckbox}" />
+                            <p:ajax event="rowSelect" update=":requerimientoForm:buttonPanel"
+                                listener="#{generarRequerimientoCALController.rowSelectCheckbox}" />
+
+                            <f:facet name="header">  
+			            		Detalle del Requerimiento
+			        		</f:facet>
+                            <h:inputHidden value="#{req.claveTipoRequerimiento}" />
+                            <h:inputHidden value="#{req.claveUnidadAdministrativa}" />
+                            <p:column resizable="false" headerText="#{msg['rrl.requerimiento.tipoRequerimiento']}"
+                                style="width:140px" filterBy="tipoReq">
+                                <h:outputText value="#{req.tipoRequerimiento}" />
+                            </p:column>
+                            <p:column headerText="#{msg['rrl.requerimiento.autoridad']}" style="width:460px"
+                                filterBy="autoridad" resizable="false">
+                                <p style="word-wrap: break-word; white-space: pre-line;">
+                                    <h:outputText value="#{req.unidadAdministrativa}" />
+                                </p>
+                            </p:column>
+                            <p:column headerText="#{msg['ca.requerimiento.eliminar']}" style="width:60px"
+                                selectionMode="Multiple" resizable="false" />
+                        </p:dataTable>
+                        <style type="text/css">
+.ui-chkbox-all {
+    visibility: hidden;
+    height: 22px !important;
+}
+
+.ui-column-filter {
+    visibility: hidden;
+}
+</style>
+                    </h:panelGrid>
+                    <br />
+                    <p:panel id="buttonPanel" style="border:hidden;height:30px;width:100%;">
+                        <p:commandButton style="float:right;" id="eliminarButton" value="#{msg['vuj.boton.eliminar']}"
+                            update="requerimientoForm:requerimientoTable,:requerimientoForm:buttonPanel"
+                            disabled="#{!generarRequerimientoCALController.eliminarVisible}" process="@this"
+                            onclick="deshabilitarCombo();"
+                            actionListener="#{generarRequerimientoCALController.eliminarDocumentos}">
+                        </p:commandButton>
+                    </p:panel>
+                    <br />
+                    <p:panel style="border:hidden;height:30px;width:100%">
+                        <p:commandButton id="guaradarRequerimientoButton" style="float:right;"
+                            value="#{msg['vuj.boton.enviarParaAutorizacion']}" update=":requerimientoForm,:msgPanel"
+                            ajax="true" oncomplete="ocultarMsgPanel();deshabilitarCombo();"
+                            process="@this,seleccionAutorizador"
+                            actionListener="#{generarRequerimientoCALController.guardarRequerimiento}" />
+                        <p:commandButton onclick="goBack()" value="#{msg['vuj.boton.anterior']}" style="float:right;"
+                            actionListener="#{generarRequerimientoCALController.cargaDatos}" immediate="true"
+                            ajax="true" process="@this" />
+                    </p:panel>
+                </p:panel>
+            </p:panel>
+        </h:form>
+        <p:panel id="solicitantePanel">
+            <ui:decorate template="../consultas/consultaFuncionario.xhtml">
+            </ui:decorate>
+        </p:panel>
+        <script type="text/javascript">
+			function inicializarComboAutorizades(val, claveTipoRequerimiento) {
+				inicializarErrores();
+				comboAutoridades.selectValue("");
+				if (val.value == claveTipoRequerimiento) {
+					comboAutoridades.enable();
+					$('#divAutoridadSelectLabel').show();
+					$('#divAutoridadSelect').show();
+					comboAutoridades.selectValue("");
+				} else {
+					comboAutoridades.disable();
+					comboAutoridades.selectValue("");
+				}
+			}
+
+			function inicializarErrores() {
+				$('#messages').hide();
+			}
+
+			function deshabilitarCombo() {
+				comboAutoridades.selectValue("");
+				var valAutoridades = comboAutoridades.value
+				if (comboTipoRequerimiento.value == 'REQCAL.RTR') {
+					if (valAutoridades == null || valAutoridades == "undefined"
+							|| valAutoridades == "") {
+							comboAutoridades.disable();
+					comboAutoridades.selectValue("");
+					comboTipoRequerimiento.selectValue("");
+					} else {
+						comboAutoridades.disable();
+						comboAutoridades.selectValue("");
+					}
+				} else {
+					comboAutoridades.disable();
+					comboAutoridades.selectValue("");
+					comboTipoRequerimiento.selectValue("");
+				}
+
+			}
+
+			function ocultarMsgPanel() {
+				var valAutorizadores = comboAutorizadores.value
+				if (valAutorizadores == null || valAutorizadores == "undefined"
+						|| valAutorizadores == "")
+					$('#messages').hide();
+			}
+			
+			function goBack() {
+			    window.history.back()
+			}
+
+			$(document).ready(function() {
+				comboAutoridades.disable();
+				comboAutoridades.selectValue("");
+			});
+		</script>
+    </ui:define>
+</ui:composition>

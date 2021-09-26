@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+
+        <h:outputStylesheet library="css" name="tabWizardRRL.css" />
+
+        <style type="text/css">
+.ui-panel {
+    border-style: none !important;
+    width: #{sessionScope.tamanioBuzon}#{sessionScope.tipoTamanioBuzon};
+}
+.ui-wizard-navbar {
+    float: right;
+}
+</style>
+
+        <p:panel style="border-style: hidden !important;">
+            <f:metadata>
+                <f:viewParam name="msgRedirect" value="#{solicitudController.messagesRedirect}" />
+                <f:event type="preRenderView" listener="#{solicitudController.mensajesRedirect}" />
+            </f:metadata>
+            <h:form id="pform">
+                <p:commandButton action="#{solicitudController.anexarDocumentoNube}" id="anexarNube"
+                    update=":FIELForm:tablaDocumentos" style="display:none" />
+            </h:form>
+            <script>
+		var submitFirmaAsociado = false;
+	</script>
+            <h:form id="FIELForm">
+                <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" />
+                <p:dialog modal="true" widgetVar="statusDialog" resizable="false"
+                    header="#{msg['vuj.estatus.procesando']}" draggable="false" closable="false">
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+                </p:dialog>
+                <p:wizard flowListener="#{solicitudController.onFlowProcess}" id="wizardPrueba"
+                    nextLabel="#{msg['vuj.boton.siguiente']}" backLabel="#{msg['vuj.boton.anterior']}">
+
+                    <p:tab id="datosSolicitud" title=" " titleStyleClass="tPaso1">
+                        <p:panel header="#{solicitudController.modalidadTramite}" style="align:left;width:98%"></p:panel>
+                        <p:panel id="funcionarioPanel" style="width:100%">
+                            <p:panel id="msgsPanel" style="width:100%">
+                                <p:messages id="messgs" autoUpdate="false" showDetail="true" showSummary="false"
+                                    escape="false" />
+                            </p:panel>
+                            <p:panel id="Solicitud" style="width:100%">
+                                <ui:include src="/resources/pages/rrl/capturaSolicitud.xhtml" />
+                            </p:panel>
+                        </p:panel>
+                    </p:tab>
+
+                    <p:tab id="seleccionDocumentos" title=" " titleStyleClass="tPaso2">
+                        <p:panel header="#{solicitudController.modalidadTramite}" style="align:left;width:100%"></p:panel>
+                        <p:panel header="#{msg['vuj.solicitud.seleccionDocumentos']}" style="width:100%">
+                            <ui:include src="/resources/pages/rrl/seleccionDocumento.xhtml" />
+                        </p:panel>
+                    </p:tab>
+                    <p:tab id="anexarDocumentos" title=" " titleStyleClass="tPaso3">
+                        <p:panel header="#{solicitudController.modalidadTramite}" style="align:left;width:100%"></p:panel>
+                        <p:panel header="Anexar Documentos" style="width:100%">
+                            <ui:include src="/resources/pages/rrl/anexarDocumentos.xhtml" />
+                        </p:panel>
+                    </p:tab>
+                    <p:tab id="firmar" title=" " titleStyleClass="tPaso4">
+                        <p:panel header="#{solicitudController.modalidadTramite}" style="align:left;width:100%"></p:panel>
+                        <p:panel header="Firmar" style="width:100%">
+                            <ui:include src="#{solicitudController.direccionFirma}" />
+                        </p:panel>
+                    </p:tab>
+                </p:wizard>
+                <script type="text/javascript">
+			$(document).ready(function() {
+				modWizardButtons();
+			});
+			function modWizardButtons(){
+	        	$( ".ui-button-icon-left" ).removeClass( "ui-icon" );
+	        	$("#FIELForm\\:wizardPrueba_back").removeClass("ui-button-text-icon-left");
+	        	$("#FIELForm\\:wizardPrueba_back").addClass("ui-button-text-only");
+	        	$("#FIELForm\\:wizardPrueba_next").removeClass("ui-button-text-icon-left");
+	        	$("#FIELForm\\:wizardPrueba_next").addClass("ui-button-text-only");
+			}
+		</script>
+            </h:form>
+        </p:panel>
+    </ui:define>
+</ui:composition>
+</html>

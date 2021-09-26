@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+
+        <style type="text/css">
+.centered {
+    position: relative;
+    height: 100px;
+    margin: 0 auto;
+    padding: 10% 0;
+}
+</style>
+
+        <h:form id="formAutorizaResolucion">
+
+            <p:panel id="panelConsultaData" header="Consulta y Autorizaciones" styleClass="centered">
+                <table cellpadding="0">
+
+                    <tr align="right">
+                        <td><p:commandButton id="btnAnterior" value="Anterior" action="" process="@this" /></td>
+                        <td><p:commandButton id="btnSiguiente" value="#{msg['vuj.boton.siguiente']}" action="" /></td>
+                    </tr>
+                    <tr>
+                        <td><h:outputText value="#{msg['vuj.resol.funcionario']}" /></td>
+                        <td><h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" /></td>
+                        <td><h:outputText value="N&uacute;mero de Asunto" /></td>
+                    </tr>
+                    <tr>
+                        <td><p:inputText id="funcionario" readonly="false" disabled="true" value="" /></td>
+                        <td><p:inputText id="rfcFuncionario" readonly="false" disabled="true" value=""
+                                maxlength="13" /></td>
+                        <td><p:inputText id="numeroAsunto" readonly="false" disabled="true" value="" maxlength="14" /></td>
+                    </tr>
+                    <tr>
+                        <td><h:outputText value="Fecha Inicio " /></td>
+                        <td><h:outputText value="Fecha Fin " /></td>
+                        <td><h:outputText value="Estado Procesal " /></td>
+                    </tr>
+                    <tr>
+                        <td><p:inputText id="fechaInicio" readonly="false" disabled="true" value="" /></td>
+                        <td><p:inputText id="fechaFin" readonly="fasle" disabled="true" value="" /></td>
+                        <td><p:inputText id="estadoProcesal" readonly="false" disabled="true" value="" /></td>
+                    </tr>
+                </table>
+            </p:panel>
+            <p:panel id="panelAutorizaResolucio" header="Sentido de la resolución" styleClass="centered">
+                <table cellpadding="0">
+                    <tr>
+                        <td><h:outputText value="Resolución" /></td>
+                    </tr>
+                    <tr>
+                        <td><p:selectOneListbox id="cboResolucion" required="true" value="" /></td>
+                    </tr>
+
+                </table>
+            </p:panel>
+            <p:panel id="panelExtraData">
+                <pe:switch>
+
+                </pe:switch>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

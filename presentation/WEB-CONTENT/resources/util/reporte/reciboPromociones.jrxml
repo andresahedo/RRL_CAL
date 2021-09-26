@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reciboPromociones" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="92d833bf-df45-4437-a238-9549c9ec1213">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<scriptlet name="QRCodeScriptlet" class="mx.gob.sat.siat.juridica.base.web.controller.bean.scriplet.QRCodeScriptlet"/>
+	<parameter name="idSolicitud" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cadenaOriginal" class="java.lang.String"/>
+	<parameter name="paramSello" class="java.lang.String"/>
+	<parameter name="BASE_PATH" class="java.lang.String"/>
+	<parameter name="FILE_SEPARATOR" class="java.lang.String"/>
+	<parameter name="QR_VALUE" class="java.lang.String"/>
+	<parameter name="tipoAcuse" class="java.lang.String"/>
+	<parameter name="fecha" class="java.util.Date"/>
+	<parameter name="cadenaOriginalSIAT" class="java.lang.String"/>
+	<parameter name="paramSelloSIAT" class="java.lang.String"/>
+	<parameter name="URLVERIFICACION" class="java.lang.String"/>
+	<parameter name="urlEncodedRfc" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT distinct unidadAdmin.NOMBRE    AS unidadAdmin,
+  personaSol.NOMBRE          AS nombreProm,
+  personaSol.APELLIDOPATERNO AS apellidoPatProm,
+  personaSol.APELLIDOMATERNO AS apellidoMatProm,
+  tramite.IDTRAMITE AS IDTRAMITE,
+  personaSol.RFC,
+  personaSol.RAZONSOCIAL,
+  personaCap.NOMBRE          AS nombreCap,
+  personaCap.APELLIDOPATERNO AS apellidoPatCap,
+  personaCap.APELLIDOMATERNO AS apellidoMatCap,
+  personaCap.RFC             AS rfcCap,
+  personaCap.RAZONSOCIAL     AS razonSocialCap,
+  sol.IDROLCAPTURISTA        AS rolCapturista,
+  tTramite.DESCSUBSERVICIO AS descripcionServicio,
+  tTramite.IDTIPOTRAMITE AS tTramite,
+  tTramite.DESCMODALIDAD AS modalidad,
+  TO_CHAR(tramite.FECRECEPCION, 'DD/MM/YYYY') AS fecRecepcion,
+  TO_CHAR(tramite.FECRECEPCION, 'HH24:MI:SS')   AS horaRecepcion,
+  (SELECT COUNT(documentoSol.IDSOLDOCUMENTO) AS IDSOLDOCUMENTO1
+  FROM RVCA_SOL_DOCUMENTO documentoSol
+  WHERE documentoSol.IDSOLICITUD      = sol.IDSOLICITUD
+  AND documentoSol.IDEESTDOCUMENTOSOL = 'ESTDOC.AN'
+  GROUP BY documentoSol.IDEESTDOCUMENTOSOL
+  ) AS numDocs
+
+
+FROM RVCT_SOLICITUD sol
+LEFT JOIN RVCT_TRAMITE tramite
+ON sol.IDSOLICITUD = tramite.IDSOLICITUD
+LEFT JOIN RVCD_SOL_DATOSGEN datosGen
+ON datosGen.IDSOLICITUD = sol.IDSOLICITUD
+LEFT JOIN RVCC_UNIADMIN unidadAdmin
+ON unidadAdmin.IDUNIADMIN = datosGen.IDUNIADMINEMISORA
+LEFT JOIN RVCT_SOLPERSONA personaSol
+ON sol.IDSOLICITUD    = personaSol.IDSOLICITUD
+LEFT JOIN RVCP_PERSONA personaCap
+ON sol.idpersonasolicitante = personaCap.idpersona
+LEFT JOIN RVCA_SOL_DOCUMENTO documento
+ON sol.IDSOLICITUD = documento.IDSOLICITUD
+LEFT JOIN RVCT_DOCUMENTO documentos
+ON documento.IDDOCUMENTO           = documentos.IDDOCUMENTO
+LEFT JOIN RVCC_TIPODOCUMENTO tipodoc
+ON documento.IDTIPODOCUMENTO = tipodoc.IDTIPODOCUMENTO
+INNER JOIN RVCC_TIPOTRAMITE tTramite
+ON tTramite.IDTIPOTRAMITE =sol.IDTIPOTRAMITE
+LEFT JOIN RVCT_REQUERIMIENTO tipoReq
+ON tipoReq.IDTRAMITE = tramite.IDTRAMITE
+WHERE sol.IDSOLICITUD = $P{idSolicitud}
+AND personaSol.IDETIPOPERSONASOL = 'TIPERS.SL']]>
+	</queryString>
+	<field name="UNIDADADMIN" class="java.lang.String"/>
+	<field name="NOMBREPROM" class="java.lang.String"/>
+	<field name="APELLIDOPATPROM" class="java.lang.String"/>
+	<field name="APELLIDOMATPROM" class="java.lang.String"/>
+	<field name="IDTRAMITE" class="java.lang.String"/>
+	<field name="RFC" class="java.lang.String"/>
+	<field name="RAZONSOCIAL" class="java.lang.String"/>
+	<field name="NOMBRECAP" class="java.lang.String"/>
+	<field name="APELLIDOPATCAP" class="java.lang.String"/>
+	<field name="APELLIDOMATCAP" class="java.lang.String"/>
+	<field name="RFCCAP" class="java.lang.String"/>
+	<field name="RAZONSOCIALCAP" class="java.lang.String"/>
+	<field name="ROLCAPTURISTA" class="java.lang.String"/>
+	<field name="DESCRIPCIONSERVICIO" class="java.lang.String"/>
+	<field name="TTRAMITE" class="java.math.BigDecimal"/>
+	<field name="MODALIDAD" class="java.lang.String"/>
+	<field name="FECRECEPCION" class="java.lang.String"/>
+	<field name="HORARECEPCION" class="java.lang.String"/>
+	<field name="NUMDOCS" class="java.math.BigDecimal"/>
+	<variable name="QR_CODE_WIDTH" class="java.lang.Integer">
+		<variableExpression><![CDATA[110]]></variableExpression>
+	</variable>
+	<variable name="QR_CODE_HEIGHT" class="java.lang.Integer">
+		<variableExpression><![CDATA[110]]></variableExpression>
+	</variable>
+	<variable name="QR_CODE_IMAGE" class="java.lang.Object"/>
+	<variable name="QR_CODE_VALUE" class="java.lang.String">
+		<variableExpression><![CDATA[$P{URLVERIFICACION}+$P{urlEncodedRfc}+"_"+$F{IDTRAMITE}+"_"+$P{QR_VALUE}]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="86" splitType="Stretch">
+			<image>
+				<reportElement x="17" y="0" width="233" height="86" uuid="69cd46a2-6b6c-447d-9fba-f9a1a9466c8d"/>
+				<imageExpression><![CDATA[$P{BASE_PATH}+$P{FILE_SEPARATOR}+"SHCP.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="391" y="14" width="177" height="40" uuid="149bf691-142b-462f-a771-dda8377300c5"/>
+				<imageExpression><![CDATA[$P{BASE_PATH}+$P{FILE_SEPARATOR}+"SAT.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="403" splitType="Stretch">
+			<staticText>
+				<reportElement x="38" y="20" width="502" height="20" uuid="2f515abe-7f07-4a37-893f-2f40fad1041e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ACUSE DE RECIBO DE PROMOCIONES]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="38" y="55" width="502" height="143" uuid="d842ad05-3cac-4ef2-b524-56d303fbe016"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<b>Tipo de acuse: </b>"+(($P{tipoAcuse}.equals("8"))?("Recepci&oacute;n de Atenci&oacute;n al Requerimiento"):(($P{tipoAcuse}.equals("1"))?"Recepci&oacute;n de Promoci&oacute;n":"Recepci&oacute;n de Documentaci&oacute;n Adicional"))+"<br><br>"+
+"<b>De:</b> Promovente <br><br>"+
+"<b>Número de Asunto: </b>"+$F{IDTRAMITE}+"<br><br>"+
+"<b>Tipo de Promoción:</b>"+$F{DESCRIPCIONSERVICIO}+"<br><br>"+
+"<b>Sub Tipo: </b> "+$F{MODALIDAD}+"<br><br>"+
+($F{ROLCAPTURISTA}.equals("solicitante")?
+("<b>Nombre, Denominación o Razón Social:</b> " + ($F{NOMBREPROM}!=null?$F{NOMBREPROM}+" "+$F{APELLIDOPATPROM}+" "+$F{APELLIDOMATPROM}+"<br><br>":
+	$F{RAZONSOCIAL}+"<br><br>")+
+"<b>RFC del Promovente:</b> "+$F{RFC}+"<br><br>"):
+("<b>Nombre del Oficial de Partes:</b> " + ($F{NOMBRECAP}!=null?$F{NOMBRECAP}+" "+$F{APELLIDOPATCAP}+" "+$F{APELLIDOMATCAP}+"<br><br>":
+	$F{RAZONSOCIALCAP}+"<br><br>")+
+"<b>RFC del Oficial de Partes:</b> "+$F{RFCCAP}+"<br><br>"))+
+"<b>Unidad administrativa del Servicio de Administración Tributaria: </b> "+($F{UNIDADADMIN}!=null?$F{UNIDADADMIN}:"")+"<br><br>"+
+"<b>Fecha de recepción:</b> "+new SimpleDateFormat("dd/MM/yyyy").format($P{fecha})+"<br><br>"+
+"<b>Hora de recepción:</b> "+new SimpleDateFormat("HH:mm").format($P{fecha})+"<br><br>"+
+"<b>Número de Documentos Electrónicos adjuntos:</b> "+($F{NUMDOCS}!=null?$F{NUMDOCS}:"0")+"<br><br>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="38" y="209" width="502" height="20" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement markup="html">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{ROLCAPTURISTA}.equals("solicitante")?"<b>Cadena Original de la Firma del Contribuyente:</b><br>":"<b>Cadena Original de la Firma del Oficial de Partes:</b><br>")+
+($P{cadenaOriginal}!=null?$P{cadenaOriginal}:"")+"<br><br>"+
+($F{ROLCAPTURISTA}.equals("solicitante")?"<b>Sello Digital del Contribuyente:</b><br>":"<b>Sello Digital del Oficial de Partes:</b><br>")+
+($P{paramSello}!=null?$P{paramSello}:"")+"<br><br>"+
+($F{ROLCAPTURISTA}.equals("solicitante")?"<b>Cadena Original </b><br>":"<b>Cadena Original SIAT-Jurídico: </b><br>")
++
+($P{cadenaOriginalSIAT}!=null?$P{cadenaOriginalSIAT}:"")+"<br><br>"+
+($F{ROLCAPTURISTA}.equals("solicitante")?"<b>Sello digital que autentica el documento:<b><br>":"<b>Sello Digital SIAT-Jurídico:<b><br>")
++
+($P{paramSelloSIAT}!=null?$P{paramSelloSIAT}:"")]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="38" y="238" width="502" height="20" uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf"/>
+				<textElement textAlignment="Justified" markup="html"/>
+				<textFieldExpression><![CDATA["La promoción ha sido firmada mediante el uso de la Firma Electrónica Avanzada amparada por un certificado vigente, de conformidad con los artículos 17-D, 17-E, 17-I, 17-K, 18 y 18-A del Código Fiscal de la Federación. Todo documento enviado se recibe sin prejuzgar su integridad y será sujeto a revisión."]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame">
+				<reportElement positionType="Float" x="37" y="269" width="133" height="130" uuid="b42eadc6-9bb7-46a2-9b3b-1bf02e6aae8c"/>
+				<imageExpression><![CDATA[$V{QR_CODE_IMAGE}]]></imageExpression>
+			</image>
+		</band>
+	</detail>
+</jasperReport>

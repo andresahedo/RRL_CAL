@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head></h:head>
+
+    <h:body>
+
+        <style type="text/css">
+.panelMontoStyle td {
+    border-style: hidden !important;
+}
+
+.panelContent td {
+    border: black solid 0px !important;
+}
+</style>
+
+
+
+
+        <p:panel id="msgPanelRes" style="border-style: none !important">
+            <p:messages id="messagesRes" showDetail="true" globalOnly="true" autoUpdate="true" />
+        </p:panel>
+
+        <h:form id="folioForm">
+
+            <p:panelGrid styleClass="panelMontoStyle" columns="2" cellpadding="3"
+                style="border-style: hidden !important;">
+                <h:outputText value="#{msg['vuj.resol.funcionario']}" />
+                <h:outputText value="#{msg['vuj.resol.rfcFuncionario']}" />
+
+
+                <p:inputText maxlength="500" readonly="true" id="funcionarioInput"
+                    value="#{solicitudControllerOficialia.userProfile.nombreCompleto}" />
+                <p:inputText maxlength="13" value="#{solicitudControllerOficialia.userProfile.rfc}" readonly="true"
+                    id="rfcFuncionarioInput" />
+
+            </p:panelGrid>
+            <p:panel id="panel1Title" header="#{msg['oficialia.capturaFolio.title']}">
+                <br />
+                <p:commandButton id="botonAtras" value="Atras" actionListener="#{solicitudControllerOficialia.atras}"
+                    process="@this">
+                </p:commandButton>
+                <p:commandButton id="botonSiguiente" value="Siguiente" update="@form"
+                    actionListener="#{solicitudControllerOficialia.siguiente}">
+                </p:commandButton>
+                <br />
+                <br />
+                <br />
+                <p:panelGrid id="panelSolicitante1" styleClass="panelMontoStyle"
+                    style="border-style: hidden !important;">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['vuj.solicitante.rfc']}" />
+                        </p:column>
+                        <c:choose>
+                            <c:when test="#{solicitudControllerOficialia.banderaRazonSocial}">
+                                <p:column>
+                                    <p:outputLabel value="#{msg['vuj.solicitante.razonSocial']}" />
+                                </p:column>
+
+                            </c:when>
+                            <c:otherwise>
+                                <p:column>
+                                    <p:outputLabel value="#{msg['oficialia.capturaFolio.nombrePromovente']}" />
+                                </p:column>
+
+                            </c:otherwise>
+                        </c:choose>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText value="#{solicitudControllerOficialia.datosSolicitud.rfcContribuyente}"
+                                readonly="true" id="rfcContribuyente" />
+                        </p:column>
+                        <c:choose>
+                            <c:when test="#{solicitudControllerOficialia.banderaRazonSocial==true}">
+                                <p:column>
+                                    <p:inputText value="#{solicitudControllerOficialia.datosSolicitud.razonSocial}"
+                                        readonly="true" style="width:208%" />
+                                </p:column>
+
+                            </c:when>
+                            <c:otherwise test="#{solicitudControllerOficialia.banderaRazonSocial==false}">
+                                <p:column>
+                                    <p:inputText value="#{solicitudControllerOficialia.nombrePromovente}"
+                                        readonly="true" style="width:208%" />
+                                </p:column>
+
+                            </c:otherwise>
+                        </c:choose>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['oficialia.bandeja.consulta.folio']}" />
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="#{msg['oficialia.capturaFolio.fechaApertura']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:inputText value="#{solicitudControllerOficialia.datosSolicitud.numeroFolio}"
+                                required="true" />
+                            <p:message for="fechaApertura" display="text" />
+                        </p:column>
+                        <p:column>
+                            <p:calendar pattern="dd/MM/yyyy" navigator="true" required="true" locale="es"
+                                value="#{solicitudControllerOficialia.datosSolicitud.fechaApertura}"
+                                readonlyInput="true" id="fechaApertura" style="width:80px;" />
+                            <p:message for="fechaApertura" display="text" />
+                        </p:column>
+
+                    </p:row>
+                </p:panelGrid>
+            </p:panel>
+        </h:form>
+
+
+
+        <h:outputScript name='/js/calendar_es.js' target="head" />
+    </h:body>
+
+</ui:composition>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="acuseNotificacion" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="92d833bf-df45-4437-a238-9549c9ec1213">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="idSolicitud" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cadenaOriginal" class="java.lang.String"/>
+	<parameter name="paramSello" class="java.lang.String"/>
+	<parameter name="tipoNotificacion" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FILE_SEPARATOR" class="java.lang.String"/>
+	<parameter name="BASE_PATH" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT DISTINCT unidadAdmin.NOMBRE AS unidadAdmin,
+  personaSol.NOMBRE                AS nombreProm,
+  personaSol.APELLIDOPATERNO       AS apellidoPatProm,
+  personaSol.APELLIDOMATERNO       AS apellidoMatProm,
+  personaSol.RFC,
+  unidadAdmin.ACRONIMO,
+  tramite.IDTRAMITE
+FROM RVCT_SOLICITUD sol
+LEFT JOIN RVCT_TRAMITE tramite
+ON sol.IDSOLICITUD = tramite.IDSOLICITUD
+LEFT JOIN RVCT_RESOLUCION resolucion
+ON tramite.IDTRAMITE = resolucion.IDTRAMITE
+LEFT JOIN RVCC_UNIADMIN unidadAdmin
+ON unidadAdmin.IDUNIADMIN = sol.IDUNIADMIN
+LEFT JOIN RVCT_SOLPERSONA personaSol
+ON sol.IDSOLICITUD      = personaSol.IDSOLICITUD
+WHERE sol.IDSOLICITUD   = $P{idSolicitud}
+AND resolucion.FECBAJA    IS NULL]]>
+	</queryString>
+	<field name="UNIDADADMIN" class="java.lang.String"/>
+	<field name="NOMBREPROM" class="java.lang.String"/>
+	<field name="APELLIDOPATPROM" class="java.lang.String"/>
+	<field name="APELLIDOMATPROM" class="java.lang.String"/>
+	<field name="RFC" class="java.lang.String"/>
+	<field name="ACRONIMO" class="java.lang.String"/>
+	<field name="IDTRAMITE" class="java.lang.String"/>
+	<variable name="nombreFirmante" class="java.lang.String"/>
+	<variable name="fechaNotificacion" class="java.lang.String">
+		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="86" splitType="Stretch">
+			<image>
+				<reportElement x="17" y="0" width="233" height="86" uuid="69cd46a2-6b6c-447d-9fba-f9a1a9466c8d"/>
+				<imageExpression><![CDATA[$P{BASE_PATH}+$P{FILE_SEPARATOR}+"SHCP.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="391" y="14" width="177" height="40" uuid="149bf691-142b-462f-a771-dda8377300c5"/>
+				<imageExpression><![CDATA[$P{BASE_PATH}+$P{FILE_SEPARATOR}+"SAT.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<detail>
+		<band splitType="Stretch">
+			<subreport>
+				<reportElement uuid="c58c56ad-68a9-4ba9-bc58-276ff348ee47" x="0" y="0" width="200" height="0"/>
+				<subreportParameter name="idTramite">
+					<subreportParameterExpression><![CDATA[$F{IDTRAMITE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<returnValue subreportVariable="nombreFirmante" toVariable="nombreFirmante"/>
+				<returnValue subreportVariable="fechaNotificacion" toVariable="fechaNotificacion"/>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} +$P{FILE_SEPARATOR}+ ($P{tipoNotificacion}.equals("resolucion")?"datosFirmaResolucion.jasper":($P{tipoNotificacion}.equals("requerimiento")?"datosFirmaRequerimiento.jasper":"datosFirmaRemision.jasper"))]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="307">
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="d842ad05-3cac-4ef2-b524-56d303fbe016" positionType="Float" isPrintRepeatedValues="false" x="44" y="85" width="489" height="143"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle" markup="html">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<b>FECHA Y HORA:</b> "+$V{fechaNotificacion}+"<br><br>"+
+"<b>ASUNTO: SE NOTIFICA </b>"+
+($P{tipoNotificacion}.equals( "requerimiento" )?"Acuerdo de requerimiento de información y/o documentación ":"")+
+($P{tipoNotificacion}.equals( "resolucion" )?"Resolución recaída al recurso de revocación ":"")+
+($P{tipoNotificacion}.equals( "remision" )?"Remisión del recurso de revocación a autoridad competente ":"")+"<br><br>"+
+"<b>UNIDAD ADMINISTRATIVA DEL SAT:</b> "+$F{UNIDADADMIN}+" "+$F{ACRONIMO}+"<br><br>"+
+"<b>EXPEDIENTE:</b> "+$F{IDTRAMITE}+"<br><br>"+
+"<b>CONTRIBUYENTE:</b> "+$F{NOMBREPROM}+" "+$F{APELLIDOPATPROM}+" "+$F{APELLIDOMATPROM}+"<br><br>"+
+"En esta fecha y hora se tiene por legalmente practicada la notificación del oficio número "+$F{IDTRAMITE}+", a través del cual "+
+($P{tipoNotificacion}.equals( "requerimiento" )?"se requiere información y/o documentación":"")+
+($P{tipoNotificacion}.equals( "resolucion" )?"se emite resolución":"")+
+($P{tipoNotificacion}.equals( "remision" )?"se remite asunto a autoridad competente":"")+
+", emitido en el recurso de revocación antes citado por la "+$F{UNIDADADMIN}+".<br><br>"+
+"Lo anterior en términos de lo dispuesto en el artículo 134 del Código Fiscal de la Federación.<br>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="84c19986-b5e8-48ca-855f-3d747c61c6bf" positionType="Float" isPrintRepeatedValues="false" x="44" y="277" width="489" height="20"/>
+				<textElement markup="html">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<b>Cadena Original. Información del documento oficial que presenta que declara:</b><br>"+
+$P{cadenaOriginal}+"<br><br>"+
+"<b>Sello Digital del Administrador:</b><br>"+
+$P{paramSello}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="7cdb2631-21dc-4364-ac6f-1bb308efcb7a" positionType="Float" isPrintRepeatedValues="false" x="44" y="228" width="489" height="21"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{nombreFirmante}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="0f0504fb-a72b-44f7-b9ed-023d848083fe" positionType="Float" x="44" y="43" width="489" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ACUSE DE NOTIFICACIÓN"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="0f0504fb-a72b-44f7-b9ed-023d848083fe" positionType="Float" x="44" y="14" width="489" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["SISTEMA DE RECURSO DE REVOCACIÓN EN LÍNEA"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="1">
+			<break type="Column">
+				<reportElement uuid="3eb5748d-4a48-443b-abf8-bf744e4271bb" x="0" y="0" width="100" height="1"/>
+			</break>
+		</band>
+	</summary>
+</jasperReport>

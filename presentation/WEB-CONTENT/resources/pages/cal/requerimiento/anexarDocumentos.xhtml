@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui"
+    xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:pe="http://primefaces.org/ui/extensions">
+
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+        <h:form enctype="multipart/form-data" id="formaDocumentos">
+            <p:panel id="panelAnexarDoc" header="#{msg['contribuyente.tipo.documento']}">
+                <p:messages showDetail="true" />
+
+                <p:panelGrid>
+        	#{autorizarRequerimientoCALController.solicitud.idSolicitud}
+        	#{autorizarRequerimientoCALController.solicitud.rfc}
+        	#{autorizarRequerimientoCALController.solicitud.tipoTramite}
+        	</p:panelGrid>
+
+                <h:panelGrid id="anexarPanel" styleClass="noBorder">
+                    <p:row>
+                        <p:column></p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+
+                        </p:column>
+                    </p:row>
+                </h:panelGrid>
+
+                <h:panelGrid>
+                    <p:dataTable id="tablaDocumentos" var="documento"
+                        value="#{autorizarRequerimientoCALController.documentoOficialDataModel}" rowIndexVar="rowIndex"
+                        resizableColumns="true" selection="#{autorizarRequerimientoCALController.registrosEliminar}"
+                        rowKey="#{documento.rutaAzure}" emptyMessage="#{msg['vuj.grid.vacio']}"
+                        paginator="true" rows="10">
+                        <p:ajax event="rowSelectCheckbox"
+                            update=":formaDocumentos:buttonPanel,:formaDocumentos:tablaDocumentos"
+                            listener="#{autorizarRequerimientoCALController.rowSelectCheckbox}" />
+                        <p:ajax event="rowUnselectCheckbox"
+                            update=":formaDocumentos:buttonPanel,:formaDocumentos:tablaDocumentos"
+                            listener="#{autorizarRequerimientoCALController.rowUnselectCheckbox}" />
+                        <p:ajax event="rowSelect" update=":formaDocumentos:buttonPanel,:formaDocumentos:tablaDocumentos"
+                            listener="#{autorizarRequerimientoCALController.rowSelectCheckbox}" />
+                        <p:column selectionMode="multiple" style="width:4%" resizable="false" />
+
+
+                        <p:column headerText="Tipo de Documento" style="width:280px" resizable="false">
+                            <h:outputText value="#{documento.descripcionTipoDocumento}" id="tipoDoc" />
+                            <pe:tooltip for="tipoDoc" value="#{documento.descripcionTipoDocumento}" mouseTracking="true"
+                                adjustX="20" adjustY="20" />
+                        </p:column>
+                        <p:column headerText="Nombre del Archivo" style="width:280px" resizable="false">
+                            <h:outputText value="#{documento.nombreArchivo}" />
+                        </p:column>
+                        <p:column headerText="#{msg['vuj.documento.tamanioDocumento']}" style="width:80px"
+                            resizable="false">
+                            <h:outputText value="---">
+                            </h:outputText>
+                        </p:column>
+                        <p:column style="width:150px;text-align:center;" resizable="false">
+                            <p:commandLink id="linkVer" value="Ver" ajax="false"
+                                update=":formaDocumentos:tablaDocumentos"
+                                actionListener="#{autorizarRequerimientoCALController.descargarDocumento}"
+                                disabled="#{documento.nombreArchivo eq null}" style="width:auto;">
+                                <f:attribute name="documentoParametro" value="#{documento}" />
+                                <p:fileDownload value="#{autorizarRequerimientoCALController.archivoDescarga}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+
+                    <h:panelGrid id="buttonPanel">
+                        <p:commandButton id="eliminarRegButton" value="#{msg['vuj.boton.eliminar']}"
+                            update=":formaDocumentos" disabled="#{!autorizarRequerimientoCALController.eliminarVisible}"
+                            process="@this" actionListener="#{autorizarRequerimientoCALController.eliminarDocumentos}" />
+                    </h:panelGrid>
+                    <style type="text/css">
+.ui-chkbox-all {
+    visibility: hidden;
+}
+</style>
+
+                </h:panelGrid>
+                <p:panel style="border:hidden;height:30px">
+
+                    <p:commandButton style="float:right;" id="anexarBtn" widgetVar="anexarBtnW"
+                        oncomplete="anexarDialogo.show()" value="#{msg['vuj.boton.adjuntar']}">
+                    </p:commandButton>
+                </p:panel>
+                <h:panelGrid>
+                    <p:row>
+                        <p:column>
+                            <h:commandButton value="#{msg['vuj.boton.siguiente']}"
+                                actionListener="#{autorizarRequerimientoCALController.anexarDocumentosRequerimientos}" />
+                        </p:column>
+                    </p:row>
+                </h:panelGrid>
+
+                <p:dialog id="dlgAnexar" widgetVar="anexarDialogo" header="#{msg['vuj.documento.anexar.tituloDialogo']}"
+                    modal="true">
+                    <h:panelGrid id="display" columns="2" cellpadding="4" style="margin:0 auto;">
+                        <p:fileUpload fileUploadListener="#{autorizarRequerimientoCALController.anexarDocumento}"
+                            mode="advanced" multiple="true" required="true" fileLimit="1"
+                            fileLimitMessage="#{errmsg['validation.uploadfile.fileLimitMessage']}"
+                            invalidFileMessage="#{errmsg['validation.uploadfile.invalid']}"
+                            label="#{msg['vuj.documento.anexar.seleccione']}" uploadLabel="#{msg['vuj.boton.cargar']}"
+                            cancelLabel="#{msg['vuj.boton.cancelar']}" allowTypes="/(\.|\/)(pdf)$/"
+                            onstart="$('#progress').show();" oncomplete="$('#progress').hide();anexarDialogo.hide();"
+                            update=":formaDocumentos:tablaDocumentos" />
+                    </h:panelGrid>
+                    <p:commandButton onclick="anexarDialogo.hide();" value="#{msg['vuj.boton.cerrar']}" />
+                </p:dialog>
+            </p:panel>
+        </h:form>
+
+    </h:body>
+
+</ui:composition>

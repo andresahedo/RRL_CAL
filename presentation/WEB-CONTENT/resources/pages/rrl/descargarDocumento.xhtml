@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:c="http://java.sun.com/jsp/jstl/core"
+    template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+        <style type="text/css">
+.ui-panel {
+    border-style: none !important;
+    width: #{sessionScope.tamanioBuzon}#{sessionScope.tipoTamanioBuzon};
+}
+</style>
+
+
+        <p:panel>
+            <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" />
+            <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+                draggable="false" closable="false">
+                <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+            </p:dialog>
+
+            <h:form enctype="multipart/form-data" id="formaDocumentos">
+
+                <p:messages showDetail="true" />
+
+                <h:panelGrid>
+                    <p:dataTable id="tablaDocumentos" var="documento"
+                        value="#{descargarDocumentoController.documentosConsulta}" rowIndexVar="rowIndex"
+                        resizableColumns="true" emptyMessage="#{msg['vuj.grid.vacio']}"
+                        style="width:#{descargarDocumentoController.anchoGridDocumentosPx}%;"
+                        paginator="true" rows="10">
+                        <p:column headerText="Tipo de Documento" style="width:38%" resizable="false">
+                            <h:outputText value="#{documento.descripcionTipoDocumento}" id="tipoDoc" />
+                            <pe:tooltip for="tipoDoc" value="#{documento.descripcionTipoDocumento}" mouseTracking="true"
+                                adjustX="20" adjustY="20" />
+                        </p:column>
+                        <p:column headerText="Nombre del Archivo" style="width:38%" resizable="false">
+                            <h:outputText value="#{documento.nombreArchivo}" id="nomDocumento" />
+                            <pe:tooltip for="nomDocumento" value="#{documento.nombreArchivo}" mouseTracking="true"
+                                adjustX="20" adjustY="20"></pe:tooltip>
+                        </p:column>
+                        <p:column headerText="#{msg['vuj.documento.tamanioDocumento']}" style="width:17%"
+                            resizable="false">
+                            <h:outputText value="#{documento.cadenaTamanioArchivo}">
+                            </h:outputText>
+                        </p:column>
+                        <p:column style="width:7%;text-align:center;" resizable="false">
+                            <p:commandButton value="#{msg['vuj.boton.ver']}" id="generarRuta"
+                                update=":formaDocumentos:dialogVisor" oncomplete="visorDialog.show()"
+                                style="width:auto;">
+                                <f:setPropertyActionListener value="#{documento}"
+                                    target="#{descargarDocumentoController.documentoOficialSelected}" />
+                                <p:ajax event="click"
+                                    listener="#{descargarDocumentoController.activaBanderaDocumentoOficial}" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGrid>
+                <p:dialog id="dialogVisor" widgetVar="visorDialog" header="PDF" dynamic="true" modal="true"
+                    styleClass="dialogVisor" position="left top" closeOnEscape="true" draggable="false"
+                    resizable="false">
+                    <c:if test="#{not empty descargarDocumentoController.urlDescargaSelected}">
+                        <p:media player="pdf" value="#{descargarDocumentoController.urlDescargaSelected}" width="780px" height="500px"
+                            styleClass="dialogMedia"> 
+	           			Su navegador no es compatible con la vista previa de pdfs. Para descargar el documento de click en esta
+			       		<a href="#{descargarDocumentoController.urlDescargaSelected}" target="_blank"> liga </a>
+                        </p:media>
+                    </c:if>
+                </p:dialog>
+            </h:form>
+            <f:metadata>
+                <f:viewParam name="msgRedirect" value="#{descargarDocumentoController.messagesRedirect}" />
+                <f:event type="preRenderView" listener="#{descargarDocumentoController.mensajesRedirect}" />
+            </f:metadata>
+        </p:panel>
+    </ui:define>
+
+</ui:composition>

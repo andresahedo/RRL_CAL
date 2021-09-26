@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui"
+    xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <h:head>
+        <h:outputStylesheet library="css" name="azure.css" />
+    </h:head>
+    <f:event type="preRenderView" listener="#{adjuntaDocumentoOficialia.prepararDocumentosAnexar}" />
+    <h:body>
+        <style type="text/css">
+.ui-chkbox-all {
+    visibility: hidden;
+}
+
+.ui-panel {
+    border-style: none !important;
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+}
+.noBorder td {
+    border-style: hidden !important;
+}
+
+.ui-selectonemenu-panel {
+    width: 60%;
+}
+
+.ui-button-icon-only {
+	display: none;
+}
+
+</style>
+        <p:panel id="panelAnexarDoc"
+            style="border-style: none !important; width:#{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};">
+            <p:panel id="msgPanel" style="width:100%">
+                <p:messages showDetail="true" autoUpdate="true" id="messages" />
+            </p:panel>
+            <h:form id="pForm">
+
+                <p:panel header="ASUNTO" style="text-align:center; width:100%" />
+                <h:panelGrid>
+                    <p:row>
+                        <p:column colspan="5">
+                            <p:outputLabel value="#{msg['vuj.documento.anexar.tipoDocumento']}">
+
+                                <h:graphicImage id="tipDocumentoT" url="/resources/css/images/ayuda.png" />
+                            </p:outputLabel>
+                            <pe:tooltip for="tipDocumentoT" value="#{msg['contribuyente.tipo.documento']}"
+                                mouseTracking="true" adjustX="20" adjustY="20"></pe:tooltip>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:selectOneMenu id="documento" value="#{adjuntaDocumentoOficialia.id}"
+                                widgetVar="comboDocs" onchange="habilitarBtnAnexar(this)" filter="true"
+                                filterMatchMode="contains">
+                                <f:selectItem itemLabel="#{msg['vuj.combo.seleccione']}" itemValue="" />
+                                <f:selectItems value="#{adjuntaDocumentoOficialia.documentosCombo}" var="documento"
+                                    itemLabel="#{documento.tipoDocumento}"
+                                    itemValue="#{documento.idTipoDocumento},#{documento.tipoDocumento}" />
+                                <p:ajax event="change" update=":pForm:anexarBtn" ignoreAutoUpdate="true"
+                                    listener="#{adjuntaDocumentoOficialia.cambioVisible}" />
+                            </p:selectOneMenu>
+                            <pe:tooltip for="documento" value="#{msg['contribuyente.tipo.documento']}"
+                                atPosition="top right" />
+                        </p:column>
+                    </p:row>
+                </h:panelGrid>
+
+                <h:panelGrid>
+                    <p:dataTable id="tablaDocumentos" var="documento"
+                        value="#{adjuntaDocumentoOficialia.documentoAdjuntarDataModel}" rowIndexVar="rowIndex"
+                        resizableColumns="true" selection="#{adjuntaDocumentoOficialia.registrosEliminar}"
+                        rowKey="#{documento.rutaAzure}" emptyMessage="#{msg['vuj.grid.vacio']}"
+                        style="width:#{consultasController.anchoGridDocumentosPx}%;"
+                        paginator="true" rows="10">
+
+                        <p:ajax event="rowSelectCheckbox" update=":pForm:buttonPanel"
+                            listener="#{adjuntaDocumentoOficialia.rowSelectCheckboxDocumentos}" />
+                        <p:ajax event="rowUnselectCheckbox" update=":pForm:buttonPanel"
+                            listener="#{adjuntaDocumentoOficialia.rowUnselectCheckboxDocumentos}" />
+                        <p:ajax event="rowSelect" update=":pForm:buttonPanel"
+                            listener="#{adjuntaDocumentoOficialia.rowSelectCheckboxDocumentos}" />
+
+                        <p:column selectionMode="multiple" style="width:5%;text-align:center" />
+
+                        <h:inputHidden value="#{documento.descripcionTipoDocumento}" />
+                        <h:inputHidden value="#{documento.idRequerimiento}" />
+                        <h:inputHidden value="#{documento.ruta}" />
+                        <h:inputHidden value="#{documento.tamanioArchivo}" />
+
+                        <p:column headerText="#{msg['vuj.documento.anexar.tipoDocumento']}" style="width:30%"
+                            resizable="false">
+                            <h:outputText value="#{documento.tipoDocumento}" id="tipoDoc" />
+                            <pe:tooltip for="tablaDocumentos" value="#{msg['atender.requerimiento.archivosEliminar']}"
+                                adjustX="2" adjustY="2" atPosition="bottom left" />
+                            <pe:tooltip for="tipoDoc" value="#{documento.tipoDocumento}" mouseTracking="true"
+                                adjustX="20" adjustY="20" />
+                        </p:column>
+                        <p:column headerText="#{msg['vuj.documento.anexar.nombreArchivo']}" style="width:40%"
+                            resizable="false">
+                            <h:outputText value="#{documento.nombre}" id="nomDocumento" />
+                            <pe:tooltip for="nomDocumento" mouseTracking="true" adjustX="20" adjustY="20">
+                                <p:outputLabel escape="true" value="#{documento.nombre}"></p:outputLabel>
+                            </pe:tooltip>
+                        </p:column>
+                        <p:column headerText="#{msg['vuj.documento.tamanioDocumento']}"
+                            style="width:15%;white-space:pre-line;" resizable="false">
+                            <h:outputText value="#{documento.cadenaTamanioArchivo}">
+                            </h:outputText>
+                        </p:column>
+                        <p:column style="width:8%;text-align:center;" resizable="false">
+                            <p:commandButton value="#{msg['vuj.boton.ver']}" id="generarRuta"
+                                oncomplete="visorDialog.show()" update=":pForm:dialogVisor" style="width:auto;">
+                                <f:setPropertyActionListener value="#{documento}"
+                                    target="#{adjuntaDocumentoOficialia.documentoDTOSelected}" />
+                                <p:ajax event="click"
+                                    listener="#{adjuntaDocumentoOficialia.activaBanderaDocumentoPromocion}" />
+                            </p:commandButton>
+                            <pe:tooltip for="generarRuta" adjustX="10" adjustY="10"
+                                value="#{msg['contribuyente.ver.documento']}" mouseTracking="true"
+                                atPosition="top right" />
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:panelGrid id="buttonPanel" columns="1" styleClass="noBorder" style="float:right;">
+
+                        <p:commandButton id="anexarBtn"
+                            widgetVar="anexarBtnW" oncomplete="anexarDialogo.show()"
+                            value="#{msg['vuj.boton.adjuntar']}" update=":pForm:display,:pForm:dlgAnexar,:pForm"
+                            disabled="#{!adjuntaDocumentoOficialia.agregarVisible}" process="@this" />
+
+                        <p:commandButton id="eliminarRegButton" value="#{msg['vuj.boton.eliminar']}"
+                            update=":pForm:tablaDocumentos,:pForm:buttonPanel,:pForm:anexarBtn"
+                            disabled="#{!adjuntaDocumentoOficialia.eliminarVisible}" process="@this"
+                            actionListener="#{adjuntaDocumentoOficialia.eliminarDocumentos}" />
+
+                        <p:commandButton id="firma" value="#{msg['vuj.boton.firmar']}"
+                            actionListener="#{adjuntaDocumentoOficialia.guardarDocumentosSolicitud}" ajax="false" />
+                    </p:panelGrid>
+
+                </h:panelGrid>
+
+                <p:dialog id="dlgAnexar" widgetVar="anexarDialogo" header="#{msg['vuj.documento.anexar.tituloDialogo']}"
+                    modal="true">
+					<h:panelGrid id="display" columns="2" cellpadding="4"
+						style="margin:0 auto;">
+						<h:form id="formUpload" enctype="multipart/form-data;charset=UTF-8" style="width:500px">
+							<h2>Adjuntar archivo</h2>
+							<br />
+							<p:fileUpload 
+								widgetVar="formUploadWidget" 
+								value="#{adjuntaDocumentoOficialia.archivo}"
+								invalidSizeMessage="El tamaño máximo por archivo es 4 MB."
+								invalidFileMessage="El tipo de documento que trata de anexar no cumple con los requisitos. No está en un formato válido de PDF."
+								mode="advanced" multiple="false" fileLimit="1"
+								allowTypes="/(\.|\/)(pdf|pd?f)$/"
+								fileUploadListener="#{adjuntaDocumentoOficialia.fileUploadListener}"
+								sizeLimit = "4194303"
+								oncomplete="termina();" 
+								showButtons="true"
+								uploadLabel="Adjuntar"
+								cancelLabel="Cancelar"
+								label="Seleccionar">
+							</p:fileUpload>
+						</h:form>
+                        <p:commandButton action="#{adjuntaDocumentoOficialia.anexarDocumentoNube}" id="anexarNube"
+                            style="display:none" update=":pForm" />
+					</h:panelGrid>
+					<p:panelGrid columns="1" styleClass="noBorder" style="float:right;">
+                        <p:column>
+                            <p:commandButton onclick="anexarDialogo.hide();" value="Cerrar" />
+                        </p:column>
+                    </p:panelGrid>
+                </p:dialog>
+
+                <p:dialog id="dialogVisor" widgetVar="visorDialog" header="PDF" modal="true" width="800px"
+                    position="left top" styleClass="dialogVisor" closeOnEscape="true" draggable="false"
+                    resizable="false">
+                    <c:if test="#{not empty adjuntaDocumentoOficialia.urlDescargaSelected}">
+                        <p:media player="pdf" value="#{adjuntaDocumentoOficialia.urlDescargaSelected}" width="780px" height="480px"
+                            styleClass="dialogMedia">
+	       			Su navegador no es compatible con la vista previa de pdfs. Para descargar el documento de click en esta
+	       			<a href="#{adjuntaDocumentoOficialia.urlDescargaSelected}" target="_blank"> liga </a>
+                        </p:media>
+                    </c:if>
+                </p:dialog>
+                <script type="text/javascript"> 
+	        function inicializarCombo() {
+    			comboDocs.selectValue("");
+   			}
+    		function habilitarBtnAnexar(val){
+    			if(val.value == null || val.value == ""){
+    				anexarBtnW.disable();
+    			}else{
+    				anexarBtnW.enable();	
+    			}
+   			}
+	        
+    		function termina(){
+				$('#pForm\\:anexarNube').click();
+			    anexarDialogo.hide();
+			}
+		</script>
+            </h:form>
+        </p:panel>
+    </h:body>
+</ui:composition>

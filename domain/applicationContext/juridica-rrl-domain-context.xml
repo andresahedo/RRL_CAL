@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:task="http://www.springframework.org/schema/task"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+         http://www.springframework.org/schema/aop
+         http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context-3.0.xsd
+         http://www.springframework.org/schema/tx
+         http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+         http://www.springframework.org/schema/task
+         http://www.springframework.org/schema/task/spring-task-3.0.xsd
+         http://www.springframework.org/schema/util 
+         http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+    <import resource="/rrl/rrl-context.xml" />
+    <import resource="/common/jms-context.xml" />
+
+    <!-- BEANS DEFINIDOS DE FORMA DIFERENTE POR CADA PERFIL DE COMPILACION -->
+    <!-- IDC -->
+    <import resource="classpath:idc-context.xml" />
+
+    <!-- BEGIN - Bean para obtener los folios -->
+    <import resource="classpath:folios-context.xml" />
+
+    <!-- BEGIN - Bean para procesar movimientos de AU -->
+    <import resource="classpath:schedulers-context.xml" />
+    
+    <!-- BEGIN - Bean para re-procesamiento-->
+    <import resource="classpath:reprocesar-context.xml" />
+
+    <!-- BEGIN - General configuration -->
+    <bean id="lifecycleProcessor" class="org.springframework.context.support.DefaultLifecycleProcessor">
+        <property name="timeoutPerShutdownPhase" value="10000" />
+    </bean>
+
+    <aop:aspectj-autoproxy />
+
+    <context:annotation-config />
+
+    <context:component-scan base-package="mx.gob.sat.siat, com.softtek" />
+
+
+
+    <!-- END - General configuration -->
+
+    <!-- BEGIN - Encryption configuration -->
+    <bean id="environmentVariablesConfiguration" class="org.jasypt.encryption.pbe.config.SimpleStringPBEConfig">
+        <property name="algorithm" value="PBEWithMD5AndDES" />
+        <property name="password" value="Pa55word" />
+    </bean>
+
+    <bean id="configurationEncryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+        <property name="config" ref="environmentVariablesConfiguration" />
+    </bean>
+
+    <bean id="propertyConfigurer" class="org.jasypt.spring.properties.EncryptablePropertyPlaceholderConfigurer">
+        <constructor-arg ref="configurationEncryptor" />
+        <property name="locations">
+            <list>
+                <value>${properties.location}infrastructure-config.properties
+                </value>
+                <value>classpath*:idc-config.properties</value>
+                <value>${properties.location}cloud.properties</value>
+                <value>${properties.location}idcHidrocarburos.properties</value>
+                <value>classpath*:domain.properties</value>
+                <value>classpath*:infrastructure.properties</value>
+            </list>
+        </property>
+
+    </bean>
+
+    <!-- END - Encryption configuration -->
+
+    <!-- BEGIN - Database configuration -->
+    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="${datasource.app}" />
+    </bean>
+
+    <tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="*" rollback-for="java.lang.Throwable" propagation="REQUIRED" />
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:config>
+        <aop:pointcut id="businessServicesPointcut"
+            expression="target(mx.gob.sat.siat.juridica.base.service.impl.BaseSupportServices) 
+        AND execution(public * *(..))" />
+        <aop:advisor advice-ref="transactionAdvice" pointcut-ref="businessServicesPointcut" />
+    </aop:config>
+
+
+
+
+    <!-- BEGIN - JPA -->
+    <bean id="persistenceUnitManager" class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
+        <property name="persistenceXmlLocations">
+            <list>
+                <value>classpath*:META-INF/persistence.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+    <bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceUnitManager" ref="persistenceUnitManager" />
+        <property name="jpaDialect" ref="jpaDialect" />
+        <property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
+
+    <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+    <!-- END - JPA -->
+
+    <bean id="notificacion" class="mx.gob.sat.siat.juridica.base.dao.domain.model.MultiFormatReportVU">
+        <property name="url" value="/resources/util/reporte/acuseNotificacion.jrxml" />
+        <property name="jdbcDataSource" ref="dataSource" />
+    </bean>
+
+    <bean id="acuseReciboPromociones" class="mx.gob.sat.siat.juridica.base.dao.domain.model.MultiFormatReportVU">
+        <property name="url" value="/resources/util/reporte/reciboPromociones.jrxml" />
+        <property name="jdbcDataSource" ref="dataSource" />
+    </bean>
+
+    <bean id="constanciaFirmado" class="mx.gob.sat.siat.juridica.base.dao.domain.model.MultiFormatReportVU">
+        <property name="url" value="/resources/util/reporte/constanciaFirmadoElectronico.jrxml" />
+        <property name="jdbcDataSource" ref="dataSource" />
+    </bean>
+
+    <bean id="realPathUtility" class="mx.gob.sat.siat.juridica.base.web.controller.bean.utility.RealPathUtility" />
+
+    <bean id="notificacionCAL" class="mx.gob.sat.siat.juridica.base.dao.domain.model.MultiFormatReportVU">
+        <property name="url" value="/resources/util/reporte/CAL/formatoSolicitudPromocion.jrxml" />
+        <property name="jdbcDataSource" ref="dataSource" />
+    </bean>
+
+    <bean id="acuseReciboPromocionesAutoridad" class="mx.gob.sat.siat.juridica.base.dao.domain.model.MultiFormatReportVU">
+        <property name="url" value="/resources/util/reporte/reciboPromocionesAutoridad.jrxml" />
+        <property name="jdbcDataSource" ref="dataSource" />
+    </bean>
+
+    <bean id="constanciaFirmadoAutoridad" class="mx.gob.sat.siat.juridica.base.dao.domain.model.MultiFormatReportVU">
+        <property name="url" value="/resources/util/reporte/constanciaFirmadoElectronicoAutoridad.jrxml" />
+        <property name="jdbcDataSource" ref="dataSource" />
+    </bean>
+
+    <bean id="constanciaFirmadoRetroalimentacion" class="mx.gob.sat.siat.juridica.base.dao.domain.model.MultiFormatReportVU">
+        <property name="url" value="/resources/util/reporte/CAL/constanciaFirmadoElectronicoRetroalimentacion.jrxml" />
+        <property name="jdbcDataSource" ref="dataSource" />
+    </bean>
+
+    <bean id="acuseTerminosyCondiciones" class="mx.gob.sat.siat.juridica.base.dao.domain.model.MultiFormatReportVU">
+        <property name="url" value="/resources/util/reporte/acuseTerminosYCondiciones.jrxml" />
+        <property name="jdbcDataSource" ref="dataSource" />
+    </bean>
+    
+    <bean id="acuseTerminosyCondicionesCal" class="mx.gob.sat.siat.juridica.base.dao.domain.model.MultiFormatReportVU">
+        <property name="url" value="/resources/util/reporte/CAL/acuseTerminosYCondiciones.jrxml" />
+        <property name="jdbcDataSource" ref="dataSource" />
+    </bean>
+    
+    <bean id="tipoRolContribuyenteIDC" name ="tipoRolContribuyenteIDC" class="mx.gob.sat.siat.juridica.ca.util.validador.TipoRolContribuyenteIDC" autowire-candidate="true">
+        <property name="URL" value="${idcClient}"/>
+        <property name="usuario" value="${usuario}"/>
+        <property name="password" value="${password}"/>
+    </bean>
+</beans>
+

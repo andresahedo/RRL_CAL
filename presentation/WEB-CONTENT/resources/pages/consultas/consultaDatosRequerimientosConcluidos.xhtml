@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:pe="http://primefaces.org/ui/extensions" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+        <style type="text/css">
+.ui-panel {
+    width: #{sessionScope.tamanioApp}#{sessionScope.tipoTamanioApp};
+    word-wrap:break-word;
+    }
+.panelContent td {
+    border: black solid 1px !important;
+}
+</style>
+
+    <p:dataTable rowIndexVar="rowId" editMode="row" id="requerimientoTable" paginator="true" rows="5"
+        widgetVar="requerimientoTableVar" var="req" value="#{consultasController.datosRequerimientoDataModel}"
+        emptyMessage="#{msg['vuj.grid.vacio']}" selection="#{consultasController.selectedReq}" resizableColumns="true">
+        <f:attribute name="tableReqs" value="#{consultasController.datosRequerimientoDataModel}"></f:attribute>
+
+        <p:ajax event="rowSelectRadio" update=":tabSolicitud:consultaReqForm" process="@this"
+            listener="#{consultasController.onRowSelect}" />
+
+
+        <p:column headerText="#{msg['rrl.requerimiento.tipoRequerimiento']}" resizable="false"
+            style="width:15%;white-space:pre-line;">
+
+            <h:outputText value="#{req.tipoRequerimiento}" />
+
+
+        </p:column>
+        <p:column headerText="#{msg['rrl.requerimiento.autoridad']}" resizable="false"
+            style="width:15%;white-space:pre-line;">
+
+            <h:outputText value="#{req.autoridad}" />
+
+
+        </p:column>
+
+        <p:column headerText="#{msg['rrl.requerimiento.fechageneracion']}" resizable="false"
+            style="width:15%;white-space:pre-line;">
+            <h:outputText value="#{req.fechaGeneracion}" id="fechaGeneracion">
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+            </h:outputText>
+        </p:column>
+
+        <p:column headerText="#{msg['rrl.requerimiento.fechaNotificacion']}" resizable="false"
+            style="width:15%;white-space:pre-line;">
+            <h:outputText value="#{req.fechaNotificacion}" id="fechaNotif">
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+            </h:outputText>
+        </p:column>
+
+        <p:column headerText="#{msg['rrl.requerimiento.fechaatencion']}" resizable="false"
+            style="width:15%;white-space:pre-line;">
+            <h:outputText value="#{req.fechaAtencion}" id="fechaAtencion">
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+            </h:outputText>
+        </p:column>
+        <p:column headerText="#{msg['rrl.requerimiento.estado']}" resizable="false"
+            style="width:15%;white-space:pre-line;">
+            <h:outputText value="#{req.estadoRequerimiento}" id="estadoRequerimientoTable" />
+        </p:column>
+        <p:column style="width:6%;white-space:pre-line;" selectionMode="single" headerText="Detalle" resizable="false">
+
+        </p:column>
+
+    </p:dataTable>
+
+    <h:form id="consultaReqForm">
+
+        <p:panel id="panelDialogReq" header="Detalle de Requerimiento" style="width:100%;margin-bottom:10px;"
+            visible="#{consultasController.reqVisible}">
+            <p:panel id="panelMensajesReq" style="border-style:hidden !important;width:70%">
+                <p:messages autoUpdate="false" globalOnly="true" showDetail="true" showSummary="false" />
+            </p:panel>
+            <table>
+                <tr>
+                    <td width="100%"><h:outputText value="#{msg['rrl.requerimiento.estadoRequerimiento']}" /></td>
+                    <td width="100%"><h:outputText value="#{msg['rrl.requerimiento.tipoRequerimiento']}" /></td>
+                    <td width="100%"><h:outputText value="#{msg['rrl.requerimiento.autoridad']}" /></td>
+                    <td width="100%"><h:outputText value="#{msg['vuj.autorizar.fechaNotif']}" /></td>
+                </tr>
+                <tr>
+                    <td><p:inputText value="#{consultasController.selectedReq.estadoRequerimiento}" disabled="true" /></td>
+                    <td><p:inputText value="#{consultasController.selectedReq.tipoRequerimiento}" disabled="true" /></td>
+                    <td><p:inputText value="#{consultasController.selectedReq.autoridad}" disabled="true" /></td>
+                    <td><p:calendar pattern="dd/MM/yyyy" locale="es" navigator="true" required="true"
+                            id="fechaNotificacionnInput" value="#{consultasController.selectedReq.fechaNotificacion}"
+                            readonlyInput="true" disabled="true"
+                            maxdate="#{consultasController.fechaMaxima}" /> <p:message display="text"
+                            for="fechaNotificacionnInput" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><h:outputText value="#{msg['rrl.requerimiento.generadoPor']}" /></td>
+                    <td><h:outputText value="#{msg['rrl.requerimiento.fechaCreacion']}" /></td>
+                    <td><h:outputText value="#{msg['rrl.requerimiento.fechaAtencion']}" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><p:inputText value="#{consultasController.selectedReq.nombreAbogado}"
+                            disabled="true" /></td>
+                    <td><p:inputText value="#{consultasController.selectedReq.fechaGeneracion}" disabled="true">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:inputText></td>
+                    <td><p:calendar pattern="dd/MM/yyyy" locale="es" readonlyInput="true"
+                            disabled="true" navigator="true"
+                            value="#{consultasController.selectedReq.fechaAtencion}" id="fechaAtencionInput"
+                            maxdate="#{consultasController.fechaMaxima}">
+
+                        </p:calendar></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><h:outputText value="#{msg['rrl.requerimiento.autorizadoPor']}" /></td>
+                    <td><h:outputText value="#{msg['rrl.requerimiento.fechaAutorizacion']}" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><p:inputText value="#{consultasController.selectedReq.autorizadoPor}"
+                            disabled="true" /></td>
+                    <td><p:inputText value="#{consultasController.selectedReq.fechaAutorizacion}" disabled="true">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:inputText></td>
+
+                    <td><c:if test="#{consultasController.esAbogado}">
+                            <p:commandButton update=":tabSolicitud:consultaReqForm"
+                                disabled="true" id="guardarReqButton"
+                                actionListener="#{consultasController.actualizarRequerimiento}" ajax="true"
+                                value="#{msg['vuj.resol.guardar']}" />
+
+                            <p:commandButton ajax="true" id="adjuntarDocButton"
+                                disabled="true"
+                                action="#{consultasController.adjuntarCumplimentacion}" process="@this"
+                                update=":tabSolicitud:consultaReqForm" value="#{msg['vuj.boton.adjuntar']}" />
+                        </c:if></td>
+                </tr>
+            </table>
+
+
+
+            <p:dataTable id="tablaDocumentosReq" var="documentoReq"
+                value="#{consultasController.selectedReq.documentosConsultaReq}"
+                emptyMessage="No se encontraron resultados" rowIndexVar="rowIndex" resizableColumns="true"
+                paginator="true" rows="10">
+                <p:column headerText="#{msg['rrl.requerimiento.tipoDocumento']}" style="width:25%" resizable="false">
+                    <h:outputText value="#{documentoReq.tipoDocumento}" />
+                </p:column>
+                <p:column headerText="#{msg['rrl.requerimiento.nombreArchivo']}" style="width:50%" resizable="false">
+                    <h:outputText value="#{documentoReq.nombre}" id="nomDocumento" />
+                    <pe:tooltip for="nomDocumento" mouseTracking="true">
+                        <p:outputLabel escape="true" value="#{documentoReq.nombre}"></p:outputLabel>
+                    </pe:tooltip>
+                </p:column>
+                <p:column style="width:25%" resizable="false">
+                    <p:commandButton value="#{msg['vuj.boton.ver']}" id="generarRuta"
+                        update=":tabSolicitud:consultaReqForm:dialogVisor" oncomplete="visorDialog.show()">
+                        <f:setPropertyActionListener value="#{documentoReq}"
+                            target="#{consultasController.documentoDTOSelected}" />
+                        <p:ajax event="click" listener="#{consultasController.activaBanderaDocumentoPromocion}" />
+                    </p:commandButton>
+                </p:column>
+
+            </p:dataTable>
+
+
+        </p:panel>
+
+        <p:dialog id="dialogVisor" widgetVar="visorDialog" header="PDF" dynamic="true" modal="true"
+            styleClass="dialogVisor" position="left top" closeOnEscape="true" draggable="false" resizable="false">
+            <c:if test="#{not empty consultasController.urlDescargaSelected}">
+                <p:media player="pdf" value="#{consultasController.urlDescargaSelected}" width="780px" height="500px"
+                    styleClass="dialogMedia">
+					Su navegador no es compatible con la vista previa de pdfs. Para descargar el documento de click en esta
+					<a href="#{consultasController.urlDescargaSelected}" target="_blank"> liga </a>
+                </p:media>
+            </c:if>
+        </p:dialog>
+
+    </h:form>
+
+
+</ui:composition>

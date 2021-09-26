@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<h:head>
+    <style type="text/css">
+.ui-selectonemenu-panel {
+    width: 50px
+}
+
+.ui-panel {
+    width: #{sessionScope.tamanioApp}px;
+    border-style:none !important;
+}
+.ui-panelgrid td {
+    border-style: none;
+}
+
+.ui-panel-titlebar {
+    text-align: center;
+}
+
+.ui-panelgrid tr {
+    border-style: none;
+}
+
+.ui-widget {
+    font-family: Arial, sans-serif !important;
+    font-size: 11px !important;
+}
+</style>
+</h:head>
+
+<ui:decorate template="encabezado.xhtml">
+</ui:decorate>
+
+<h:body>
+    <h:form id="buttonForm">
+        <p:panel id="msgPanel">
+            <p:messages id="messages" showDetail="true" globalOnly="true" autoUpdate="true">
+                <p:message showDetail="true" rendered=""></p:message>
+            </p:messages>
+        </p:panel>
+        <p:panel header="#{msg['usuarios.asignarPermisos']}" id="permisosPanel" style="float:left">
+            <p:panelGrid id="datosEmpleado">
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msg['usuarios.datos.empleado.nombre']}" />
+                    </p:column>
+
+                    <p:column>
+                        <p:outputLabel value="#{msg['usuarios.datos.empleado.apellidoPaterno']}" />
+                    </p:column>
+
+                    <p:column>
+                        <p:outputLabel value="#{msg['usuarios.datos.empleado.apellidoMaterno']}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:inputText readonly="true" value="#{administrarEmpleadosController.empleadoDTO.nombre}" />
+                    </p:column>
+
+                    <p:column>
+                        <p:inputText readonly="true"
+                            value="#{administrarEmpleadosController.empleadoDTO.apellidoPaterno}" />
+                    </p:column>
+
+                    <p:column>
+                        <p:inputText readonly="true"
+                            value="#{administrarEmpleadosController.empleadoDTO.apellidoMaterno}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.consulta.rfc']}" />
+                    </p:column>
+
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.consulta.rfcCorto']}" />
+                    </p:column>
+
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.correoElectronico']}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:inputText readonly="true" value="#{administrarEmpleadosController.empleadoDTO.rfc}" />
+                    </p:column>
+
+                    <p:column>
+                        <p:inputText readonly="true" value="#{administrarEmpleadosController.empleadoDTO.rfcCorto}" />
+                    </p:column>
+
+                    <p:column>
+                        <p:inputText readonly="true"
+                            value="#{administrarEmpleadosController.empleadoDTO.correoElectronico}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.numeroEmpleado']}" />
+                    </p:column>
+
+                    <p:column rendered="#{!administrarEmpleadosController.blnBase}">
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.unidadAdmin']}"
+                            rendered="#{!administrarEmpleadosController.blnBase}" />
+                    </p:column>
+                    <p:column rendered="#{administrarEmpleadosController.blnBase}">
+                        <p:outputLabel value="#{msg['administracion.usuarios.bitacora.unidadAdminBase']}"
+                            rendered="#{administrarEmpleadosController.esUnidadBase}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:inputText readonly="true"
+                            value="#{administrarEmpleadosController.empleadoDTO.numeroEmpleado}" />
+                    </p:column>
+
+                    <p:column>
+                        <p:inputText readonly="true" value="#{administrarEmpleadosController.empleadoDTO.unidadAdmin}" />
+                    </p:column>
+                </p:row>
+
+            </p:panelGrid>
+            <p:panel id="permisosTable" header="Permisos Asignados">
+                <p:dataTable selection="#{administrarEmpleadosController.rolSelected}" id="empleadoTable"
+                    value="#{administrarEmpleadosController.informacionUsuarioDataModel}" rowKey="#{empleado.idRol}"
+                    emptyMessage="#{administrarEmpleadosController.mensajeBandejaVacia}" var="empleado"
+                    rowIndexVar="rowIndex">
+                    <p:ajax event="rowSelectRadio" update=":buttonForm:permisosTable"
+                        listener="#{administrarEmpleadosController.onRowSelect}" />
+                    <p:column headerText="#{msg['administracion.usuarios.consulta.permiso']}">
+                        <p:outputLabel value="#{empleado.descripcionRol}" id="permiso" style="white-space:pre-line;" />
+                    </p:column>
+
+                    <p:column headerText="#{msg['usuarios.asignar.tramites.permisoActivo']}" style="text-align:center">
+                        <p:selectBooleanCheckbox value="#{empleado.asignado}" />
+                    </p:column>
+
+
+                    <p:column selectionMode="single" style="text-align:center"
+                        rendered="#{administrarEmpleadosController.esUnidadBase}">
+                        <f:facet name="header">
+                            <p:outputLabel value="#{msg['usuarios.asignar.tramites.permisoReplicar']}"></p:outputLabel>
+                            <p:outputLabel style="color:red;">*</p:outputLabel>
+                        </f:facet>
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:panel>
+            <style type="text/css">
+.ui-chkbox-all {
+    visibility: hidden;
+}
+</style>
+            <p:panelGrid id="buttonPanel" style="float:right;">
+                <p:row>
+                    <p:column>
+                        <p:commandButton value="#{msg['usuarios.asignar.tramites']}" ajax="true"
+                            actionListener="#{administrarEmpleadosController.reasignarTramites}"></p:commandButton>
+                    </p:column>
+                    <p:column>
+                        <p:commandButton value="#{msg['usuarios.asignar.tramites.reasignar']}" ajax="true"
+                            actionListener="#{administrarEmpleadosController.reasignar}"></p:commandButton>
+                    </p:column>
+                    <p:column>
+                        <p:commandButton value="#{msg['usuarios.asignar.tramites.actualizar']}" ajax="false"
+                            oncomplete="confirmActualizar.show();"
+                            action="#{administrarEmpleadosController.activarConfirm}" process="@this, empleadoTable"
+                            partialSubmit="true"
+                            update=":buttonForm:buttonPanel,:buttonForm:permisosTable,:buttonForm:msgPanel,:buttonForm:permisosPanel,:buttonForm:confirmActualizar" />
+                    </p:column>
+                    <p:column>
+                        <p:commandButton value="#{msg['usuarios.asignar.tramites.regresar']}" ajax="true"
+                            actionListener="#{administrarEmpleadosController.back}" process="@this"></p:commandButton>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+
+            <p:panel>
+                <p:confirmDialog closable="false" global="false"
+                    message="#{administrarEmpleadosController.msgActualizar}"
+                    visible="#{administrarEmpleadosController.blnActivaDialogo}" showEffect="fade" hideEffect="explode"
+                    id="confirmActualizar" header="Confirmación" severity="alert" widgetVar="cdConfirmaEliminar">
+                    <p:panelGrid columns="2" styleClass="noBorder" style="float:right;">
+                        <p:column>
+                            <p:commandButton value="Si" actionListener="#{administrarEmpleadosController.actualizar}"
+                                styleClass="ui-confirmdialog-yes" icon="ui-icon-check" process="@this"
+                                update=":buttonForm:buttonPanel,:buttonForm:permisosTable,:buttonForm:msgPanel"
+                                oncomplete="cdConfirmaEliminar.hide();" />
+                        </p:column>
+                        <p:column>
+                            <p:commandButton value="No" onclick="cdConfirmaEliminar.hide();" type="button"
+                                styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:column>
+                    </p:panelGrid>
+                </p:confirmDialog>
+            </p:panel>
+
+        </p:panel>
+    </h:form>
+</h:body>
+
+</html>
