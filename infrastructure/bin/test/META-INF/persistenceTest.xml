@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+    <persistence-unit name="VUJPersistenceUnit" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <shared-cache-mode>ALL</shared-cache-mode>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect" />
+            <property name="hibernate.archive.autodetection" value="class" />
+            <property name="hibernate.order_inserts" value="true" />
+            <property name="hibernate.order_updates" value="true" />
+            <property name="hibernate.jdbc.use_get_generated_keys" value="true" />
+            <property name="hibernate.transaction.flush_before_completion" value="true" />
+            <property name="hibernate.transaction.auto_close_session" value="true" />
+            <property name="hibernate.connection.release_mode" value="after_transaction" />
+            <property name="hibernate.bytecode.use_reflection_optimizer" value="true" />
+            <property name="hibernate.query.factory_class" value="org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory" />
+            <property name="hibernate.connection.charSet" value="UTF-8" />
+            <!-- BEGIN - Cache settings -->
+            <property name="hibernate.cache.use_second_level_cache" value="true" />
+            <property name="hibernate.cache.provider_class" value="org.hibernate.cache.OSCacheProvider" />
+            <property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory" />
+            <property name="hibernate.cache.use_minimal_puts" value="false" />
+            <property name="hibernate.cache.use_query_cache" value="true" />
+            <property name="hibernate.cache.region_prefix" value="HibernateCacheId" />
+            <property name="hibernate.cache.use_structured_entries" value="true" />
+            <!-- END - Cache settings -->
+            <!-- BEGIN - Properties to be used ONLY during development -->
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="true" />
+            <property name="hibernate.generate_statistics" value="false" />
+            <property name="hibernate.use_sql_comments" value="true" />
+            <!-- END - Properties to be used ONLY during development -->
+        </properties>
+    </persistence-unit>
+</persistence>

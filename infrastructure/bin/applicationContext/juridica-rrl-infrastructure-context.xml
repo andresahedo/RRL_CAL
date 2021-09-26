@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:task="http://www.springframework.org/schema/task"
+    xmlns:jee="http://www.springframework.org/schema/jee"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+         http://www.springframework.org/schema/aop
+         http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context-3.0.xsd
+         http://www.springframework.org/schema/tx
+         http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+         http://www.springframework.org/schema/task
+         http://www.springframework.org/schema/task/spring-task-3.0.xsd
+         http://www.springframework.org/schema/jee
+         http://www.springframework.org/schema/jee/spring-jee-3.0.xsd">
+
+    <bean id="jdbcTemplatePA" class="org.springframework.jdbc.core.JdbcTemplate" autowire-candidate="true">
+        <property name="dataSource" ref="dataSourceBitacora"></property>
+    </bean>
+
+    <bean id="segbMovimientosDAO" class="mx.gob.sat.siat.modelo.dao.impl.SegbMovimientosDAOImpl"
+        autowire-candidate="true">
+    </bean>
+
+    <bean id="dataSourceBitacora" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="${datasource.app}" />
+    </bean>
+
+    <bean id="controllerAuditoriaAspect" class="mx.gob.sat.siat.juridica.auditoria.aspect.ControllerAuditoriaAspect"
+        factory-method="aspectOf">
+        <property name="segbMovimientosDAO" ref="segbMovimientosDAO" />
+    </bean>
+    <bean id="facadeAuditoriaAspect" class="mx.gob.sat.siat.juridica.auditoria.aspect.FacadeAuditoriaAspect"
+        factory-method="aspectOf">
+        <property name="segbMovimientosDAO" ref="segbMovimientosDAO" />
+    </bean>
+    <bean id="bussinessAuditoriaAspect" class="mx.gob.sat.siat.juridica.auditoria.aspect.BusinessAuditoriaAspect"
+        factory-method="aspectOf">
+        <property name="segbMovimientosDAO" ref="segbMovimientosDAO" />
+    </bean>
+
+    <!-- BEGIN - Scheduler -->
+    <task:annotation-driven executor="myExecutor" scheduler="myScheduler" />
+
+    <task:executor id="myExecutor" pool-size="5-25" queue-capacity="100" />
+
+    <task:scheduler id="myScheduler" pool-size="10" />
+    <!-- END - Scheduler -->
+
+
+    <!-- BEGIN - Common Scheduler -->
+    <!--task:scheduled-tasks scheduler="myScheduler"> <task:scheduled ref="bpmService" method="completarTareasPorTimmer" 
+        fixed-delay="60000" /> </task:scheduled-tasks -->
+    <!-- END - Common Scheduler -->
+
+    <!-- BEGIN - Mail JMS -->
+    <jee:jndi-lookup id="mailQueue" jndi-name="${jndi.mail.queue}" />
+
+    <bean id="mailJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="siatJmsConnectionFactory" />
+        <property name="defaultDestination" ref="mailQueue" />
+    </bean>
+
+    <bean id="mailJMSDao" class="mx.gob.sat.siat.juridica.rrl.util.recurso.correo.impl.MailRequestSenderJMSImpl"
+        autowire-candidate="true">
+        <property name="destination" ref="mailQueue" />
+        <property name="jmsTemplate" ref="mailJmsTemplate" />
+    </bean>
+
+    <bean id="mailReceiver" class="mx.gob.sat.siat.juridica.rrl.util.recurso.correo.MailRequestReceiver" />
+
+    <bean id="mailListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="sessionTransacted" value="false" />
+        <property name="connectionFactory" ref="siatJmsConnectionFactory" />
+        <property name="destination" ref="mailQueue" />
+        <property name="messageListener" ref="mailReceiver" />
+        <property name="concurrentConsumers" value="1" />
+        <property name="maxConcurrentConsumers" value="1" />
+    </bean>
+
+    <!-- Mail session jndi -->
+    <jee:jndi-lookup id="mailSession" jndi-name="${jndi.mail}" cache="true" />
+    <bean id="jndiMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="session" ref="mailSession" />
+    </bean>
+
+    <!-- END - Mail JMS -->
+
+    <!-- Buzon tributario -->
+
+    <bean id="buzonMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+        <property name="contextPath" value="mx.gob.sat.siat.juridica.buzon.wsdl" />
+    </bean>
+
+    <bean id="httpParamsBuzon" class="org.apache.commons.httpclient.params.HttpClientParams">
+        <!-- Timeout in milliseconds: in this case 2 minutes -->
+        <property name="soTimeout" value="${buzon.timeout}" />
+    </bean>
+
+    <bean id="httpClientBuzon" class="org.apache.commons.httpclient.HttpClient">
+        <property name="params" ref="httpParamsBuzon" />
+    </bean>
+
+    <bean id="httpSenderBuzon" class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+        <constructor-arg>
+            <ref bean="httpClientBuzon" />
+        </constructor-arg>
+    </bean>
+
+    <bean name="buzonTributarioClient" class="mx.gob.sat.siat.juridica.buzon.client.BuzonTributarioClient">
+        <property name="messageFactory">
+            <bean class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory" />
+        </property>
+        <property name="messageSenders">
+            <list>
+                <ref bean="httpSenderBuzon" />
+            </list>
+        </property>
+        <property name="defaultUri" value="${buzon.uri}" />
+        <property name="marshaller" ref="buzonMarshaller" />
+        <property name="unmarshaller" ref="buzonMarshaller" />
+    </bean>
+
+    <bean id="buzonTributarioService" class="mx.gob.sat.siat.juridica.buzon.service.impl.BuzonTributarioServiceImpl"
+        autowire-candidate="true" />
+
+    <!-- END - Buzon tributario -->
+
+
+    <bean name="applicationContextHelper" class="mx.gob.sat.siat.juridica.base.web.util.ApplicationContextHelper" />
+    <bean name="appletMode" class="java.lang.String">
+        <constructor-arg value="${appletFiel.mode}" />
+    </bean>
+    
+    <bean name="sgiARA" class="mx.gob.sat.sgi.SgiCripto.SgiARA" autowire-candidate="true" />
+</beans>

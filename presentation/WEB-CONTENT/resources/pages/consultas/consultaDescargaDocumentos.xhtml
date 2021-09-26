@@ -94,9 +94,7 @@
 
   
   <c:if  style="visibility: visible" id="a" test="#{consultasController.validarAcusesFaltantes}">
-	 <p:commandLink actionListener="#{consultasController.acusesFaltantes}">
-		<h:outputText value="Entrar para consultar acuses" />
-	</p:commandLink>
+	 <h:link value="Entrar para consultar acuse" outcome="#{consultasController.acusesFaltantes}" />
   </c:if>
   
   </p:panel>
