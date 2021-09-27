@@ -217,8 +217,7 @@ public class CapturaSolicitudController extends
     @PostConstruct
     public void iniciar() {
     	HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
-        
-    	numeroAsuntoAcusesFaltantes = session.getAttribute("numeroAsuntoFaltantes").toString().toString();
+    	numeroAsuntoAcusesFaltantes = session.getAttribute("numeroAsuntoFaltantes").toString();
     	getLogger().debug("numeroAsuntoAcusesFaltantes:",numeroAsuntoAcusesFaltantes);
     	if (numeroAsuntoAcusesFaltantes != null) {
     		this.iniciarConFaltantes();
@@ -284,10 +283,6 @@ public class CapturaSolicitudController extends
         }
     }
 
-    private Object iniciarFaltantes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	protected void meterId() {
         Date hora = new Date();
@@ -409,39 +404,6 @@ public class CapturaSolicitudController extends
         }
     }
 
-    public String onFlowProcessAcusesFaltantes(FlowEvent event) {
-    	try {
-            List<DocumentoDTO> listaDocs = getCapturaSolicitudBussines()
-                    .obtenerDocumentosPorIdSolicitud(
-                            getSolicitud().getIdSolicitud());
-            if (listaDocs != null && !listaDocs.isEmpty()) {
-                prepararFirmaSolicitud();
-                return event.getNewStep();
-
-            } else {
-                String mensaje = guardarDocumentos();
-                if (mensaje == null) {
-                    prepararFirmaSolicitud();
-                    return event.getNewStep();
-                } else {
-                    throw new ArchivoNoGuardadoException(mensaje);
-                }
-            }
-        } catch (ArchivoNoGuardadoException e) {
-            FacesContext.getCurrentInstance().addMessage(
-                    null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e
-                            .getMessage(), ""));
-            for (String documento : getDocumentosPorAnexar()) {
-                FacesContext.getCurrentInstance().addMessage(
-                        null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                documento, ""));
-            }
-            return RegistroSolicitudConstants.ANEXAR_DOCUMENTOS_SOLICITUD;
-        }
-    }
-    
     public String onFlowProcess(FlowEvent event) {
 
         if (event.getNewStep().equals(
