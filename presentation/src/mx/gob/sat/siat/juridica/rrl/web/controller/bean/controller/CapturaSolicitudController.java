@@ -230,6 +230,12 @@ public class CapturaSolicitudController extends
     
     private void iniciarConFaltantes() {
     	getLogger().debug("ingresando a iniciar acuses faltantes");
+    	setModalidadTramite(new StringBuffer());
+        String modalidad = getCapturaSolicitudBussines()
+                .obtenerModalidadDeTramite(
+                        Integer.parseInt(DiscriminadorConstants.T1_CLASIFICACION_ARANCELARIA));
+        getModalidadTramite().append("Recursos Administrativos-");
+        getModalidadTramite().append(modalidad);
     }
     
     private void iniciarSinFaltantes() {
