@@ -1782,9 +1782,9 @@ public class ConsultasController extends BaseCloudController<DocumentoOficialDTO
         session.setAttribute("numeroAsuntoFaltantes", tramite.getNumeroAsunto());
         String urlFirma;
         if(tramite.getTipoTramite().equals(DiscriminadorConstants.T1_CLASIFICACION_ARANCELARIA)) {
-        	urlFirma = RegistroSolicitudConstants.FIRMAR_SOLICITUD;
+        	urlFirma = UrlFirma.PAGINA_FIRMA_SOLICITUD.toString();
         }else {
-        	urlFirma = RegistroSolicitudConstants.FIRMAR_SOLICITUD_CAL;
+        	urlFirma = UrlFirma.PAGINA_FIRMA_SOLICITUD_CAL.toString();
         }
         
     	return urlFirma;
