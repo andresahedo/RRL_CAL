@@ -1781,7 +1781,7 @@ public class ConsultasController extends BaseCloudController<DocumentoOficialDTO
     	HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
         session.setAttribute("numeroAsuntoFaltantes", tramite.getNumeroAsunto());
         String urlFirma;
-        if(tramite.getNumeroAsunto.substring(0,3).equals("RRL")) {
+        if(tramite.getNumeroAsunto().substring(0,3).equals("RRL") ) {
         	urlFirma = UrlFirma.PAGINA_FIRMA_SOLICITUD.toString();
         }else {
         	urlFirma = UrlFirma.PAGINA_FIRMA_SOLICITUD_CAL.toString();
