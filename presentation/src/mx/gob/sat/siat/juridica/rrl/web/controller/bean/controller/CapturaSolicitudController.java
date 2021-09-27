@@ -1011,7 +1011,7 @@ public class CapturaSolicitudController extends
     
 	public void firmar() {
 		try {
-			if (validarAra() && acusesFaltantes) {
+			if (validarAra()) {
 				generaFechaFirma();
 				if (acusesFaltantes) {
 					firmarFaltantes();
