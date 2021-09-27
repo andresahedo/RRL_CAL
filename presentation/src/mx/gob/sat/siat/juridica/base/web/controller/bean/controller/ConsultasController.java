@@ -1777,7 +1777,7 @@ public class ConsultasController extends BaseCloudController<DocumentoOficialDTO
     	return consultasBussines.obtenerDocumentosOficialesTipo(tramite.getNumeroAsunto(), TipoDocumentoOficial.OFICIO_TERMINOS_CONDICIONES.getClave()).isEmpty();
     }
     
-    public String acusesFaltante() {
+    public String getAcusesFaltante() {
     	HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
         session.setAttribute("numeroAsuntoFaltantes", tramite.getNumeroAsunto());
         String urlFirma;
