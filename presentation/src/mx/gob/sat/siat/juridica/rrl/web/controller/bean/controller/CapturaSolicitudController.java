@@ -1066,7 +1066,7 @@ public class CapturaSolicitudController extends
 	private void resultadoAcuses(String numAsunto, List<Long> idsDoc) {
 		descargarDocumentoController.getDatosBandejaTareaDTO().setNumeroAsunto(numAsunto);
 		descargarDocumentoController.obtenerDocumentosByIdDoc(idsDoc);
-		String aviso = "Tu Promoci\u00F3n ha sido registrada con el siguiente  n\u00FAmero de Asunto " + numAsunto;
+		String aviso = "Se muestran los acuses correctamente.";
 		descargarDocumentoController.setMessagesRedirect(aviso);
 		ConfigurableNavigationHandler configurableNavigationHandler = (ConfigurableNavigationHandler) FacesContext
 				.getCurrentInstance().getApplication().getNavigationHandler();
@@ -1110,8 +1110,6 @@ public class CapturaSolicitudController extends
 			getLogger().debug("Profiling inicio bussines firmarDocumentos {}",
 					new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
 			getCapturaSolicitudBussines().firmarDocumentos(getSolicitud().getIdSolicitud(), firma);
-			getLogger().debug("Profiling fin bussines firmarDocumentos {}",
-					new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
 		}
 
 		descargarDocumentoController.getDatosBandejaTareaDTO().setNumeroAsunto(numAsunto);
