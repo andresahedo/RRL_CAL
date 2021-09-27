@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<ui:composition template="/WEB-INF/facelets/templates/layout.xhtml">
+    <ui:define name="content">
+
+        <style type="text/css">
+.ui-wizard-navbar {
+    float: right;
+}
+
+.ui-panel {
+    border-style: hidden !important;
+}
+</style>
+        <h:outputStylesheet library="css" name="tabsWizard.css" />
+
+        <f:metadata>
+            <f:viewParam name="msgRedirect" value="#{registroSolicitudCALController.messagesRedirect}" />
+            <f:event type="preRenderView" listener="#{registroSolicitudCALController.mensajesRedirect}" />
+        </f:metadata>
+        <script>
+		var submitFirmaAsociado = false;
+	</script>
+        <h:form id="FIELForm">
+            <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" />
+            <p:dialog modal="true" widgetVar="statusDialog" resizable="false" header="#{msg['vuj.estatus.procesando']}"
+                draggable="false" closable="false">
+                <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+            </p:dialog>
+            <p:panel style="width:#{sessionScope.tamanioBuzon}#{sessionScope.tipoTamanioBuzon};">
+                    <p:panel header="#{registroSolicitudCALController.modalidadTramite}" style="align:left;"></p:panel>
+                        <p:panel header="Firmar" style="width:100%">
+                            <ui:include src="#{registroSolicitudCALController.firmarSolicitudCAL}" />
+                        </p:panel>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

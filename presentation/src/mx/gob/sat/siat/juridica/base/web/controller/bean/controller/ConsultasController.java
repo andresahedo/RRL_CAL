@@ -1788,7 +1788,7 @@ public class ConsultasController extends BaseCloudController<DocumentoOficialDTO
         if(tramite.getNumeroAsunto().substring(0,3).equals("RRL") ) {
         	urlFirma = UrlFirma.PAGINA_FIRMA_FALTANTES.toString();
         }else {
-        	urlFirma = UrlFirma.PAGINA_FIRMA_SOLICITUD_CAL.toString();
+        	urlFirma = UrlFirma.PAGINA_FIRMA_FALTANTES_CAL.toString();
         }
     	return urlFirma;
     }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.ConfigurableNavigationHandler;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.ExternalContext;
@@ -20,6 +22,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
+import javax.servlet.http.HttpSession;
 
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FlowEvent;
@@ -269,6 +272,11 @@ public abstract class RegistroSolicitudCALCommonController extends BaseCloudCont
     private List<DocumentoDTO> listaGeneralDocumentos;
 
     private List<String> docsFaltantesPorAnexar;
+    
+    private String numeroAsuntoFaltantes;
+    private boolean acusesFaltantes=Boolean.FALSE;
+    private Date fechaRecepcionFaltantes;
+    private Long idSolicitudFaltantes;
 
     public RegistroSolicitudCALCommonController() {}
 
@@ -279,8 +287,53 @@ public abstract class RegistroSolicitudCALCommonController extends BaseCloudCont
     private String tipoRolContribuyenteText;
     @ManagedProperty(value = "#{tipoRolContribuyenteIDC}")
     private transient TipoRolContribuyenteIDC tipoRolContribuyenteIDC;
+    /**
+     * Postc-Constructor para cargar las unidades emisoras e informacion del
+     * solicitante
+     */
     @PostConstruct
     public void iniciar() {
+    	HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+    	numeroAsuntoFaltantes = (String) session.getAttribute("numeroAsuntoFaltantes");
+    	idSolicitudFaltantes = (Long) session.getAttribute("idSolicitudFaltantes");
+    	fechaRecepcionFaltantes = (Date) session.getAttribute("fechaRecepcionFaltantes");
+    	getLogger().debug("numeroAsuntoFaltantes:"+numeroAsuntoFaltantes);
+    	session.removeAttribute("numeroAsuntoFaltantes");
+    	session.removeAttribute("idSolicitudFaltantes");
+    	session.removeAttribute("fechaRecepcionFaltantes");
+    	if (numeroAsuntoFaltantes != null && idSolicitudFaltantes != null) {
+    		this.iniciarConFaltantes();
+    	}else {
+    		this.iniciarSinFaltantes();
+    	}
+    	
+    }
+    
+    private void iniciarConFaltantes() {
+    	getLogger().debug("ingresando a iniciar acuses faltantes");
+    	llenaModalidaTramite();
+    	acusesFaltantes=Boolean.TRUE;
+    	setSolicitud(getConsultasAutorizacionesCALBusiness().obtenerDatos(idSolicitudFaltantes));
+		prepararFirmaSolicitud();
+    }
+    
+    
+    
+    private void llenaModalidaTramite() {
+    	modalidadTramite = new StringBuffer();
+        String mod = getConsultasAutorizacionesCALBusiness().obtenerDescripcionModalidad(getModalidad());
+        getModalidadTramite().append("Consultas y Autorizaciones-");
+        if (mod != null && !mod.equals("")) {
+            getModalidadTramite().append(mod);
+        }
+        else {
+            getModalidadTramite().append(
+                    getConsultasAutorizacionesCALBusiness()
+                            .obtenerDescripcionModalidad(getSolicitud().getTipoTramite()));
+        }
+	}
+
+	private void iniciarSinFaltantes() {
         cargarCombosCaptura();
         maxDate = new Date();
         listaPersonasOirNot = new ArrayList<PersonaOirNotificacionesDTO>();
@@ -373,17 +426,7 @@ public abstract class RegistroSolicitudCALCommonController extends BaseCloudCont
                 }
             }
         }
-        modalidadTramite = new StringBuffer();
-        String mod = getConsultasAutorizacionesCALBusiness().obtenerDescripcionModalidad(getModalidad());
-        getModalidadTramite().append("Consultas y Autorizaciones-");
-        if (mod != null && !mod.equals("")) {
-            getModalidadTramite().append(mod);
-        }
-        else {
-            getModalidadTramite().append(
-                    getConsultasAutorizacionesCALBusiness()
-                            .obtenerDescripcionModalidad(getSolicitud().getTipoTramite()));
-        }
+        llenaModalidaTramite();
         getFlash().remove("idSolicitud");
         meterId();
         meterIdFr();
@@ -1564,99 +1607,126 @@ public abstract class RegistroSolicitudCALCommonController extends BaseCloudCont
         getFlash().put(VistaConstantes.SOLICITUD, getSolicitud());
 
     }
+    
+    String sNumSerie;
+    private boolean validarAra() throws SgiARAException {
+    	setUserID(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("userID")
+				.toString());
+    	sNumSerie = getAraValidadorHelper().getNumSerie(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("numeroSerie"));
 
-    public String firmar() {
-        String sNumSerie;
-        String urlforward = RegistroSolicitudConstants.FIRMAR;
-        List<Long> idsDoc = new ArrayList<Long>();
-        // Valida que usuario que firma es el usuario que esta logeado
-        setUserID(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("userID")
-                .toString());
-
-        String[] param = new String[NumerosConstantes.CINCO];
-
-        try {
-            if (getUserID().equalsIgnoreCase(getUserProfile().getRfc())) {
-
-                sNumSerie = getAraValidadorHelper().getNumSerie(FacesContext
-                        .getCurrentInstance().getExternalContext()
-                        .getRequestParameterMap().get("numeroSerie"));
-
-                if (getAraValidadorHelper().validarRfcNumSerie(sNumSerie, getUserProfile().getRfc()) 
-                        && getAraValidadorHelper().getEdoCertificado(sNumSerie)) {
-                    setFirmaDigital(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
-                            .get("firmaDigital").toString());
-
-                    Date fechaFirma = new Date();
-                    getFirma().setSello(getFirmaDigital());
-                    getFirma().setRfcUsuario(getUserProfile().getRfc());
-                    getFirma().setCveRol(getUserProfile().getRol());
-                    getFirma().setCadenaOriginal(getCadenaOriginal());
-                    getFirma().setCveProceso(TipoProcesoFirma.REG_PROM.getClave());
-                    getFirma().setCertificado(sNumSerie);
-                    
-                    String numAsunto
-                            = getRegistroSolicitudCALCommonBussines().firmaSolicitud(getSolicitud(), getUserProfile().getRfc(),
-                                    getFirma());
-                    if (numAsunto != null) {
-                        try {
-                            FirmaDTO firmaSelladora
-                                    = getRegistroSolicitudCALCommonBussines().obtenSelloPromocionSIAT(numAsunto,
-                                            getSolicitud().getIdSolicitud(), fechaFirma);
-                            DatosBandejaTareaDTO datosBandejaTareaDTO = new DatosBandejaTareaDTO();
-                            datosBandejaTareaDTO.setNumeroAsunto(numAsunto);
-                            datosBandejaTareaDTO.setIdSolicitud(getSolicitud().getIdSolicitud());
-                            datosBandejaTareaDTO.setRfcSolicitante(getUserProfile().getRfc());
-                            idsDoc
-                                    = getGenerarDocumentosHelper().generarDocumentosPromocionCAL(
-                                            datosBandejaTareaDTO,
-                                            TipoAcuse.RECPROM.getClave(),
-                                            getFirma(),
-                                            firmaSelladora.getCadenaOriginal(),
-                                            firmaSelladora.getSello(),
-                                            getRegistroSolicitudCALCommonBussines().tieneDocumentosAnexados(
-                                                    getSolicitud().getIdSolicitud().toString()),solicitud.getTipoRolContribuyente(),solicitud.getEstadoContribuyente());
-                            getCapturaSolicitudBussines().firmarDocumentos(getSolicitud().getIdSolicitud(), getFirma());
-                        } catch (BusinessException e) {
-                            getLogger().error("Ocurrio un error RegistroSolicitudCALCommonController.firmar {0}", e);
-                            FacesContext.getCurrentInstance().addMessage(null,
-                                    new FacesMessage(FacesMessage.SEVERITY_ERROR, null, e.getMessage()));
-                            getFlash().put(VistaConstantes.SOLICITUD, getSolicitud());
-                        }
-                    }
-
-                    descargarDocumentoController.getDatosBandejaTareaDTO().setNumeroAsunto(numAsunto);
-                    descargarDocumentoController.obtenerDocumentosByIdDoc(idsDoc);
-
-                    String aviso = "Tu Promoci\u00F3n ha sido registrada con el siguiente  n\u00FAmero de Asunto " + numAsunto;
-
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", aviso));
-                }
-
-                urlforward = LoginConstante.DESCARGA_DOCUMENTO;
-
-            } else {
-                param[0] = getUserProfile().getRfc();
-
-                FacesContext.getCurrentInstance().addMessage(
-                        null,
-                        new FacesMessage(FacesMessage.SEVERITY_INFO, "", 
-                                MessageFormat.format(AraConstantes.MENSAJE_LLAVE_SERIE_INCORRECTO, getUserProfile().getRfc())));
-            }
-
-        } catch (SgiARAException ex) {
-            getLogger().error("Ocurrio un error al firmar RegistroSolicitudCALCommonController.firmar {0}", ex);
+    	return getAraValidadorHelper().validarRfcNumSerie(sNumSerie, getUserProfile().getRfc())
+				&& getAraValidadorHelper().getEdoCertificado(sNumSerie);
+    }
+    
+    private void generaFechaFirma() {
+        setFirmaDigital(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
+                .get("firmaDigital").toString());
+        Date fechaFirma = new Date();
+        getFirma().setFechaFirma(acusesFaltantes ? fechaRecepcionFaltantes : fechaFirma);
+        getFirma().setSello(getFirmaDigital());
+        getFirma().setRfcUsuario(getUserProfile().getRfc());
+        getFirma().setCveRol(getUserProfile().getRol());
+        getFirma().setCadenaOriginal(getCadenaOriginal());
+        getFirma().setCveProceso(TipoProcesoFirma.REG_PROM.getClave());
+        getFirma().setCertificado(sNumSerie);
+    }
+    
+	public String firmar() {
+		String[] param = new String[NumerosConstantes.CINCO];
+		try {
+			if (validarAra()) {
+				generaFechaFirma();
+				if (acusesFaltantes) {
+					return firmarFaltantes();
+				} else {
+					return firmarSinFaltantes();
+				}
+			} else {
+				param[0] = getUserProfile().getRfc();
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+						MessageFormat.format(AraConstantes.MENSAJE_LLAVE_SERIE_INCORRECTO, getUserProfile().getRfc())));
+				return RegistroSolicitudConstants.FIRMAR;
+			}
+		} catch (SgiARAException ex) {
+			 getLogger().error("Ocurrio un error al firmar RegistroSolicitudCALCommonController.firmar {0}", ex);
+	            FacesContext.getCurrentInstance().addMessage(null,
+	                    new FacesMessage(FacesMessage.SEVERITY_ERROR, null, ex.getMessage()));
+		} catch (BusinessException e) {
+			getLogger().error("Ocurrio un error RegistroSolicitudCALCommonController.firmar {0}", e);
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, null, ex.getMessage()));
-        } catch (Exception e) {
-            getLogger().error("Ocurrio un error RegistroSolicitudCALCommonController.firmar {0}", e);
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, null, e.getMessage()));
+            getFlash().put(VistaConstantes.SOLICITUD, getSolicitud());
+		} catch (Exception e) {
+			getLogger().error("Ocurrio un error RegistroSolicitudCALCommonController.firmar {0}", e);
             getFlash().put(VistaConstantes.SOLICITUD, getSolicitud());
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ocurri\u00F3 un error al firmar la promoci\u00F3n", ""));
-        }
+		}
+		
+		return RegistroSolicitudConstants.FIRMAR;
 
-        return urlforward;
+	}
+    
+	/* Firmar Acuses Faltantes */
+	private String firmarFaltantes() throws SgiARAException, BusinessException {
+		List<Long> idsDoc = new ArrayList<Long>();
+		/* generar Asunto */
+		String numAsunto = numeroAsuntoFaltantes;
+		FirmaDTO firmaSelladora = getRegistroSolicitudCALCommonBussines().obtenSelloPromocionSIAT(numAsunto,
+				getSolicitud().getIdSolicitud(), getFirma().getFechaFirma());
+		DatosBandejaTareaDTO datosBandejaTareaDTO = new DatosBandejaTareaDTO();
+		datosBandejaTareaDTO.setNumeroAsunto(numAsunto);
+		datosBandejaTareaDTO.setIdSolicitud(getSolicitud().getIdSolicitud());
+		datosBandejaTareaDTO.setRfcSolicitante(getUserProfile().getRfc());
+		datosBandejaTareaDTO.setFechaAsignacion(getFirma().getFechaFirma());
+		idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocionCAL(datosBandejaTareaDTO,
+				TipoAcuse.RECPROM.getClave(), getFirma(), firmaSelladora.getCadenaOriginal(), firmaSelladora.getSello(),
+				getRegistroSolicitudCALCommonBussines()
+						.tieneDocumentosAnexados(getSolicitud().getIdSolicitud().toString()),
+				solicitud.getTipoRolContribuyente(), solicitud.getEstadoContribuyente());
+		getCapturaSolicitudBussines().firmarDocumentos(getSolicitud().getIdSolicitud(), getFirma());
+		resultadoAcuses(numAsunto,idsDoc);
+		return LoginConstante.DESCARGA_DOCUMENTO;
     }
+    
+	private void resultadoAcuses(String numAsunto, List<Long> idsDoc) {
+		descargarDocumentoController.getDatosBandejaTareaDTO().setNumeroAsunto(numAsunto);
+        descargarDocumentoController.obtenerDocumentosByIdDoc(idsDoc);
+		String aviso = "Se muestran los acuses correctamente.";
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", aviso));
+	}
+	
+    /**
+     * M&eacute;todo para firmar la solicitud
+     * @throws BusinessException 
+     */
+	
+	private String firmarSinFaltantes() throws BusinessException {
+		List<Long> idsDoc = new ArrayList<Long>();
+		String numAsunto = getRegistroSolicitudCALCommonBussines().firmaSolicitud(getSolicitud(),
+				getUserProfile().getRfc(), getFirma());
+		if (numAsunto != null) {
+			FirmaDTO firmaSelladora = getRegistroSolicitudCALCommonBussines().obtenSelloPromocionSIAT(numAsunto,
+					getSolicitud().getIdSolicitud(), getFirma().getFechaFirma());
+			DatosBandejaTareaDTO datosBandejaTareaDTO = new DatosBandejaTareaDTO();
+			datosBandejaTareaDTO.setNumeroAsunto(numAsunto);
+			datosBandejaTareaDTO.setIdSolicitud(getSolicitud().getIdSolicitud());
+			datosBandejaTareaDTO.setRfcSolicitante(getUserProfile().getRfc());
+			idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocionCAL(datosBandejaTareaDTO,
+					TipoAcuse.RECPROM.getClave(), getFirma(), firmaSelladora.getCadenaOriginal(),
+					firmaSelladora.getSello(),
+					getRegistroSolicitudCALCommonBussines()
+							.tieneDocumentosAnexados(getSolicitud().getIdSolicitud().toString()),
+					solicitud.getTipoRolContribuyente(), solicitud.getEstadoContribuyente());
+			getCapturaSolicitudBussines().firmarDocumentos(getSolicitud().getIdSolicitud(), getFirma());
+
+		}
+		descargarDocumentoController.getDatosBandejaTareaDTO().setNumeroAsunto(numAsunto);
+		descargarDocumentoController.obtenerDocumentosByIdDoc(idsDoc);
+		String aviso = "Tu Promoci\u00F3n ha sido registrada con el siguiente  n\u00FAmero de Asunto " + numAsunto;
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", aviso));
+		return LoginConstante.DESCARGA_DOCUMENTO;
+	}
 
     public void rowSelectCheckbox(SelectEvent event) {
         setEliminarVisiblePerOir(true);

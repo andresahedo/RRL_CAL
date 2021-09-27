@@ -376,6 +376,7 @@ public class GenerarDocumentosHelper implements Serializable {
         String numAsunto = datosBandejaTareaDTO.getNumeroAsunto();
         Long idSolicitud = datosBandejaTareaDTO.getIdSolicitud();
         String rfcSolicitante = datosBandejaTareaDTO.getRfcSolicitante();
+        Date fechaAsignacion=datosBandejaTareaDTO.getFechaAsignacion();
 
         final Map<String, Object> parameters = new LinkedHashMap<String, Object>();
         List<Long> idDocumentos = new ArrayList<Long>();
@@ -396,7 +397,7 @@ public class GenerarDocumentosHelper implements Serializable {
 
         Date fechaCalculada;
         try {
-            fechaCalculada = fechaCapturaHelper.calcularFechaCaptura(new Date());
+            fechaCalculada = fechaCapturaHelper.calcularFechaCaptura(fechaAsignacion != null ? fechaAsignacion : new Date());
         }
         catch (ParseException e1) {
             fechaCalculada = new Date();
