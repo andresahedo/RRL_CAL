@@ -19,7 +19,7 @@ public enum UrlFirma {
     PAGINA_FIRMA_ATENDER_REQUERIMIENTO(), PAGINA_FIRMA_ATENDER_REQUERIMIENTO_AUTORIDAD(),
     PAGINA_FIRMA_CONFIRMAR_NOTIFICACION(), FIRMA_CONSULTAS(), PAGINA_FIRMA_OBSERVACION_CAL,
     PAGINA_FIRMA_OBSERVACION_RRL, PAGINA_FIRMA_RECHAZO_ASUNTO_OFICIALIA, PAGINA_FIRMA_SOLICITUD_RRL_OP,
-    PAGINA_FIRMA_SOLICITUD_CAL_OP, PAGINA_FIRMA_RECHAZO_DOCUMENTO_OFICIALIA, PAGINA_FIRMA_DOCUMENTO_OFICIALIA;
+    PAGINA_FIRMA_SOLICITUD_CAL_OP, PAGINA_FIRMA_RECHAZO_DOCUMENTO_OFICIALIA, PAGINA_FIRMA_DOCUMENTO_OFICIALIA, PAGINA_FIRMA_FALTANTES;
 
     @Override
     public String toString() {
@@ -81,6 +81,9 @@ public enum UrlFirma {
             case PAGINA_FIRMA_DOCUMENTO_OFICIALIA:
                 url = "/resources/pages/consultas/firmaDocumentoOficialia.xhtml";
                 break;
+            case PAGINA_FIRMA_FALTANTES:
+                url = "/resources/pages/firma/firmaAcusesFaltantes.xhtml";
+                break; 
             default:
                 break;
             }
