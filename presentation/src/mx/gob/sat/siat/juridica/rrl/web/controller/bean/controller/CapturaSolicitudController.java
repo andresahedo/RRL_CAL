@@ -217,8 +217,9 @@ public class CapturaSolicitudController extends
     @PostConstruct
     public void iniciar() {
     	HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
-    	numeroAsuntoAcusesFaltantes = session.getAttribute("numeroAsuntoFaltantes").toString();
-    	getLogger().debug("numeroAsuntoAcusesFaltantes:",numeroAsuntoAcusesFaltantes);
+    	numeroAsuntoAcusesFaltantes = (String) session.getAttribute("numeroAsuntoFaltantes");
+    	getLogger().debug("numeroAsuntoAcusesFaltantes:"+numeroAsuntoAcusesFaltantes);
+    	session.removeAttribute("numeroAsuntoFaltantes");
     	if (numeroAsuntoAcusesFaltantes != null) {
     		this.iniciarConFaltantes();
     	}else {
