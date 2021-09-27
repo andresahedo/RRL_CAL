@@ -62,7 +62,7 @@ INNER JOIN SIAT_RVC_ADMIN.RVCT_DOCUMENTO documentos
 ON documento.IDDOCUMENTO           = documentos.IDDOCUMENTO
 where personasol.idetipopersonasol = 'TIPERS.SL'
 and sol.idsolicitud                = $P{idSolicitud}
-AND documento.IDEESTDOCUMENTOSOL   = 'ESTDOC.FIR']]>
+AND documento.IDEESTDOCUMENTOSOL   = 'ESTDOC.AN']]>
 	</queryString>
 	<field name="NOMBREPROM" class="java.lang.String"/>
 	<field name="APELLIDOPATPROM" class="java.lang.String"/>

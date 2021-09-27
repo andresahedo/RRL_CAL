@@ -1009,18 +1009,20 @@ public class CapturaSolicitudController extends
 		firma.setCveProceso(TipoProcesoFirma.REG_PROM.getClave());
     }
     
-    public void firmar() {   	
-    	
-    	try {
-    		if(validarAra() && acusesFaltantes){
-    			generaFechaFirma();
-    			firmarFaltantes();
-    		} else {
-    			FacesContext.getCurrentInstance().addMessage(
-	                    null,
-	                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error:",
-	                            MessageFormat.format(AraConstantes.MENSAJE_LLAVE_SERIE_INCORRECTO, getUserProfile().getRfc())));
-    		}
+	public void firmar() {
+		try {
+			if (validarAra() && acusesFaltantes) {
+				generaFechaFirma();
+				if (acusesFaltantes) {
+					firmarFaltantes();
+				} else {
+					firmarSinFaltantes();
+				}
+			} else {
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+						"Error:",
+						MessageFormat.format(AraConstantes.MENSAJE_LLAVE_SERIE_INCORRECTO, getUserProfile().getRfc())));
+			}
 		} catch (SgiARAException ex) {
 			getLogger().error("Error al firmar promocion ", ex);
 			getFlash().put(VistaConstantes.SOLICITUD, getSolicitud());
@@ -1040,25 +1042,20 @@ public class CapturaSolicitudController extends
     
 	/* Firmar Acuses Faltantes */
 	private void firmarFaltantes() throws SgiARAException, BusinessException {
-		Date fechaFirma = new Date();
 		List<Long> idsDoc = new ArrayList<Long>();
 		/* generar Asunto */
 		String numAsunto = numeroAsuntoFaltantes;
-    			
 		// clh profiling firma
-		FirmaDTO firmaSelladora = getCapturaSolicitudBussines().obtenSelloPromocionSIAT(numAsunto, getSolicitud().getIdSolicitud(), fechaFirma);
-		
+		FirmaDTO firmaSelladora = getCapturaSolicitudBussines().obtenSelloPromocionSIAT(numAsunto, getSolicitud().getIdSolicitud(), firma.getFechaFirma());
 		DatosBandejaTareaDTO datosBandejaTareaDTO = new DatosBandejaTareaDTO();
 		datosBandejaTareaDTO.setNumeroAsunto(numAsunto);
 		datosBandejaTareaDTO.setIdSolicitud(getSolicitud().getIdSolicitud());
 		datosBandejaTareaDTO.setRfcSolicitante(getUserProfile().getRfc());
-		
 		idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocion(datosBandejaTareaDTO,
 				TipoAcuse.RECPROM.getClave(), firma.getCadenaOriginal(), firma.getSello(),
 				firmaSelladora.getCadenaOriginal(), firmaSelladora.getSello());
 		getCapturaSolicitudBussines().firmarDocumentos(getSolicitud().getIdSolicitud(), firma);
 		new SimpleDateFormat(FORMATO_FECHA).format(new Date());
- 		
 		resultadoAcuses(numAsunto,idsDoc);
     }
     
@@ -1075,110 +1072,52 @@ public class CapturaSolicitudController extends
 	
     /**
      * M&eacute;todo para firmar la solicitud
+     * @throws BusinessException 
      */
-	private void firmarSinFaltantes() {
-		String sNumSerie;
-		// clh profiling firma
+	private void firmarSinFaltantes() throws BusinessException {
 		getLogger().debug("Profiling inicio firmar {}", new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
 
 		List<Long> idsDoc = new ArrayList<Long>();
-		// Valida que usuario que firma es el usuario que esta logeado
+		String numAsunto = getCapturaSolicitudBussines().firmarSolicitud(getSolicitud().getIdSolicitud(), getFirma(),
+				getUserProfile().getRfc(), getSolicitud().getRfcContribuyente(), new Object());
+		getLogger().debug("Profiling fin bussines firmar {}", new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
+		if (numAsunto != null) {
+			getLogger().debug("Profiling inicio bussines obtenSelloPromocionSIAT {}",
+					new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
+			FirmaDTO firmaSelladora = getCapturaSolicitudBussines().obtenSelloPromocionSIAT(numAsunto,
+					getSolicitud().getIdSolicitud(), firma.getFechaFirma());
+			getLogger().debug("Profiling fin bussines obtenSelloPromocionSIAT {}",
+					new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
 
-		setUserID(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("userID")
-				.toString());
+			DatosBandejaTareaDTO datosBandejaTareaDTO = new DatosBandejaTareaDTO();
+			datosBandejaTareaDTO.setNumeroAsunto(numAsunto);
+			datosBandejaTareaDTO.setIdSolicitud(getSolicitud().getIdSolicitud());
+			datosBandejaTareaDTO.setRfcSolicitante(getUserProfile().getRfc());
+			// clh profiling firma
+			getLogger().debug("Profiling inicio bussines generarDocumentosPromocion {}",
+					new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
+			idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocion(datosBandejaTareaDTO,
+					TipoAcuse.RECPROM.getClave(), firma.getCadenaOriginal(), firma.getSello(),
+					firmaSelladora.getCadenaOriginal(), firmaSelladora.getSello());
+			getLogger().debug("Profiling fin bussines generarDocumentosPromocion {}",
+					new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
 
-		if (getUserID().equalsIgnoreCase(getUserProfile().getRfc())) {
-			try {
-				sNumSerie = getAraValidadorHelper().getNumSerie(FacesContext.getCurrentInstance().getExternalContext()
-						.getRequestParameterMap().get("numeroSerie"));
-
-				if (getAraValidadorHelper().validarRfcNumSerie(sNumSerie, getUserProfile().getRfc())
-						&& getAraValidadorHelper().getEdoCertificado(sNumSerie)) {
-					setFirmaDigital(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
-							.get("firmaDigital").toString());
-
-					Date fechaFirma = new Date();
-					firma.setFechaFirma(fechaFirma);
-					firma.setSello(getFirmaDigital());
-					firma.setCertificado(sNumSerie);
-					firma.setRfcUsuario(getUserProfile().getRfc());
-					firma.setCveRol(getUserProfile().getRol());
-					firma.setCveProceso(TipoProcesoFirma.REG_PROM.getClave());
-
-					// return tramite
-					// clh profiling firma
-					getLogger().debug("Profiling inicio bussines firmar {}",
-							new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
-					String numAsunto = getCapturaSolicitudBussines().firmarSolicitud(getSolicitud().getIdSolicitud(),
-							getFirma(), getUserProfile().getRfc(), getSolicitud().getRfcContribuyente(), new Object());
-					getLogger().debug("Profiling fin bussines firmar {}",
-							new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
-					if (numAsunto != null) {
-						try {
-							// clh profiling firma
-							getLogger().debug("Profiling inicio bussines obtenSelloPromocionSIAT {}",
-									new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
-							FirmaDTO firmaSelladora = getCapturaSolicitudBussines().obtenSelloPromocionSIAT(numAsunto,
-									getSolicitud().getIdSolicitud(), fechaFirma);
-							getLogger().debug("Profiling fin bussines obtenSelloPromocionSIAT {}",
-									new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
-
-							DatosBandejaTareaDTO datosBandejaTareaDTO = new DatosBandejaTareaDTO();
-							datosBandejaTareaDTO.setNumeroAsunto(numAsunto);
-							datosBandejaTareaDTO.setIdSolicitud(getSolicitud().getIdSolicitud());
-							datosBandejaTareaDTO.setRfcSolicitante(getUserProfile().getRfc());
-							// clh profiling firma
-							getLogger().debug("Profiling inicio bussines generarDocumentosPromocion {}",
-									new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
-							idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocion(datosBandejaTareaDTO,
-									TipoAcuse.RECPROM.getClave(), firma.getCadenaOriginal(), firma.getSello(),
-									firmaSelladora.getCadenaOriginal(), firmaSelladora.getSello());
-							getLogger().debug("Profiling fin bussines generarDocumentosPromocion {}",
-									new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
-
-							// clh profiling firma
-							getLogger().debug("Profiling inicio bussines firmarDocumentos {}",
-									new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
-							getCapturaSolicitudBussines().firmarDocumentos(getSolicitud().getIdSolicitud(), firma);
-							getLogger().debug("Profiling fin bussines firmarDocumentos {}",
-									new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
-						} catch (BusinessException e) {
-							FacesContext.getCurrentInstance().addMessage(null,
-									new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error ", e.getMessage()));
-							getFlash().put(VistaConstantes.SOLICITUD, getSolicitud());
-
-						}
-					}
-
-					descargarDocumentoController.getDatosBandejaTareaDTO().setNumeroAsunto(numAsunto);
-					descargarDocumentoController.obtenerDocumentosByIdDoc(idsDoc);
-					String aviso = "Tu Promoci\u00F3n ha sido registrada con el siguiente  n\u00FAmero de Asunto " + numAsunto;
-					descargarDocumentoController.setMessagesRedirect(aviso);
-					ConfigurableNavigationHandler configurableNavigationHandler = (ConfigurableNavigationHandler) FacesContext
-							.getCurrentInstance().getApplication().getNavigationHandler();
-
-					configurableNavigationHandler
-							.performNavigation(LoginConstante.DESCARGA_DOCUMENTO + "?faces-redirect=true");
-				}
-			} catch (SgiARAException ex) {
-				getLogger().error("Error al firmar promocion ", ex);
-				getFlash().put(VistaConstantes.SOLICITUD, getSolicitud());
-				FacesContext.getCurrentInstance().addMessage(null,
-						new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), ""));
-			} catch (Exception e) {
-				getLogger().error("Error al firmar promocion ", e);
-				getFlash().put(VistaConstantes.SOLICITUD, getSolicitud());
-				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-						"Ocurri\u00F3 un error al firmar la promoci\u00F3n", ""));
-
-			}
-		} else {
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error:",
-					MessageFormat.format(AraConstantes.MENSAJE_LLAVE_SERIE_INCORRECTO, getUserProfile().getRfc())));
-
+			// clh profiling firma
+			getLogger().debug("Profiling inicio bussines firmarDocumentos {}",
+					new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
+			getCapturaSolicitudBussines().firmarDocumentos(getSolicitud().getIdSolicitud(), firma);
+			getLogger().debug("Profiling fin bussines firmarDocumentos {}",
+					new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
 		}
-		// clh profiling firma
-		getLogger().debug("Profiling fin firmar {}", new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
+
+		descargarDocumentoController.getDatosBandejaTareaDTO().setNumeroAsunto(numAsunto);
+		descargarDocumentoController.obtenerDocumentosByIdDoc(idsDoc);
+		String aviso = "Tu Promoci\u00F3n ha sido registrada con el siguiente  n\u00FAmero de Asunto " + numAsunto;
+		descargarDocumentoController.setMessagesRedirect(aviso);
+		ConfigurableNavigationHandler configurableNavigationHandler = (ConfigurableNavigationHandler) FacesContext
+				.getCurrentInstance().getApplication().getNavigationHandler();
+
+		configurableNavigationHandler.performNavigation(LoginConstante.DESCARGA_DOCUMENTO + "?faces-redirect=true");
 	}
 
     /**

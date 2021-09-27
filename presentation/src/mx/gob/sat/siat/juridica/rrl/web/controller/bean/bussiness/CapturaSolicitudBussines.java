@@ -226,4 +226,5 @@ public class CapturaSolicitudBussines extends BaseCloudBusiness {
     public List<DocumentoDTO> obtenerDocumentosPorIdSolicitud(Long idSolicitud) {
         return registroRecursoRevocacionFacade.obtenerDocumentosPorIdSolicitud(idSolicitud);
     }
+
 }
