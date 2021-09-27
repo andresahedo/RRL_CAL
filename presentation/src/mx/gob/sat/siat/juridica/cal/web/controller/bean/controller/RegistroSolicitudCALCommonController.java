@@ -311,9 +311,9 @@ public abstract class RegistroSolicitudCALCommonController extends BaseCloudCont
     
     private void iniciarConFaltantes() {
     	getLogger().debug("ingresando a iniciar acuses faltantes");
-    	llenaModalidaTramite();
     	acusesFaltantes=Boolean.TRUE;
     	setSolicitud(getConsultasAutorizacionesCALBusiness().obtenerDatos(idSolicitudFaltantes));
+    	llenaModalidaTramite();
 		prepararFirmaSolicitud();
     }
     
