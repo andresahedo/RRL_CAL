@@ -1774,12 +1774,14 @@ public class ConsultasController extends BaseCloudController<DocumentoOficialDTO
     public boolean getValidarAcusesFaltantes() {
     	HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
     	session.removeAttribute("numeroAsuntoFaltantes");
+    	session.removeAttribute("idSolicitudFaltantes");
     	return consultasBussines.obtenerDocumentosOficialesTipo(tramite.getNumeroAsunto(), TipoDocumentoOficial.OFICIO_TERMINOS_CONDICIONES.getClave()).isEmpty();
     }
     
     public String getAcusesFaltantes() {
     	HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
         session.setAttribute("numeroAsuntoFaltantes", tramite.getNumeroAsunto());
+        session.setAttribute("idSolicitudFaltantes", tramite.getIdSolicitud());
         String urlFirma;
         if(tramite.getNumeroAsunto().substring(0,3).equals("RRL") ) {
         	urlFirma = UrlFirma.PAGINA_FIRMA_FALTANTES.toString();
