@@ -78,5 +78,7 @@ public interface ConsultasAutorizacionesCALFacade extends BaseFacade {
     List<DocumentoDTO> obtenerDocumentosRegistroOpcionales(String idSol);
     
     List<ManifiestoDTO> obtenerManifiestosPorModalidad(Integer modalidad);
+    
+    SolicitudCALDTO obtenerSolicitudPorId(Long idSolicitud);
 
 }

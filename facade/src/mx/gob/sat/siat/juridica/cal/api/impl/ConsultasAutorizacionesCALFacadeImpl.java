@@ -339,4 +339,15 @@ public class ConsultasAutorizacionesCALFacadeImpl extends ConsultaRecursoRevocac
         return dataPage;
     }
 
+	@Override
+	public SolicitudCALDTO obtenerSolicitudPorId(Long idSolicitud) {
+		SolicitudCALDTO solicitudCALDTO = new SolicitudCALDTO();
+        Solicitud solicitud = consultaSolicitudServices.obtenerSolicitudporId(idSolicitud);
+        if(solicitud != null) {
+        	solicitudCALDTO.setIdSolicitud(solicitud.getIdSolicitud());
+        	solicitudCALDTO.setTipoTramite(solicitud.getTipoTramite().getModalidad());
+        }
+		return solicitudCALDTO;
+	}
+
 }

@@ -183,4 +183,9 @@ public class ConsultasAutorizacionesCALBusiness extends BaseBussinessBean {
         return consultasAutorizacionesCALFacade.obtenerManifiestosPorModalidad(modalidad);
     }
 
+
+	public SolicitudCALDTO obtenerSolicitudPorId(Long idSolicitud) {
+		return consultasAutorizacionesCALFacade.obtenerSolicitudPorId(idSolicitud);
+	}
+
 }
