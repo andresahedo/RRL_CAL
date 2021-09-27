@@ -88,11 +88,11 @@
                     </tr>
                 </table>
             </p:panel>
-            <p:panel id="mostrarFirma">
-			  <c:if  style="visibility: visible; text-align: center;" id="a" test="#{consultasController.validarAcusesFaltantes}">
-				 <h:link value="Entrar para consultar acuse" outcome="#{consultasController.acusesFaltantes}" />
-			  </c:if>
-			</p:panel>
+            <c:if id="acusesFaltantesIf" test="#{consultasController.validarAcusesFaltantes}">
+	            <p:panel width="100%" id="acusesFaltantesPanel">  
+					 <h:link width="100%" style="text-align: center;" value="Entrar para consultar acuse" outcome="#{consultasController.acusesFaltantes}" />
+				</p:panel>
+		    </c:if>
         </p:panel>
   
         <p:panel id="display">
