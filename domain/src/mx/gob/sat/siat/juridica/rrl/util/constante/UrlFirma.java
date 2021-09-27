@@ -85,7 +85,7 @@ public enum UrlFirma {
                 url = "/resources/pages/firma/firmaAcusesFaltantes.xhtml";
                 break; 
             case PAGINA_FIRMA_FALTANTES_CAL:
-                url = "/resources/pages/firma/firmaAcusesFaltantes.xhtml";
+                url = "/resources/pages/firma/firmaAcusesFaltantesCal.xhtml";
                 break; 
             default:
                 break;
