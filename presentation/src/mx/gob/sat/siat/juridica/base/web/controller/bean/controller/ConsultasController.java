@@ -1775,6 +1775,7 @@ public class ConsultasController extends BaseCloudController<DocumentoOficialDTO
     	HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
     	session.removeAttribute("numeroAsuntoFaltantes");
     	session.removeAttribute("idSolicitudFaltantes");
+    	session.removeAttribute("fechaRecepcionFaltantes");
     	return consultasBussines.obtenerDocumentosOficialesTipo(tramite.getNumeroAsunto(), TipoDocumentoOficial.OFICIO_TERMINOS_CONDICIONES.getClave()).isEmpty();
     }
     
@@ -1782,13 +1783,13 @@ public class ConsultasController extends BaseCloudController<DocumentoOficialDTO
     	HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
         session.setAttribute("numeroAsuntoFaltantes", tramite.getNumeroAsunto());
         session.setAttribute("idSolicitudFaltantes", tramite.getIdSolicitud());
+        session.setAttribute("fechaRecepcionFaltantes", tramite.getFechaRecepcion());
         String urlFirma;
         if(tramite.getNumeroAsunto().substring(0,3).equals("RRL") ) {
         	urlFirma = UrlFirma.PAGINA_FIRMA_FALTANTES.toString();
         }else {
         	urlFirma = UrlFirma.PAGINA_FIRMA_SOLICITUD_CAL.toString();
         }
-        
     	return urlFirma;
     }
     
