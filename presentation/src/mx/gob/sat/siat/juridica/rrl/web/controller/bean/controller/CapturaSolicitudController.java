@@ -194,6 +194,7 @@ public class CapturaSolicitudController extends
     
     private String numeroAsuntoFaltantes;
     private boolean acusesFaltantes=Boolean.FALSE;
+    private Date fechaRecepcionFaltantes;
 
 	private Long idSolicitudFaltantes;
     
@@ -222,9 +223,11 @@ public class CapturaSolicitudController extends
     	HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
     	numeroAsuntoFaltantes = (String) session.getAttribute("numeroAsuntoFaltantes");
     	idSolicitudFaltantes = (Long) session.getAttribute("idSolicitudFaltantes");
+    	fechaRecepcionFaltantes = (Date) session.getAttribute("fechaRecepcionFaltantes");
     	getLogger().debug("numeroAsuntoFaltantes:"+numeroAsuntoFaltantes);
     	session.removeAttribute("numeroAsuntoFaltantes");
     	session.removeAttribute("idSolicitudFaltantes");
+    	session.removeAttribute("fechaRecepcionFaltantes");
     	if (numeroAsuntoFaltantes != null && idSolicitudFaltantes != null) {
     		this.iniciarConFaltantes();
     	}else {
@@ -1001,7 +1004,7 @@ public class CapturaSolicitudController extends
     
     private void generaFechaFirma() {
     	Date fechaFirma = new Date();
-		firma.setFechaFirma(fechaFirma);
+		firma.setFechaFirma(acusesFaltantes ? fechaRecepcionFaltantes : fechaFirma);
 		firma.setSello(getFirmaDigital());
 		firma.setCertificado(sNumSerie);
 		firma.setRfcUsuario(getUserProfile().getRfc());
@@ -1051,6 +1054,7 @@ public class CapturaSolicitudController extends
 		datosBandejaTareaDTO.setNumeroAsunto(numAsunto);
 		datosBandejaTareaDTO.setIdSolicitud(getSolicitud().getIdSolicitud());
 		datosBandejaTareaDTO.setRfcSolicitante(getUserProfile().getRfc());
+		datosBandejaTareaDTO.setFechaAsignacion(firma.getFechaFirma());
 		idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocion(datosBandejaTareaDTO,
 				TipoAcuse.RECPROM.getClave(), firma.getCadenaOriginal(), firma.getSello(),
 				firmaSelladora.getCadenaOriginal(), firmaSelladora.getSello());
