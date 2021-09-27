@@ -512,4 +512,25 @@ public class SolicitudCALDTO extends SolicitudDTO {
     public void setEstadoContribuyente(String estadoContribuyente) {
         this.estadoContribuyente = estadoContribuyente;
     }
+
+	@Override
+	public String toString() {
+		return "SolicitudCALDTO [listaPersonasNotificaciones=" + listaPersonasNotificaciones
+				+ ", listaPersonasInvolucradas=" + listaPersonasInvolucradas + ", listaFraccionDuda="
+				+ listaFraccionDuda + ", granContribuyete=" + granContribuyete + ", montoOperacion=" + montoOperacion
+				+ ", actividadInteresado=" + actividadInteresado + ", hechosCircunstancias=" + hechosCircunstancias
+				+ ", razonesNegocio=" + razonesNegocio + ", hechosCircunstanciasPrevPlanteadas="
+				+ hechosCircunstanciasPrevPlanteadas + ", claveAutoridad=" + claveAutoridad + ", claveUnidadEmisora="
+				+ claveUnidadEmisora + ", fechaPromocion=" + fechaPromocion + ", fechaCreacion=" + fechaCreacion
+				+ ", hechosCircunstanciasMatMedios=" + hechosCircunstanciasMatMedios + ", idMedioDefensa="
+				+ idMedioDefensa + ", claveMedioDefensa=" + claveMedioDefensa + ", numeroAsunto=" + numeroAsunto
+				+ ", claveSentidoResolucion=" + claveSentidoResolucion + ", descripcionAutoridad="
+				+ descripcionAutoridad + ", contribuyenteSujetoEjercicio=" + contribuyenteSujetoEjercicio
+				+ ", periodosContribuciones=" + periodosContribuciones + ", plazo=" + plazo
+				+ ", claveAutoridadRevisando=" + claveAutoridadRevisando + ", tipoClasificacion=" + tipoClasificacion
+				+ ", descripcionMercancia=" + descripcionMercancia + ", fraccionAplicable=" + fraccionAplicable
+				+ ", fraccionDuda=" + fraccionDuda + ", numeroFolio=" + numeroFolio + ", fechaApertura=" + fechaApertura
+				+ ", mensajeBuzon=" + mensajeBuzon + ", muestraMensaje=" + muestraMensaje + ", tipoRolContribuyente="
+				+ tipoRolContribuyente + ", estadoContribuyente=" + estadoContribuyente + "]";
+	}
 }
