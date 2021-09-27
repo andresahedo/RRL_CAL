@@ -215,8 +215,7 @@ public class DocumentoDaoImpl extends BaseJPADao implements DocumentoDao {
         sb.append("ORDER BY ds.fechaAsociacion ASC");
         Query query = getEntityManager().createQuery(sb.toString());
         query.setParameter("idSoli", idSolicitud);
-        // query.setParameter(this.parametroEstadoDocumento, EstadoDocumento.ANEXADO.getClave());
-        query.setParameter(this.parametroEstadoDocumento, EstadoDocumento.FIRMADO.getClave());
+        query.setParameter(this.parametroEstadoDocumento, EstadoDocumento.ANEXADO.getClave());
         return query.getResultList();
     }
 
