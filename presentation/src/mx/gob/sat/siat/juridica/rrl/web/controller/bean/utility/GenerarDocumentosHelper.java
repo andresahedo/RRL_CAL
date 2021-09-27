@@ -248,7 +248,7 @@ public class GenerarDocumentosHelper implements Serializable {
 
         Date fechaCalculada;
         try {
-            fechaCalculada = fechaCapturaHelper.calcularFechaCaptura(fechaAsignacion);
+            fechaCalculada = fechaCapturaHelper.calcularFechaCaptura(fechaAsignacion!=null ? fechaAsignacion : new Date());
         }
         catch (ParseException e1) {
             fechaCalculada = new Date();
