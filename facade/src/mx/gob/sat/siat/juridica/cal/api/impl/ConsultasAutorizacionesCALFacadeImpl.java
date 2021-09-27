@@ -345,7 +345,7 @@ public class ConsultasAutorizacionesCALFacadeImpl extends ConsultaRecursoRevocac
         Solicitud solicitud = consultaSolicitudServices.obtenerSolicitudporId(idSolicitud);
         if(solicitud != null) {
         	solicitudCALDTO.setIdSolicitud(solicitud.getIdSolicitud());
-        	solicitudCALDTO.setTipoTramite(solicitud.getTipoTramite().getModalidad());
+        	solicitudCALDTO.setTipoTramite(solicitud.getTipoTramiteSolicitud().getIdTipoTramite().toString());
         }
 		return solicitudCALDTO;
 	}
