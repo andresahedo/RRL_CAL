@@ -609,14 +609,18 @@ public class SolicitudServiceImpl extends BaseSerializableBusinessServices imple
 
 		String strCadena = cadenaOriginal.toString();
 		Firma firmaSIAT = null;
+		/*
 		try {
 			firmaSIAT = selladoraHelper.getSello(strCadena);
-			firmaSIAT = selladoraHelper.getSelloDefault(strCadena); /** Solo Para Desarrollo no copiar en producción **/
+			
 		} catch (SelladoraException se) {
 			firmaSIAT = selladoraHelper.getSelloDefault(strCadena);
 			getLogger().error("Sella promocion RRL:  " + se.getMessage());
 		}
+		*/
+		/** Solo Para Desarrollo no copiar en producción **/
 
+		firmaSIAT = selladoraHelper.getSelloDefault(strCadena); 
 		return firmaSIAT;
 	}
 
