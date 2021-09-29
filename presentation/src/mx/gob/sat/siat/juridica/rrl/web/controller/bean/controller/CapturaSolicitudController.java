@@ -1003,6 +1003,9 @@ public class CapturaSolicitudController extends
     }
     
     private void generaFechaFirma() {
+    	setFirmaDigital(FacesContext.getCurrentInstance()
+                .getExternalContext().getRequestParameterMap()
+                .get("firmaDigital").toString());
     	Date fechaFirma = new Date();
 		firma.setFechaFirma(acusesFaltantes ? fechaRecepcionFaltantes : fechaFirma);
 		firma.setSello(getFirmaDigital());
