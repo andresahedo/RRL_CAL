@@ -113,4 +113,6 @@ public interface TramiteServices extends Serializable {
     boolean verificarAdminResponsable(String rfcFuncionario);
 
     List<String> obtenerAsuntosPorAdministrador(String administrador);
+
+	boolean tieneDocumentosAnexados(String idSolicitud);
 }

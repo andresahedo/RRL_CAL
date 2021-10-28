@@ -14,6 +14,7 @@ import com.softtek.idc.client.util.exception.IDCException;
 import com.softtek.idc.client.util.exception.RFCNoVigenteException;
 import com.softtek.idc.common.exceptions.IDCNoDisponibleException;
 import mx.gob.sat.siat.juridica.base.api.BaseCloudFacade;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Tarea;
 import mx.gob.sat.siat.juridica.base.dto.*;
 import mx.gob.sat.siat.juridica.base.util.exception.SolicitudNoGuardadaException;
 import mx.gob.sat.siat.juridica.buzon.exception.BuzonNoDisponibleException;
@@ -216,7 +217,7 @@ public interface RegistroSolicitudCALCommonFacade extends BaseCloudFacade {
      */
     FirmaDTO obtenSelloPromocionSIAT(String numAsunto, long idSolicitud, Date fechaFirma);
 
-    String firmaSolicitud(SolicitudCALDTO solicitud, String usuario, FirmaDTO firma);
+    Tarea firmaSolicitud(SolicitudCALDTO solicitud, String usuario, FirmaDTO firma);
 
     /**
      * Metodo para buscar persona en Idc

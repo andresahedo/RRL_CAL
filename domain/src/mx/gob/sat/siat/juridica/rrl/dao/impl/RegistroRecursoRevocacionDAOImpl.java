@@ -22,6 +22,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -178,7 +180,7 @@ import java.util.List;
                 + EstadoDocumento.ANEXADO.getClave() + "' order by ds.fechaAsociacion desc");
         Query query = getEntityManager().createQuery(sb.toString());
         query.setParameter("idSol", Long.parseLong(idSol));
-        return query.getResultList();
+        return query.getResultList() != null ? query.getResultList() : new ArrayList();
     }
 
     /**
@@ -412,5 +414,17 @@ import java.util.List;
     public void guardaDocumentoSolicitudRequerimiento(DocumentoSolicitudRequerimiento docSolReq) {
         getEntityManager().persist(docSolReq);
     }
+
+	@Override
+	public List<DocumentoSolicitud> obtenerDocumentoSolicitudEstado(String idSol, String estadoActual) {
+		StringBuffer sb = new StringBuffer();
+        sb.append("SELECT ds from DocumentoSolicitud ds ");
+        sb.append("where ds.solicitud.idSolicitud = :idSol ");
+        sb.append("and ds.documento.blnActivo = 1 and ds.estadoDocumentoSolicitud='"
+                + estadoActual + "' order by ds.fechaAsociacion desc");
+        Query query = getEntityManager().createQuery(sb.toString());
+        query.setParameter("idSol", Long.parseLong(idSol));
+        return query.getResultList() != null ? query.getResultList() : new ArrayList();
+	}
 
 }

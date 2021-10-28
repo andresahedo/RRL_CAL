@@ -244,6 +244,18 @@ public class TareaDaoImpl extends BaseJPARepository implements TareaDao {
                         Tarea.class);
         return (List<Tarea>) query.getResultList();
     }
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Tarea> obtenerTareasPorNumAsunto(String numAsunto) {
+		 Query query =
+	                getEntityManager().createQuery(
+	                        "select t from Tarea t WHERE t.numeroAsunto = :idTramite ",
+	                        Tarea.class);
+	        query.setParameter(this.parametroIdTramite, numAsunto);
+	        return (List<Tarea>) query.getResultList() != null ? query.getResultList() : new ArrayList();
+	}
     
     
 

@@ -226,8 +226,6 @@ public class BalanceadorDAOImpl extends BaseJPADao implements BalanceadorDAO {
     @SuppressWarnings(SuppressWarningsConstants.UNCHECKED)
     public ResultadoAdminResponsable getAdministradorResponsableUnidadLocalRecaudadora(String unidadAdministrativa,
             String tipoTramite) {
-        // TODO validar usuarios y roles vigentes en las tablas
-        
         ResultadoAdminResponsable resultado = new ResultadoAdminResponsable();
         Query query = getEntityManager().createQuery(
             "SELECT per FROM PersonaInterna per, InfRoleUnidadAdmin rolunitt "

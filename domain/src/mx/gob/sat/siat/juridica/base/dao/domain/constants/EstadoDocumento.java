@@ -20,7 +20,7 @@ public enum EstadoDocumento {
      */
     ANEXADO("ESTDOC.AN", "Anexado"), FIRMADO("ESTDOC.FIR", "Firmado"), ELIMINADO("ESTDOC.ELI", "Eliminado"),
     POR_APROBAR("ESTDOCS.PA", "Por Aprobar"), RECHAZADO("ESTDOCS.RZ", "Rechazado"), APROVADO("ESTDOCS.AP", "Aprobado"),
-    GENERADO("ESTDOCS.GN", "Generado"),EXCLUSIVO_FONDO("ESTDOCS.EF","Exclusivo Fonfo");
+    GENERADO("ESTDOCS.GN", "Generado"),EXCLUSIVO_FONDO("ESTDOCS.EF","Exclusivo Fonfo"), SIN_ACUSE("ESTDOC.SA","No se genero acuse");
 
     /**
      * Atributo privado "clave" tipo String

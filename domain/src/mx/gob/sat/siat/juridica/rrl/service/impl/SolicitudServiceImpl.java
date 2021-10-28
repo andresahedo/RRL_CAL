@@ -8,14 +8,58 @@
  */
 package mx.gob.sat.siat.juridica.rrl.service.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.json.JSONObject;
+import org.json.XML;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import mx.gob.sat.siat.juridica.base.constantes.NumerosConstantes;
 import mx.gob.sat.siat.juridica.base.constantes.ProcesosConstantes;
 import mx.gob.sat.siat.juridica.base.constantes.RolesConstantes;
-import mx.gob.sat.siat.juridica.base.dao.*;
+import mx.gob.sat.siat.juridica.base.dao.DiaInhabilDAO;
+import mx.gob.sat.siat.juridica.base.dao.DocumentoDao;
+import mx.gob.sat.siat.juridica.base.dao.FirmarDAO;
+import mx.gob.sat.siat.juridica.base.dao.PersonaDao;
+import mx.gob.sat.siat.juridica.base.dao.TramiteDao;
 import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.UnidadAdministrativa;
-import mx.gob.sat.siat.juridica.base.dao.domain.constants.*;
-import mx.gob.sat.siat.juridica.base.dao.domain.model.*;
-import mx.gob.sat.siat.juridica.base.service.*;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.DiscriminadorConstants;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.EnumeracionBitacora;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.EstadoDocumento;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.EstadoSolicitud;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.EstadoTramite;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.ProcesosBPM;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.TipoErrorEnvioBPM;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.TipoMensajeBPM;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.TipoRol;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.TipoSecuencia;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.AsignacionTramite;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Documento;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.DocumentoSolicitud;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Firma;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaSolicitud;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaSolicitudPK;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.MensajeBPM;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.ResultadoAdminResponsable;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Solicitante;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Solicitud;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.SolicitudDatosGenerales;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Tarea;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Tramite;
+import mx.gob.sat.siat.juridica.base.service.AsignacionTramiteServices;
+import mx.gob.sat.siat.juridica.base.service.BalanceadorServices;
+import mx.gob.sat.siat.juridica.base.service.EnviarCorreoService;
+import mx.gob.sat.siat.juridica.base.service.SolicitanteServices;
+import mx.gob.sat.siat.juridica.base.service.TareaServices;
+import mx.gob.sat.siat.juridica.base.service.TramiteReprocesarServices;
+import mx.gob.sat.siat.juridica.base.service.TramiteServices;
+import mx.gob.sat.siat.juridica.base.service.UnidadAdministrativaServices;
 import mx.gob.sat.siat.juridica.base.service.impl.BaseSerializableBusinessServices;
 import mx.gob.sat.siat.juridica.base.util.helper.SelladoraHelper;
 import mx.gob.sat.siat.juridica.bpm.dao.domain.ParametroTramiteBPM;
@@ -31,17 +75,6 @@ import mx.gob.sat.siat.juridica.rrl.service.SolicitudService;
 import mx.gob.sat.siat.juridica.rrl.util.helper.FechaCapturaHelper;
 import mx.gob.sat.siat.juridica.rrl.util.helper.TramiteHelper;
 import mx.gob.sat.siat.selladora.SelladoraException;
-import org.json.JSONObject;
-import org.json.XML;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 
@@ -166,7 +199,7 @@ public class SolicitudServiceImpl extends BaseSerializableBusinessServices imple
 	 * 
 	 * @param mensajeBPM
 	 */
-	public void iniciaTramite(MensajeBPM mensajeBPM, SolicitudDatosGenerales sol, String rfcResponsable) {
+	public Tarea iniciaTramite(MensajeBPM mensajeBPM, SolicitudDatosGenerales sol, String rfcResponsable) {
 		Tramite tramite = new Tramite();
 		try {
 			JSONObject json = null;
@@ -183,8 +216,9 @@ public class SolicitudServiceImpl extends BaseSerializableBusinessServices imple
 		}
 
 		getLogger().debug("Inicio service iniciaTramite {}", new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
+		Tarea tarea = new Tarea();
 		try {
-			Tarea tarea = new Tarea();
+			
 			if (tramite != null) {
 				tarea.setNumeroAsunto(tramite.getNumeroAsunto());
 			} else {
@@ -199,8 +233,10 @@ public class SolicitudServiceImpl extends BaseSerializableBusinessServices imple
 			tarea.setFechaCreacion(new Date());
 			tarea.setFechaAct(new Date());
 			tareaServices.guardarTarea(tarea);
+			return tarea;
 		} catch (Exception ex) {
 			getLogger().error("Error en la tarea al generar la tarea", ex);
+			return tarea;
 		}
 	}
 
@@ -721,5 +757,18 @@ public class SolicitudServiceImpl extends BaseSerializableBusinessServices imple
 		resultados.add(inicioTramite);
 		resultados.add(tramite);
 		return resultados;
+	}
+
+	@Override
+	public void cambiarEstadofirmarDocumentosRegistro(Long idSolicitud, String estadoActual, String estadoNuevo) {
+		List<DocumentoSolicitud> docs = registroRecursoRevocacionDAO
+				.obtenerDocumentoSolicitudEstado(idSolicitud.toString(),estadoActual);
+		for (DocumentoSolicitud doc : docs) {
+			doc.setEstadoDocumentoSolicitud(estadoNuevo);
+			doc.getDocumento().setEstadoDocumento(estadoNuevo);
+			registroRecursoRevocacionDAO.guardaDocumento(doc);
+			registroRecursoRevocacionDAO.guardaDocumentoSolicitud(doc.getDocumento());
+		}
+		
 	}
 }

@@ -8,7 +8,13 @@
  */
 package mx.gob.sat.siat.juridica.base.dao;
 
-import mx.gob.sat.siat.juridica.base.dao.domain.model.*;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Firma;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaNotificacion;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaObservacion;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaRemision;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaRequerimiento;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaResolucion;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaSolicitud;
 
 /**
  * 
@@ -48,5 +54,7 @@ public interface FirmarDAO {
     void guardarFirmaObservacion(FirmaObservacion firmaObservacion);
 
     FirmaNotificacion obtenerFirmaNotificacion(Long idNotificacion);
+
+	Firma obtenerFirmaSolicitud(String idSolicitud, String claveUsuario);
 
 }

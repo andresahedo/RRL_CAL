@@ -8,18 +8,25 @@
  */
 package mx.gob.sat.siat.juridica.rrl.web.controller.bean.bussiness;
 
-import mx.gob.sat.siat.juridica.base.api.TareaFacade;
-import mx.gob.sat.siat.juridica.base.bussiness.BaseBussinessBean;
-import mx.gob.sat.siat.juridica.base.dao.domain.model.DataPage;
-import mx.gob.sat.siat.juridica.base.dto.CatalogoDTO;
-import mx.gob.sat.siat.juridica.base.dto.SolicitudDTO;
-import mx.gob.sat.siat.juridica.rrl.api.BPMFacade;
-import mx.gob.sat.siat.juridica.rrl.dto.FiltroBandejaTareaDTO;
+import java.util.Date;
+import java.util.List;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.NoneScoped;
-import java.util.List;
+
+import mx.gob.sat.siat.juridica.base.api.ConsultaRecursoRevocacionFacade;
+import mx.gob.sat.siat.juridica.base.api.RegistroRecursoRevocacionFacade;
+import mx.gob.sat.siat.juridica.base.api.TareaFacade;
+import mx.gob.sat.siat.juridica.base.bussiness.BaseBussinessBean;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.DataPage;
+import mx.gob.sat.siat.juridica.base.dto.CatalogoDTO;
+import mx.gob.sat.siat.juridica.base.dto.DocumentoOficialDTO;
+import mx.gob.sat.siat.juridica.base.dto.FirmaDTO;
+import mx.gob.sat.siat.juridica.base.dto.SolicitudDTO;
+import mx.gob.sat.siat.juridica.rrl.api.BPMFacade;
+import mx.gob.sat.siat.juridica.rrl.dto.DatosBandejaTareaDTO;
+import mx.gob.sat.siat.juridica.rrl.dto.FiltroBandejaTareaDTO;
 
 /**
  * Bean para conectar con el backend, atiende todas las peticiones de
@@ -45,7 +52,15 @@ public class BandejaBussines extends BaseBussinessBean {
 
     @ManagedProperty("#{tareaFacade}")
     private TareaFacade tareaFacade;
-
+    
+    /** Facade para capturar la solicitud */
+    @ManagedProperty("#{registroRecursoRevocacionFacade}")
+    private RegistroRecursoRevocacionFacade registroRecursoRevocacionFacade;
+    
+    /** Facade para consultar recursos de revocacion. */
+    @ManagedProperty("#{consultaRecursoRevocacionFacade}")
+    private ConsultaRecursoRevocacionFacade consultaRecursoRevocacionFacade;
+    
     /**
      * Metodo que obtiene los datos de bandeja de BD
      * @param bandejaTareaDTO
@@ -74,7 +89,23 @@ public class BandejaBussines extends BaseBussinessBean {
 
     }
 
-    /**
+    public RegistroRecursoRevocacionFacade getRegistroRecursoRevocacionFacade() {
+		return registroRecursoRevocacionFacade;
+	}
+
+	public void setRegistroRecursoRevocacionFacade(RegistroRecursoRevocacionFacade registroRecursoRevocacionFacade) {
+		this.registroRecursoRevocacionFacade = registroRecursoRevocacionFacade;
+	}
+
+	public ConsultaRecursoRevocacionFacade getConsultaRecursoRevocacionFacade() {
+		return consultaRecursoRevocacionFacade;
+	}
+
+	public void setConsultaRecursoRevocacionFacade(ConsultaRecursoRevocacionFacade consultaRecursoRevocacionFacade) {
+		this.consultaRecursoRevocacionFacade = consultaRecursoRevocacionFacade;
+	}
+
+	/**
      * 
      * @return bpmFacade
      */
@@ -98,4 +129,24 @@ public class BandejaBussines extends BaseBussinessBean {
     public SolicitudDTO obtenerSolicitud(Long idSolicitud) {
         return getBpmFacade().obtenerSolicitud(idSolicitud);
     }
+
+	public boolean tieneDocumentosAnexados(String idSolicitud) {
+		return tareaFacade.tieneDocumentosAnexados(idSolicitud);
+	}
+
+	public FirmaDTO obtenSelloPromocionSIAT(String numeroAsunto, Long idSolicitud, Date fechaFirma) {
+		return registroRecursoRevocacionFacade.obtenSelloPromocionSIAT(numeroAsunto, idSolicitud, fechaFirma);
+	}
+
+	public FirmaDTO obtieneFirma(DatosBandejaTareaDTO datoSelected) {
+		return tareaFacade.obtieneFirma(datoSelected);
+	}
+
+	public List<DocumentoOficialDTO> obtenerDocumentosOficialesTipo(String idTipoTramite, String idTipoDocumentoOficial){
+		return consultaRecursoRevocacionFacade.obtenerDocumentoOficialesTipo(idTipoTramite, idTipoDocumentoOficial);
+	}
+
+	public void cambiarEstadofirmarDocumentos(Long idSolicitud, String estadoActual, String estadoNuevo) {
+		registroRecursoRevocacionFacade.cambiarEstadofirmarDocumentos(idSolicitud, estadoActual, estadoNuevo);
+	}
 }

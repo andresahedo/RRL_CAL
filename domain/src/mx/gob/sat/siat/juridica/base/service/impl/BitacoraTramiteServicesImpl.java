@@ -10,7 +10,10 @@ package mx.gob.sat.siat.juridica.base.service.impl;
 
 import mx.gob.sat.siat.juridica.base.dao.BitacoraDao;
 import mx.gob.sat.siat.juridica.base.dao.domain.model.Bitacora;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.BitacoraAU;
 import mx.gob.sat.siat.juridica.base.service.BitacoraTramiteServices;
+import mx.gob.sat.siat.juridica.configuracion.usuarios.dao.BitacoraAUDAO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,11 +33,19 @@ public class BitacoraTramiteServicesImpl extends BaseSerializableBusinessService
 
     @Autowired
     private BitacoraDao bitacoraDao;
+    
+    @Autowired
+    private BitacoraAUDAO bitacoraAUDAO;
 
     @Override
     public void insertarBitacora(Bitacora bitacora) {
 
         bitacoraDao.insertarBitacora(bitacora);
     }
+
+	@Override
+	public void guardarBitacora(BitacoraAU bitacora) {
+		bitacoraAUDAO.guardarDatosBitacora(bitacora);	
+	}
     
 }

@@ -31,4 +31,6 @@ public interface TareaDao extends Serializable {
 
     int obtenerTareasPorAsuntoAbogado(String numeroAsunto, String claveAsignado);
 
+	List<Tarea> obtenerTareasPorNumAsunto(String numAsunto);
+
 }

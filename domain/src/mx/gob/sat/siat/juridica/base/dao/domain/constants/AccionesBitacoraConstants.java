@@ -45,5 +45,8 @@ public interface AccionesBitacoraConstants {
     String ACCION_REALIZA_EMPLEADO = "EACBIT.EMP";
     String ACCION_REALIZA_EMPLEADO_APLICA = "ACTBT1.EMP";
     String ACCION_REALIZA_UNIDAD_ADMIN = "ACTBT1.UNA";
+    
+    String ERROR_REGISTRO_RRL = "ERROR.RRL";
+    String ERROR_REGISTRO_CAL = "ERROR.CAL";
 
 }

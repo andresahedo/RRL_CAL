@@ -11,6 +11,8 @@ package mx.gob.sat.siat.juridica.rrl.web.controller.bean.bussiness;
 import mx.gob.sat.siat.juridica.auditoria.dto.BitacoraDTO;
 import mx.gob.sat.siat.juridica.base.api.AnexarDocumentosFacade;
 import mx.gob.sat.siat.juridica.base.api.RegistroRecursoRevocacionFacade;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.BitacoraAU;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Tarea;
 import mx.gob.sat.siat.juridica.base.dto.CatalogoDTO;
 import mx.gob.sat.siat.juridica.base.dto.DocumentoDTO;
 import mx.gob.sat.siat.juridica.base.dto.FirmaDTO;
@@ -156,7 +158,7 @@ public class CapturaSolicitudBussines extends BaseCloudBusiness {
     /**
      * M&eacute;todo para firmar la captura de la solicitud
      */
-    public String firmarSolicitud(long idSolicitud, FirmaDTO firma, String usuario, String rfcContribuyente,
+    public Tarea firmarSolicitud(long idSolicitud, FirmaDTO firma, String usuario, String rfcContribuyente,
             Object ceritifcadoUtilizado) throws TareaInicialException, TereaSinUsuarioAsignadoException {
         return getRegistroRecursoRevocacionFacade().firmarSolicitud(idSolicitud, firma, usuario, rfcContribuyente,
                 ceritifcadoUtilizado);
@@ -226,5 +228,22 @@ public class CapturaSolicitudBussines extends BaseCloudBusiness {
     public List<DocumentoDTO> obtenerDocumentosPorIdSolicitud(Long idSolicitud) {
         return registroRecursoRevocacionFacade.obtenerDocumentosPorIdSolicitud(idSolicitud);
     }
+
+	public void cambiarEstadofirmarDocumentos(Long idSolicitud, String estadoActual, String estadoNuevo) {
+		registroRecursoRevocacionFacade.cambiarEstadofirmarDocumentos(idSolicitud, estadoActual, estadoNuevo);
+		
+	}
+
+	public List<Tarea> obtenerTareasPorNumAsunto(String numAsunto) {
+		return registroRecursoRevocacionFacade.obtenerTareasPorNumAsunto(numAsunto);
+	}
+
+	public void regenerarTarea(Tarea tarea) {
+		getRegistroRecursoRevocacionFacade().regenerarTarea(tarea);
+	}
+
+	public void guardarBitacora(BitacoraAU bitacora) {
+		getRegistroRecursoRevocacionFacade().guardarBitacora(bitacora);
+	}
 
 }

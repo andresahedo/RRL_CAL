@@ -39,10 +39,15 @@ import mx.gob.sat.sgi.SgiCripto.SgiARAException;
 import mx.gob.sat.siat.juridica.ara.constantes.AraConstantes;
 import mx.gob.sat.siat.juridica.ara.util.AraValidadorHelper;
 import mx.gob.sat.siat.juridica.base.constantes.NumerosConstantes;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.AccionesBitacora;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.AccionesBitacoraConstants;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.DiscriminadorConstants;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.EstadoDocumento;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.TipoAcuse;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.TipoProcesoFirma;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.TipoRol;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.BitacoraAU;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Tarea;
 import mx.gob.sat.siat.juridica.base.dto.CatalogoDTO;
 import mx.gob.sat.siat.juridica.base.dto.DocumentoDTO;
 import mx.gob.sat.siat.juridica.base.dto.FirmaDTO;
@@ -197,6 +202,8 @@ public class CapturaSolicitudController extends
     private Date fechaRecepcionFaltantes;
 
 	private Long idSolicitudFaltantes;
+	
+	private int reintentos = NumerosConstantes.CERO;
     
     public boolean isEliminarVisible() {
         return eliminarVisible;
@@ -224,6 +231,7 @@ public class CapturaSolicitudController extends
     	numeroAsuntoFaltantes = (String) session.getAttribute("numeroAsuntoFaltantes");
     	idSolicitudFaltantes = (Long) session.getAttribute("idSolicitudFaltantes");
     	fechaRecepcionFaltantes = (Date) session.getAttribute("fechaRecepcionFaltantes");
+    	reintentos = NumerosConstantes.CERO;
     	getLogger().debug("numeroAsuntoFaltantes:"+numeroAsuntoFaltantes);
     	session.removeAttribute("numeroAsuntoFaltantes");
     	session.removeAttribute("idSolicitudFaltantes");
@@ -1063,13 +1071,12 @@ public class CapturaSolicitudController extends
 				firmaSelladora.getCadenaOriginal(), firmaSelladora.getSello());
 		getCapturaSolicitudBussines().firmarDocumentos(getSolicitud().getIdSolicitud(), firma);
 		new SimpleDateFormat(FORMATO_FECHA).format(new Date());
-		resultadoAcuses(numAsunto,idsDoc);
+		resultadoAcuses(numAsunto,idsDoc,"Se muestran los acuses correctamente.");
     }
     
-	private void resultadoAcuses(String numAsunto, List<Long> idsDoc) {
+	private void resultadoAcuses(String numAsunto, List<Long> idsDoc, String aviso) {
 		descargarDocumentoController.getDatosBandejaTareaDTO().setNumeroAsunto(numAsunto);
 		descargarDocumentoController.obtenerDocumentosByIdDoc(idsDoc);
-		String aviso = "Se muestran los acuses correctamente.";
 		descargarDocumentoController.setMessagesRedirect(aviso);
 		ConfigurableNavigationHandler configurableNavigationHandler = (ConfigurableNavigationHandler) FacesContext
 				.getCurrentInstance().getApplication().getNavigationHandler();
@@ -1081,51 +1088,111 @@ public class CapturaSolicitudController extends
      * M&eacute;todo para firmar la solicitud
      * @throws BusinessException 
      */
-	private void firmarSinFaltantes() throws BusinessException {
+	private void firmarSinFaltantes() throws BusinessException, Exception {
 		getLogger().debug("Profiling inicio firmar {}", new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
 
 		List<Long> idsDoc = new ArrayList<Long>();
-		String numAsunto = getCapturaSolicitudBussines().firmarSolicitud(getSolicitud().getIdSolicitud(), getFirma(),
+		Tarea tarea = getCapturaSolicitudBussines().firmarSolicitud(getSolicitud().getIdSolicitud(), getFirma(),
 				getUserProfile().getRfc(), getSolicitud().getRfcContribuyente(), new Object());
+		String numAsunto = tarea.getNumeroAsunto();
 		getLogger().debug("Profiling fin bussines firmar {}", new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
-		if (numAsunto != null) {
-			getLogger().debug("Profiling inicio bussines obtenSelloPromocionSIAT {}",
-					new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
-			FirmaDTO firmaSelladora = getCapturaSolicitudBussines().obtenSelloPromocionSIAT(numAsunto,
-					getSolicitud().getIdSolicitud(), firma.getFechaFirma());
-			getLogger().debug("Profiling fin bussines obtenSelloPromocionSIAT {}",
-					new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
+		DatosBandejaTareaDTO datosBandejaTareaDTO = new DatosBandejaTareaDTO();
+		if (numAsunto == null) {
+			throw new Exception("Ocurrio un error al generar el asunto");
+		}
+		getLogger().debug("Profiling inicio bussines obtenSelloPromocionSIAT {}",
+				new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
+		FirmaDTO firmaSelladora = getCapturaSolicitudBussines().obtenSelloPromocionSIAT(numAsunto,
+				getSolicitud().getIdSolicitud(), firma.getFechaFirma());
+		getLogger().debug("Profiling fin bussines obtenSelloPromocionSIAT {}",
+				new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
 
-			DatosBandejaTareaDTO datosBandejaTareaDTO = new DatosBandejaTareaDTO();
-			datosBandejaTareaDTO.setNumeroAsunto(numAsunto);
-			datosBandejaTareaDTO.setIdSolicitud(getSolicitud().getIdSolicitud());
-			datosBandejaTareaDTO.setRfcSolicitante(getUserProfile().getRfc());
-			// clh profiling firma
-			getLogger().debug("Profiling inicio bussines generarDocumentosPromocion {}",
-					new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
+		datosBandejaTareaDTO.setNumeroAsunto(numAsunto);
+		datosBandejaTareaDTO.setIdSolicitud(getSolicitud().getIdSolicitud());
+		datosBandejaTareaDTO.setRfcSolicitante(getUserProfile().getRfc());
+		// clh profiling firma
+		getLogger().debug("Profiling inicio bussines generarDocumentosPromocion {}",
+				new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
+		idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocion(datosBandejaTareaDTO,
+				TipoAcuse.RECPROM.getClave(), firma.getCadenaOriginal(), firma.getSello(),
+				firmaSelladora.getCadenaOriginal(), firmaSelladora.getSello());
+		getLogger().debug("Profiling fin bussines generarDocumentosPromocion {}",
+				new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
+
+		// clh profiling firma
+		getLogger().debug("Profiling inicio bussines firmarDocumentos {}",
+				new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
+		getCapturaSolicitudBussines().firmarDocumentos(getSolicitud().getIdSolicitud(), firma);
+		
+		reintentaGeneracionAcuses(idsDoc, datosBandejaTareaDTO,tarea, firmaSelladora);
+
+	}
+	
+	private void reintentaGeneracionAcuses(List<Long> idsDoc,DatosBandejaTareaDTO datosBandejaTareaDTO,Tarea tarea, FirmaDTO firmaSelladora) throws BusinessException {
+		//Validar documentos
+		Boolean banDocumento = Boolean.TRUE;
+		Boolean banTarea = Boolean.TRUE;
+		BitacoraAU bitacora = new BitacoraAU();
+		bitacora.setFechaAccion(new Date());
+		bitacora.setIdRealizadoPor(tarea.getNumeroAsunto()!=null ? tarea.getNumeroAsunto() : "Sin Asunto");
+		bitacora.setIdAplicadoA(AccionesBitacoraConstants.ERROR_REGISTRO_RRL);
+		getLogger().debug("Se validan los documento");
+		if(idsDoc.isEmpty()) {
+			//Bitacora no se genraron los acuses
+			getLogger().error("No se generaron acuses para el asunto:{}",tarea.getNumeroAsunto());
+			banDocumento = Boolean.FALSE;
+			bitacora.setIdAccion(AccionesBitacora.ERROR_ACUSES.getClave());
+			bitacora.setDescripcion("Ocurrio un error en la generación del acuse y se realiza el reintento:"+reintentos);
+			getCapturaSolicitudBussines().guardarBitacora(bitacora);
+			getCapturaSolicitudBussines().cambiarEstadofirmarDocumentos(getSolicitud().getIdSolicitud(),EstadoDocumento.FIRMADO.getClave(), EstadoDocumento.ANEXADO.getClave());
 			idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocion(datosBandejaTareaDTO,
 					TipoAcuse.RECPROM.getClave(), firma.getCadenaOriginal(), firma.getSello(),
 					firmaSelladora.getCadenaOriginal(), firmaSelladora.getSello());
-			getLogger().debug("Profiling fin bussines generarDocumentosPromocion {}",
-					new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
-
-			// clh profiling firma
-			getLogger().debug("Profiling inicio bussines firmarDocumentos {}",
-					new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
-			getCapturaSolicitudBussines().firmarDocumentos(getSolicitud().getIdSolicitud(), firma);
+			if(!idsDoc.isEmpty()) {
+				getCapturaSolicitudBussines().cambiarEstadofirmarDocumentos(getSolicitud().getIdSolicitud(),EstadoDocumento.ANEXADO.getClave(), EstadoDocumento.FIRMADO.getClave());
+				banDocumento = Boolean.TRUE;
+				getLogger().info("Se generaron acuses para el asunto:{}",tarea.getNumeroAsunto());
+			}
 		}
-
-		descargarDocumentoController.getDatosBandejaTareaDTO().setNumeroAsunto(numAsunto);
-		descargarDocumentoController.obtenerDocumentosByIdDoc(idsDoc);
-		String aviso = "Tu Promoci\u00F3n ha sido registrada con el siguiente  n\u00FAmero de Asunto " + numAsunto;
-		descargarDocumentoController.setMessagesRedirect(aviso);
-		ConfigurableNavigationHandler configurableNavigationHandler = (ConfigurableNavigationHandler) FacesContext
-				.getCurrentInstance().getApplication().getNavigationHandler();
-
-		configurableNavigationHandler.performNavigation(LoginConstante.DESCARGA_DOCUMENTO + "?faces-redirect=true");
+				
+		
+		//validar tareas
+		List<Tarea> tareas = getCapturaSolicitudBussines().obtenerTareasPorNumAsunto(tarea.getNumeroAsunto());
+		if(tareas.isEmpty()) {
+			banTarea = Boolean.FALSE;
+			getLogger().error("No se guardo la tarea:{}",tarea.toString());
+			bitacora.setIdAccion(AccionesBitacora.ERROR_TAREA.getClave());
+			bitacora.setDescripcion("Ocurrio un error en la generación de la tarea y se realiza el reintento:"+reintentos);
+			getCapturaSolicitudBussines().guardarBitacora(bitacora);
+			tarea.setIdTarea(null);
+			getCapturaSolicitudBussines().regenerarTarea(tarea);
+			tareas = getCapturaSolicitudBussines().obtenerTareasPorNumAsunto(tarea.getNumeroAsunto());
+			if(!tareas.isEmpty()) {
+				banTarea = Boolean.TRUE;
+				getLogger().error("Se guardo la tarea:{}",tarea.toString());
+			}
+			
+		}
+		
+		if(reintentos==NumerosConstantes.TRES) {
+			getLogger().error("Reintentos:{} para el asunto:{} se genearon acuses:{} se creo tarea:{}",reintentos,tarea.getNumeroAsunto(),banDocumento, banTarea);
+			banDocumento = Boolean.TRUE;
+			banTarea = Boolean.TRUE;
+		}
+		
+		if(banDocumento && banTarea) {
+			getLogger().info("Reintentos:{} para el asunto:{}",reintentos,tarea.getNumeroAsunto());
+			getLogger().info("Acuses generados:{} para el asunto:{}",idsDoc.size(),tarea.getNumeroAsunto());
+			String aviso = "Tu Promoci\u00F3n ha sido registrada con el siguiente  n\u00FAmero de Asunto " + tarea.getNumeroAsunto();
+			resultadoAcuses(tarea.getNumeroAsunto(),idsDoc,aviso);	
+		}else {
+			getLogger().error("Reintentos:{} para el asunto:{} se genearon acuses:{} se creo tarea:{}",reintentos,tarea.getNumeroAsunto(),banDocumento, banTarea);
+			reintentos=reintentos+NumerosConstantes.UNO;
+			reintentaGeneracionAcuses(idsDoc, datosBandejaTareaDTO,tarea, firmaSelladora);
+		}	
 	}
 
-    /**
+	/**
      * 
      * @return firma
      */

@@ -8,20 +8,65 @@
  */
 package mx.gob.sat.siat.juridica.cal.api.impl;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.softtek.idc.client.util.exception.ContribuyenteInactivoException;
 import com.softtek.idc.client.util.exception.ContribuyenteNoEncontradoException;
 import com.softtek.idc.client.util.exception.IDCException;
 import com.softtek.idc.client.util.exception.RFCNoVigenteException;
 import com.softtek.idc.common.exceptions.IDCNoDisponibleException;
+
 import mx.gob.sat.siat.juridica.base.api.impl.BaseCloudFacadeImpl;
 import mx.gob.sat.siat.juridica.base.constantes.NumerosConstantes;
-import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.*;
+import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.CatalogoD;
+import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.Descripcion;
+import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.DocumentoTramite;
+import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.EnumeracionTr;
+import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.Persona;
+import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.TipoDocumento;
+import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.TipoTramite;
+import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.UnidadAdministrativa;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.DiscriminadorConstants;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.EnumeracionBitacora;
-import mx.gob.sat.siat.juridica.base.dao.domain.model.*;
-import mx.gob.sat.siat.juridica.base.dto.*;
-import mx.gob.sat.siat.juridica.base.dto.transformer.*;
-import mx.gob.sat.siat.juridica.base.service.*;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Autoridad;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Bitacora;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Documento;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.DocumentoSolicitud;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Firma;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaSolicitud;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaSolicitudPK;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FraccionDuda;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.MensajeBPM;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.PersonaOirRecibirNotificaciones;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.PersonaResidenteExtranjero;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Solicitante;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.SolicitudDatosGenerales;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Tarea;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Tramite;
+import mx.gob.sat.siat.juridica.base.dto.CatalogoDTO;
+import mx.gob.sat.siat.juridica.base.dto.DocumentoDTO;
+import mx.gob.sat.siat.juridica.base.dto.DomicilioSolicitudDTO;
+import mx.gob.sat.siat.juridica.base.dto.FirmaDTO;
+import mx.gob.sat.siat.juridica.base.dto.ModalidadesDTO;
+import mx.gob.sat.siat.juridica.base.dto.PersonaSolicitudDTO;
+import mx.gob.sat.siat.juridica.base.dto.TipoTramiteDTO;
+import mx.gob.sat.siat.juridica.base.dto.transformer.CatalogoDTOTransformer;
+import mx.gob.sat.siat.juridica.base.dto.transformer.DocumentoDTOTransformer;
+import mx.gob.sat.siat.juridica.base.dto.transformer.FirmaTransformer;
+import mx.gob.sat.siat.juridica.base.dto.transformer.ModalidadesDTOTransformer;
+import mx.gob.sat.siat.juridica.base.dto.transformer.PersonaSolicitudDTOTransformer;
+import mx.gob.sat.siat.juridica.base.service.BitacoraTramiteServices;
+import mx.gob.sat.siat.juridica.base.service.BuscarPersonaSolicitanteService;
+import mx.gob.sat.siat.juridica.base.service.CatalogosServices;
+import mx.gob.sat.siat.juridica.base.service.DocumentosServices;
+import mx.gob.sat.siat.juridica.base.service.EnviarCorreoService;
+import mx.gob.sat.siat.juridica.base.service.FirmarServices;
+import mx.gob.sat.siat.juridica.base.service.UnidadAdministrativaServices;
 import mx.gob.sat.siat.juridica.base.util.constante.BuzonConstantes;
 import mx.gob.sat.siat.juridica.base.util.constante.CatalogoConstantes;
 import mx.gob.sat.siat.juridica.base.util.constante.EnumeracionConstantes;
@@ -32,7 +77,11 @@ import mx.gob.sat.siat.juridica.buzon.service.BuzonTributarioService;
 import mx.gob.sat.siat.juridica.ca.dao.domain.model.SolicitudConsultaAutorizacion;
 import mx.gob.sat.siat.juridica.ca.util.constants.RegistroSolicitudConstants;
 import mx.gob.sat.siat.juridica.cal.api.RegistroSolicitudCALCommonFacade;
-import mx.gob.sat.siat.juridica.cal.dto.*;
+import mx.gob.sat.siat.juridica.cal.dto.FraccionArancelariaDudaDTO;
+import mx.gob.sat.siat.juridica.cal.dto.ManifiestoDTO;
+import mx.gob.sat.siat.juridica.cal.dto.PersonaInvolucradaDTO;
+import mx.gob.sat.siat.juridica.cal.dto.PersonaOirNotificacionesDTO;
+import mx.gob.sat.siat.juridica.cal.dto.SolicitudCALDTO;
 import mx.gob.sat.siat.juridica.cal.dto.transformer.SolicitudCALDTOTransformer;
 import mx.gob.sat.siat.juridica.cal.dto.transformer.TipoTramiteDTOTransformer;
 import mx.gob.sat.siat.juridica.cal.service.ManifiestoService;
@@ -41,12 +90,6 @@ import mx.gob.sat.siat.juridica.cal.service.SolicitudCALServices;
 import mx.gob.sat.siat.juridica.idc.service.IdcJuridicoService;
 import mx.gob.sat.siat.juridica.rrl.dto.transformer.FirmasSolicitudTransformer;
 import mx.gob.sat.siat.juridica.rrl.util.exception.ArchivoNoGuardadoException;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Facade para atender el registro de la solicitud.
@@ -561,7 +604,7 @@ public abstract class RegistroSolicitudCALCommonFacadeImpl extends BaseCloudFaca
     }
 
     @Override
-    public String firmaSolicitud(SolicitudCALDTO solicitud, String usuario, FirmaDTO firma) {
+    public Tarea firmaSolicitud(SolicitudCALDTO solicitud, String usuario, FirmaDTO firma) {
 
         Firma firmaModel = firmasSolicitudTransformer.transformarDTO(firma);
 
@@ -575,7 +618,7 @@ public abstract class RegistroSolicitudCALCommonFacadeImpl extends BaseCloudFaca
                 .get(NumerosConstantes.TRES);
         Tramite tramite = (Tramite) resultados.get(NumerosConstantes.CUATRO);
 
-        solicitudCALServices.iniciaTramite(mensajeBPM, sol, administradorResponsable);
+        Tarea tarea = solicitudCALServices.iniciaTramite(mensajeBPM, sol, administradorResponsable);
 
         if (administradorResponsable != null) {
             enviarCorreoService.enviarCorreoTareaPendiente(tramite.getNumeroAsunto(), administradorResponsable,
@@ -598,7 +641,7 @@ public abstract class RegistroSolicitudCALCommonFacadeImpl extends BaseCloudFaca
         } catch (Exception ex) {
             getLogger().error("Error en la bitacora al firmar la solicitud", ex);
         }
-        return tramite.getNumeroAsunto();
+        return tarea;
     }
 
     @Override

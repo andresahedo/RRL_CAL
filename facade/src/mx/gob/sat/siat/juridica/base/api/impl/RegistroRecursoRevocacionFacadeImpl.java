@@ -1,5 +1,13 @@
 package mx.gob.sat.siat.juridica.base.api.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import mx.gob.sat.siat.juridica.base.api.RegistroRecursoRevocacionFacade;
 import mx.gob.sat.siat.juridica.base.constantes.NumerosConstantes;
 import mx.gob.sat.siat.juridica.base.constantes.ProcesosConstantes;
@@ -7,7 +15,14 @@ import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.DocumentoTramite;
 import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.UnidadAdministrativa;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.EnumeracionBitacora;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.TipoRol;
-import mx.gob.sat.siat.juridica.base.dao.domain.model.*;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Bitacora;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.BitacoraAU;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.DocumentoSolicitud;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Firma;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Solicitante;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.SolicitudDatosGenerales;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Tarea;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Tramite;
 import mx.gob.sat.siat.juridica.base.dto.CatalogoDTO;
 import mx.gob.sat.siat.juridica.base.dto.DocumentoDTO;
 import mx.gob.sat.siat.juridica.base.dto.FirmaDTO;
@@ -17,7 +32,13 @@ import mx.gob.sat.siat.juridica.base.dto.transformer.DocumentoDTOTransformer;
 import mx.gob.sat.siat.juridica.base.dto.transformer.FirmaTransformer;
 import mx.gob.sat.siat.juridica.base.dto.transformer.SolicitudDTOTransformer;
 import mx.gob.sat.siat.juridica.base.facade.impl.BaseFacadeImpl;
-import mx.gob.sat.siat.juridica.base.service.*;
+import mx.gob.sat.siat.juridica.base.service.AsignacionTramiteServices;
+import mx.gob.sat.siat.juridica.base.service.BitacoraTramiteServices;
+import mx.gob.sat.siat.juridica.base.service.DocumentosServices;
+import mx.gob.sat.siat.juridica.base.service.EnviarCorreoService;
+import mx.gob.sat.siat.juridica.base.service.TareaServices;
+import mx.gob.sat.siat.juridica.base.service.TipoTramiteServices;
+import mx.gob.sat.siat.juridica.base.service.TramiteServices;
 import mx.gob.sat.siat.juridica.base.util.constante.BuzonConstantes;
 import mx.gob.sat.siat.juridica.base.util.exception.SolicitudNoGuardadaException;
 import mx.gob.sat.siat.juridica.bpm.excepcion.TareaInicialException;
@@ -32,13 +53,6 @@ import mx.gob.sat.siat.juridica.rrl.dto.transformer.DatosSolicitudDTOTransformer
 import mx.gob.sat.siat.juridica.rrl.dto.transformer.FirmasSolicitudTransformer;
 import mx.gob.sat.siat.juridica.rrl.service.RegistroRecursoRevocacionServices;
 import mx.gob.sat.siat.juridica.rrl.service.SolicitudService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Component("registroRecursoRevocacionFacade")
 public class RegistroRecursoRevocacionFacadeImpl extends BaseFacadeImpl implements RegistroRecursoRevocacionFacade {
@@ -154,17 +168,17 @@ public class RegistroRecursoRevocacionFacadeImpl extends BaseFacadeImpl implemen
     }
 
     @Override
-    public String firmarSolicitud(long idSolicitud, FirmaDTO firma, String usuario, String rfcContribuyente,
+    public Tarea firmarSolicitud(long idSolicitud, FirmaDTO firma, String usuario, String rfcContribuyente,
             Object ceritifcadoUtilizado) throws TareaInicialException, TereaSinUsuarioAsignadoException {
         getLogger().debug("Profiling inicio service obtenerTramitePorIdSolicitud {}", new SimpleDateFormat(FORMATO_FECHA).format( new Date()) );
         Tramite tramite = tramiteServices.obtenerTramitePorIdSolicitud(idSolicitud);
         getLogger().debug("Profiling fin service obtenerTramitePorIdSolicitud {}", new SimpleDateFormat(FORMATO_FECHA).format( new Date()) );
+        Tarea tarea = new Tarea();
         if (tramite != null) {
-            return tramite.getNumeroAsunto();
+        	tarea.setNumeroAsunto(tramite.getNumeroAsunto());
+            return tarea;
         }
         Firma firmaModel = firmasSolicitudTransformer.transformarDTO(firma);
-
-
         getLogger().debug("Profiling inicio service firmarSolicitud {}", new SimpleDateFormat(FORMATO_FECHA).format( new Date()) );
         List<Object> resultados = solicitudService.firmarSolicitud(idSolicitud, firmaModel, usuario, rfcContribuyente,
             ceritifcadoUtilizado);
@@ -174,19 +188,19 @@ public class RegistroRecursoRevocacionFacadeImpl extends BaseFacadeImpl implemen
         mx.gob.sat.siat.juridica.bpm.dao.domain.Tramite inicioTramite = (mx.gob.sat.siat.juridica.bpm.dao.domain.Tramite)resultados.get(NumerosConstantes.TRES);
         tramite = (Tramite)resultados.get(NumerosConstantes.CUATRO);
         getLogger().debug("Profiling inicio service iniciaTramite {}", new SimpleDateFormat(FORMATO_FECHA).format( new Date()) );
-       try {
-            Tarea tarea = new Tarea();
-            tarea.setNumeroAsunto(tramite.getNumeroAsunto());
-            tarea.setClaveAdm(administradorResponsable);
-            tarea.setClaveAsignado(administradorResponsable);
-            tarea.setTarea(EnumeracionBitacora.TURNAR_ASUNTO.getClave());
-            tarea.setDescripcion(EnumeracionBitacora.TURNAR_ASUNTO.getDescripcion());
-            tarea.setEstadoTarea(ProcesosConstantes.PROCESO_TAREA_PROCESO);
-            tarea.setFechaCreacion(new Date());
-            tarea.setFechaAct(new Date());
+        tarea.setNumeroAsunto(tramite.getNumeroAsunto());
+        tarea.setClaveAdm(administradorResponsable);
+        tarea.setClaveAsignado(administradorResponsable);
+        tarea.setTarea(EnumeracionBitacora.TURNAR_ASUNTO.getClave());
+        tarea.setDescripcion(EnumeracionBitacora.TURNAR_ASUNTO.getDescripcion());
+        tarea.setEstadoTarea(ProcesosConstantes.PROCESO_TAREA_PROCESO);
+        tarea.setFechaCreacion(new Date());
+        tarea.setFechaAct(new Date());
+        try {
             tareaServices.guardarTarea(tarea);
         }
         catch (Exception ex){
+        	getLogger().error("Error al generar la tarea del asunto:{}",tramite.getNumeroAsunto());
             getLogger().error("Error en la tarea al generar la tarea", ex);
         }
 
@@ -227,7 +241,7 @@ public class RegistroRecursoRevocacionFacadeImpl extends BaseFacadeImpl implemen
             getLogger().error("Error en la bitacora al firmar la solicitud", ex);
         }
 
-        return inicioTramite.getFolioTramite();
+        return tarea;
     }
 
     @Override
@@ -355,5 +369,26 @@ public class RegistroRecursoRevocacionFacadeImpl extends BaseFacadeImpl implemen
             return null;
         }
     }
+
+	@Override
+	public void cambiarEstadofirmarDocumentos(Long idSolicitud, String estadoActual, String estadoNuevo) {
+        solicitudService.cambiarEstadofirmarDocumentosRegistro(idSolicitud, estadoActual, estadoNuevo);
+		
+	}
+
+	@Override
+	public List<Tarea> obtenerTareasPorNumAsunto(String numAsunto) {
+		return tareaServices.obtenerTareasPorNumAsunto(numAsunto);
+	}
+
+	@Override
+	public void regenerarTarea(Tarea tarea) {
+		tareaServices.guardarTarea(tarea);
+	}
+
+	@Override
+	public void guardarBitacora(BitacoraAU bitacora) {
+		bitacoraTramiteServices.guardarBitacora(bitacora);
+	}
 
 }

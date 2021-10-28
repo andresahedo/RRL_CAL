@@ -29,4 +29,6 @@ public interface TareaServices extends Serializable{
 
     List<Tarea> buscarTareasReasignar(String numeroAsunto, String administrador, String abogado);
 
+	List<Tarea> obtenerTareasPorNumAsunto(String numAsunto);
+
 }

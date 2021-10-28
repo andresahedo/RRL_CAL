@@ -8,14 +8,23 @@
  */
 package mx.gob.sat.siat.juridica.base.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import mx.gob.sat.siat.juridica.base.dao.FirmarDAO;
 import mx.gob.sat.siat.juridica.base.dao.RemisionDao;
-import mx.gob.sat.siat.juridica.base.dao.domain.model.*;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Firma;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaNotificacion;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaObservacion;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaObservacionPK;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaRemision;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaRequerimiento;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaResolucion;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaSolicitud;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Remision;
 import mx.gob.sat.siat.juridica.base.service.FirmarServices;
 import mx.gob.sat.siat.juridica.base.util.helper.SelladoraHelper;
 import mx.gob.sat.siat.selladora.SelladoraException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * 
@@ -149,5 +158,10 @@ public class FirmarServicesImpl extends BaseSerializableBusinessServices impleme
     public void guardaFirmaRechazoAsunto(Firma firma) {
         // TODO transformrerFirmaRechazo
     }
+
+	@Override
+	public Firma obtenerFirmaSolicitud(String idSolicitud, String claveUsuario) {
+		return firmarDAO.obtenerFirmaSolicitud(idSolicitud,claveUsuario);
+	}
 
 }

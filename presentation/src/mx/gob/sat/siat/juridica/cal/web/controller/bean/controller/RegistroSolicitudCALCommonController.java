@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
-import javax.faces.application.ConfigurableNavigationHandler;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.ExternalContext;
@@ -42,9 +40,14 @@ import mx.gob.sat.siat.juridica.ara.util.AraValidadorHelper;
 import mx.gob.sat.siat.juridica.base.constantes.MenusConstantes;
 import mx.gob.sat.siat.juridica.base.constantes.NumerosConstantes;
 import mx.gob.sat.siat.juridica.base.constantes.ProcesosConstantes;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.AccionesBitacora;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.AccionesBitacoraConstants;
+import mx.gob.sat.siat.juridica.base.dao.domain.constants.EstadoDocumento;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.TipoAcuse;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.TipoClasificacionArancelaria;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.TipoProcesoFirma;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.BitacoraAU;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Tarea;
 import mx.gob.sat.siat.juridica.base.dto.CatalogoDTO;
 import mx.gob.sat.siat.juridica.base.dto.DocumentoDTO;
 import mx.gob.sat.siat.juridica.base.dto.DomicilioSolicitudDTO;
@@ -287,6 +290,9 @@ public abstract class RegistroSolicitudCALCommonController extends BaseCloudCont
     private String tipoRolContribuyenteText;
     @ManagedProperty(value = "#{tipoRolContribuyenteIDC}")
     private transient TipoRolContribuyenteIDC tipoRolContribuyenteIDC;
+    
+    private int reintentos = NumerosConstantes.CERO;
+    
     /**
      * Postc-Constructor para cargar las unidades emisoras e informacion del
      * solicitante
@@ -297,6 +303,7 @@ public abstract class RegistroSolicitudCALCommonController extends BaseCloudCont
     	numeroAsuntoFaltantes = (String) session.getAttribute("numeroAsuntoFaltantes");
     	idSolicitudFaltantes = (Long) session.getAttribute("idSolicitudFaltantes");
     	fechaRecepcionFaltantes = (Date) session.getAttribute("fechaRecepcionFaltantes");
+    	reintentos = NumerosConstantes.CERO;
     	getLogger().debug("numeroAsuntoFaltantes:"+numeroAsuntoFaltantes);
     	session.removeAttribute("numeroAsuntoFaltantes");
     	session.removeAttribute("idSolicitudFaltantes");
@@ -1685,14 +1692,14 @@ public abstract class RegistroSolicitudCALCommonController extends BaseCloudCont
 						.tieneDocumentosAnexados(getSolicitud().getIdSolicitud().toString()),
 				solicitud.getTipoRolContribuyente(), solicitud.getEstadoContribuyente());
 		getCapturaSolicitudBussines().firmarDocumentos(getSolicitud().getIdSolicitud(), getFirma());
-		resultadoAcuses(numAsunto,idsDoc);
+		String aviso = "Se muestran los acuses correctamente.";
+		resultadoAcuses(numAsunto,idsDoc,aviso);
 		return LoginConstante.DESCARGA_DOCUMENTO;
     }
     
-	private void resultadoAcuses(String numAsunto, List<Long> idsDoc) {
+	private void resultadoAcuses(String numAsunto, List<Long> idsDoc,String aviso) {
 		descargarDocumentoController.getDatosBandejaTareaDTO().setNumeroAsunto(numAsunto);
         descargarDocumentoController.obtenerDocumentosByIdDoc(idsDoc);
-		String aviso = "Se muestran los acuses correctamente.";
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", aviso));
 	}
 	
@@ -1701,33 +1708,101 @@ public abstract class RegistroSolicitudCALCommonController extends BaseCloudCont
      * @throws BusinessException 
      */
 	
-	private String firmarSinFaltantes() throws BusinessException {
+	private String firmarSinFaltantes() throws BusinessException, Exception {
 		List<Long> idsDoc = new ArrayList<Long>();
-		String numAsunto = getRegistroSolicitudCALCommonBussines().firmaSolicitud(getSolicitud(),
+		Tarea tarea = getRegistroSolicitudCALCommonBussines().firmaSolicitud(getSolicitud(),
 				getUserProfile().getRfc(), getFirma());
-		if (numAsunto != null) {
-			FirmaDTO firmaSelladora = getRegistroSolicitudCALCommonBussines().obtenSelloPromocionSIAT(numAsunto,
-					getSolicitud().getIdSolicitud(), getFirma().getFechaFirma());
-			DatosBandejaTareaDTO datosBandejaTareaDTO = new DatosBandejaTareaDTO();
-			datosBandejaTareaDTO.setNumeroAsunto(numAsunto);
-			datosBandejaTareaDTO.setIdSolicitud(getSolicitud().getIdSolicitud());
-			datosBandejaTareaDTO.setRfcSolicitante(getUserProfile().getRfc());
+		String numAsunto = tarea.getNumeroAsunto();
+		
+		if (numAsunto == null) {
+			throw new Exception("Ocurrio un error al generar el asunto");
+		}
+		FirmaDTO firmaSelladora = getRegistroSolicitudCALCommonBussines().obtenSelloPromocionSIAT(numAsunto,
+				getSolicitud().getIdSolicitud(), getFirma().getFechaFirma());
+		DatosBandejaTareaDTO datosBandejaTareaDTO = new DatosBandejaTareaDTO();
+		datosBandejaTareaDTO.setNumeroAsunto(numAsunto);
+		datosBandejaTareaDTO.setIdSolicitud(getSolicitud().getIdSolicitud());
+		datosBandejaTareaDTO.setRfcSolicitante(getUserProfile().getRfc());
+		idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocionCAL(datosBandejaTareaDTO,
+				TipoAcuse.RECPROM.getClave(), getFirma(), firmaSelladora.getCadenaOriginal(),
+				firmaSelladora.getSello(),
+				getRegistroSolicitudCALCommonBussines()
+						.tieneDocumentosAnexados(getSolicitud().getIdSolicitud().toString()),
+				solicitud.getTipoRolContribuyente(), solicitud.getEstadoContribuyente());
+		getCapturaSolicitudBussines().firmarDocumentos(getSolicitud().getIdSolicitud(), getFirma());
+		reintentaGeneracionAcuses(idsDoc, datosBandejaTareaDTO,tarea, firmaSelladora);
+		
+		return LoginConstante.DESCARGA_DOCUMENTO;
+	}
+	
+	private void reintentaGeneracionAcuses(List<Long> idsDoc,DatosBandejaTareaDTO datosBandejaTareaDTO,Tarea tarea, FirmaDTO firmaSelladora) throws BusinessException {
+		//Validar documentos
+		Boolean banDocumento = Boolean.TRUE;
+		Boolean banTarea = Boolean.TRUE;
+		BitacoraAU bitacora = new BitacoraAU();
+		bitacora.setFechaAccion(new Date());
+		bitacora.setIdRealizadoPor(tarea.getNumeroAsunto()!=null ? tarea.getNumeroAsunto() : "Sin Asunto");
+		bitacora.setIdAplicadoA(AccionesBitacoraConstants.ERROR_REGISTRO_CAL);
+		getLogger().debug("Se validan los documento");
+		if(idsDoc.isEmpty()) {
+			//Bitacora no se genraron los acuses
+			getLogger().error("No se generaron acuses para el asunto:{}",tarea.getNumeroAsunto());
+			banDocumento = Boolean.FALSE;
+			bitacora.setIdAccion(AccionesBitacora.ERROR_ACUSES.getClave());
+			bitacora.setDescripcion("Ocurrio un error en la generación del acuse y se realiza el reintento:"+reintentos);
+			getCapturaSolicitudBussines().guardarBitacora(bitacora);
+			getCapturaSolicitudBussines().cambiarEstadofirmarDocumentos(getSolicitud().getIdSolicitud(),EstadoDocumento.FIRMADO.getClave(), EstadoDocumento.ANEXADO.getClave());
 			idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocionCAL(datosBandejaTareaDTO,
 					TipoAcuse.RECPROM.getClave(), getFirma(), firmaSelladora.getCadenaOriginal(),
 					firmaSelladora.getSello(),
 					getRegistroSolicitudCALCommonBussines()
 							.tieneDocumentosAnexados(getSolicitud().getIdSolicitud().toString()),
 					solicitud.getTipoRolContribuyente(), solicitud.getEstadoContribuyente());
-			getCapturaSolicitudBussines().firmarDocumentos(getSolicitud().getIdSolicitud(), getFirma());
-
+			if(!idsDoc.isEmpty()) {
+				getCapturaSolicitudBussines().cambiarEstadofirmarDocumentos(getSolicitud().getIdSolicitud(),EstadoDocumento.ANEXADO.getClave(), EstadoDocumento.FIRMADO.getClave());
+				banDocumento = Boolean.TRUE;
+				getLogger().info("Se generaron acuses para el asunto:{}",tarea.getNumeroAsunto());
+			}
 		}
-		descargarDocumentoController.getDatosBandejaTareaDTO().setNumeroAsunto(numAsunto);
-		descargarDocumentoController.obtenerDocumentosByIdDoc(idsDoc);
-		String aviso = "Tu Promoci\u00F3n ha sido registrada con el siguiente  n\u00FAmero de Asunto " + numAsunto;
-		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", aviso));
-		return LoginConstante.DESCARGA_DOCUMENTO;
+				
+		
+		//validar tareas
+		List<Tarea> tareas = getCapturaSolicitudBussines().obtenerTareasPorNumAsunto(tarea.getNumeroAsunto());
+		if(tareas.isEmpty()) {
+			banTarea = Boolean.FALSE;
+			getLogger().error("No se guardo la tarea:{}",tarea.toString());
+			bitacora.setIdAccion(AccionesBitacora.ERROR_TAREA.getClave());
+			bitacora.setDescripcion("Ocurrio un error en la generación de la tarea y se realiza el reintento:"+reintentos);
+			getCapturaSolicitudBussines().guardarBitacora(bitacora);
+			tarea.setIdTarea(null);
+			getCapturaSolicitudBussines().regenerarTarea(tarea);
+			tareas = getCapturaSolicitudBussines().obtenerTareasPorNumAsunto(tarea.getNumeroAsunto());
+			if(!tareas.isEmpty()) {
+				banTarea = Boolean.TRUE;
+				getLogger().error("Se guardo la tarea:{}",tarea.toString());
+			}
+			
+		}
+		
+		if(reintentos==NumerosConstantes.TRES) {
+			getLogger().error("Reintentos:{} para el asunto:{} se genearon acuses:{} se creo tarea:{}",reintentos,tarea.getNumeroAsunto(),banDocumento, banTarea);
+			banDocumento = Boolean.TRUE;
+			banTarea = Boolean.TRUE;
+		}
+		
+		if(banDocumento && banTarea) {
+			getLogger().info("Reintentos:{} para el asunto:{}",reintentos,tarea.getNumeroAsunto());
+			getLogger().info("Acuses generados:{} para el asunto:{}",idsDoc.size(),tarea.getNumeroAsunto());
+			String aviso = "Tu Promoci\u00F3n ha sido registrada con el siguiente  n\u00FAmero de Asunto " + tarea.getNumeroAsunto();
+			resultadoAcuses(tarea.getNumeroAsunto(),idsDoc,aviso);	
+		}else {
+			getLogger().error("Reintentos:{} para el asunto:{} se genearon acuses:{} se creo tarea:{}",reintentos,tarea.getNumeroAsunto(),banDocumento, banTarea);
+			reintentos=reintentos+NumerosConstantes.UNO;
+			reintentaGeneracionAcuses(idsDoc, datosBandejaTareaDTO,tarea, firmaSelladora);
+		}	
 	}
-
+	
+	
     public void rowSelectCheckbox(SelectEvent event) {
         setEliminarVisiblePerOir(true);
     }

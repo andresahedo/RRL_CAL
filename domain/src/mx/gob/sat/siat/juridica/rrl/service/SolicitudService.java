@@ -36,7 +36,7 @@ public interface SolicitudService extends Serializable {
      * 
      * @param mensajeTarea
      */
-    void iniciaTramite(MensajeBPM mensajeBPM, SolicitudDatosGenerales sol, String rfcResponsable);
+    Tarea iniciaTramite(MensajeBPM mensajeBPM, SolicitudDatosGenerales sol, String rfcResponsable);
 
     /**
      * Metodo para generar la cadena original
@@ -154,4 +154,6 @@ public interface SolicitudService extends Serializable {
             
     List<Object>  firmarSolicitud(long idSolicitud, Firma firma, String usuario, String rfcContribuyente,
             Object ceritifcadoUtilizado) throws TareaInicialException, TereaSinUsuarioAsignadoException;
+
+	void cambiarEstadofirmarDocumentosRegistro(Long idSolicitud, String estadoActual, String estadoNuevo);
 }

@@ -30,7 +30,7 @@ public enum AccionesBitacora {
     ACTUALIZAR_TRAMITES_UA("EACBT.ATUA", "Actualizar Tr\u00E1mites a la Unidad Administrativa"),
     REVOCAR_PERMISO_EMPLEADO("EACBT.RPE", "Revocar permiso Empleado"), BAJA_TEMPORAL_EMPLEADO("EACBT.BTE",
             "Baja temporal del Empleado"), BAJA_ROL_EMPLEADO("EACBT.BRE", "Baja de Rol al Empleado"),
-    ALTA_ROL("EACBT.AR", "Alta de Rol");
+    ALTA_ROL("EACBT.AR", "Alta de Rol"),ERROR_ACUSES("ERROR.ACU","Error al generar acuses"), ERROR_TAREA("ERROR.TAR","Error al crear tarea");
 
     /**
      * Atributo privado clave" tipo String

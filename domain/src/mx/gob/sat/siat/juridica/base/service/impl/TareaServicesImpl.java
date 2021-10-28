@@ -154,4 +154,9 @@ public class TareaServicesImpl extends BaseSerializableBusinessServices implemen
         getLogger().debug("TareaServicesImpl : obtenerTareaPorRequerimientoNoAtendido");
         return tareaDao.obtenerTareaPorRequerimientoNoAtendido();
     }
+
+	@Override
+	public List<Tarea> obtenerTareasPorNumAsunto(String numAsunto) {
+		return tareaDao.obtenerTareasPorNumAsunto(numAsunto);
+	}
 }

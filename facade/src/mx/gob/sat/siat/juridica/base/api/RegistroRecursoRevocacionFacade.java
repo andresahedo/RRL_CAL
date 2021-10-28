@@ -1,5 +1,7 @@
 package mx.gob.sat.siat.juridica.base.api;
 
+import mx.gob.sat.siat.juridica.base.dao.domain.model.BitacoraAU;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Tarea;
 import mx.gob.sat.siat.juridica.base.dto.CatalogoDTO;
 import mx.gob.sat.siat.juridica.base.dto.DocumentoDTO;
 import mx.gob.sat.siat.juridica.base.dto.FirmaDTO;
@@ -53,10 +55,18 @@ public interface RegistroRecursoRevocacionFacade extends BaseFacade {
 
     List<DocumentoDTO> getDocumentosOpcionales(Integer idTipoTramite);
 
-    String firmarSolicitud(long idSolicitud, FirmaDTO firma, String usuario, String rfcContribuyente,
+    Tarea firmarSolicitud(long idSolicitud, FirmaDTO firma, String usuario, String rfcContribuyente,
             Object ceritifcadoUtilizado) throws TareaInicialException, TereaSinUsuarioAsignadoException;
 
     String obtenerModalidadDeTramite(Integer idTipoTramite);
 
     List<DocumentoDTO> obtenerDocumentosPorIdSolicitud(Long idSolicitud);
+
+	void cambiarEstadofirmarDocumentos(Long idSolicitud, String estadoActual, String estadoNuevo);
+
+	List<Tarea> obtenerTareasPorNumAsunto(String numAsunto);
+
+	void regenerarTarea(Tarea tarea);
+
+	void guardarBitacora(BitacoraAU bitacora);
 }

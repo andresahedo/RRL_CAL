@@ -188,4 +188,6 @@ public interface RegistroRecursoRevocacionDAO extends Serializable {
 
     List<DocumentoOficial> obtenerDocumentosOficialesPromovente(String numAsunto);
 
+	List<DocumentoSolicitud> obtenerDocumentoSolicitudEstado(String idSol, String estadoActual);
+
 }

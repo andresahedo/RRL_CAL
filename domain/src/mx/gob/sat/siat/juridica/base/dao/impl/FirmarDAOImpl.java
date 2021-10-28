@@ -8,11 +8,18 @@
  */
 package mx.gob.sat.siat.juridica.base.dao.impl;
 
-import mx.gob.sat.siat.juridica.base.dao.FirmarDAO;
-import mx.gob.sat.siat.juridica.base.dao.domain.model.*;
+import javax.persistence.Query;
+
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.Query;
+import mx.gob.sat.siat.juridica.base.dao.FirmarDAO;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Firma;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaNotificacion;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaObservacion;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaRemision;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaRequerimiento;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaResolucion;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaSolicitud;
 
 /**
  * 
@@ -111,5 +118,25 @@ public class FirmarDAOImpl extends BaseJPADao implements FirmarDAO {
         }
 
     }
+    
+    @Override
+    public Firma obtenerFirmaSolicitud(String idSolicitud, String claveUsuario) {
+    	StringBuffer sb = new StringBuffer();
+    	String cadenaOriginal = "|" + idSolicitud +"|%";
+        sb.append("SELECT firm from Firma firm ");
+        sb.append("where firm.claveUsuario = :claveUsuario ");
+        sb.append("and ideProcesoFirma = 'TIPPRO.RGS' ");
+        sb.append("and cadenaOriginal like :cadenaOriginal ");
+        Query query = getEntityManager().createQuery(sb.toString());
+        query.setParameter("claveUsuario", claveUsuario);
+        query.setParameter("cadenaOriginal", cadenaOriginal);
+        if (query.getResultList() != null && !query.getResultList().isEmpty()) {
+            return (Firma) query.getResultList().get(0);
+        }
+        else {
+            return new Firma();
+        }
+    }
+    
 
 }

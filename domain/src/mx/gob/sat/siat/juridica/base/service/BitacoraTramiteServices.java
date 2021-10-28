@@ -9,6 +9,7 @@
 package mx.gob.sat.siat.juridica.base.service;
 
 import mx.gob.sat.siat.juridica.base.dao.domain.model.Bitacora;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.BitacoraAU;
 
 import java.io.Serializable;
 
@@ -24,5 +25,7 @@ public interface BitacoraTramiteServices extends Serializable {
      * 
      */
     void insertarBitacora(Bitacora bitacora);
+
+	void guardarBitacora(BitacoraAU bitacora);
     
 }

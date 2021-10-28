@@ -8,6 +8,13 @@
  */
 package mx.gob.sat.siat.juridica.base.service.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import mx.gob.sat.siat.juridica.base.constantes.NumerosConstantes;
 import mx.gob.sat.siat.juridica.base.dao.TipoTramiteDAO;
 import mx.gob.sat.siat.juridica.base.dao.TramiteDao;
@@ -17,12 +24,7 @@ import mx.gob.sat.siat.juridica.base.dao.domain.model.DocumentoSolicitud;
 import mx.gob.sat.siat.juridica.base.dao.domain.model.Tramite;
 import mx.gob.sat.siat.juridica.base.service.TramiteServices;
 import mx.gob.sat.siat.juridica.base.util.exception.SolicitudNoGuardadaException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import mx.gob.sat.siat.juridica.rrl.dao.RegistroRecursoRevocacionDAO;
 
 /**
  * 
@@ -48,6 +50,9 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
      */
     @Autowired
     private TipoTramiteDAO tipoTramiteDAO;
+    
+    @Autowired
+    private RegistroRecursoRevocacionDAO registroRecursoRevocacionDAO;
 
     /**
      * Atributo privado "bpmjmsDao" tipo TipoTramiteDAO
@@ -317,5 +322,10 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
 
         return resultados;
     }
+
+	@Override
+	public boolean tieneDocumentosAnexados(String idSolicitud) {
+        return !registroRecursoRevocacionDAO.obtenerDocumentoSolicitudAnexado(idSolicitud).isEmpty();
+	}
 
 }

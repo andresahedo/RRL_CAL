@@ -8,13 +8,24 @@
  */
 package mx.gob.sat.siat.juridica.cal.web.controller.bean.business;
 
+import java.io.InputStream;
+import java.util.Date;
+import java.util.List;
+
 import com.softtek.idc.client.util.exception.ContribuyenteInactivoException;
 import com.softtek.idc.client.util.exception.ContribuyenteNoEncontradoException;
 import com.softtek.idc.client.util.exception.IDCException;
 import com.softtek.idc.client.util.exception.RFCNoVigenteException;
 import com.softtek.idc.common.exceptions.IDCNoDisponibleException;
+
 import mx.gob.sat.siat.juridica.base.api.BaseCloudFacade;
-import mx.gob.sat.siat.juridica.base.dto.*;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Tarea;
+import mx.gob.sat.siat.juridica.base.dto.CatalogoDTO;
+import mx.gob.sat.siat.juridica.base.dto.DocumentoDTO;
+import mx.gob.sat.siat.juridica.base.dto.FirmaDTO;
+import mx.gob.sat.siat.juridica.base.dto.ModalidadesDTO;
+import mx.gob.sat.siat.juridica.base.dto.PersonaSolicitudDTO;
+import mx.gob.sat.siat.juridica.base.dto.TipoTramiteDTO;
 import mx.gob.sat.siat.juridica.base.util.exception.SolicitudNoGuardadaException;
 import mx.gob.sat.siat.juridica.base.web.controller.bean.bussiness.BaseCloudBusiness;
 import mx.gob.sat.siat.juridica.buzon.exception.BuzonNoDisponibleException;
@@ -23,10 +34,6 @@ import mx.gob.sat.siat.juridica.cal.api.RegistroSolicitudCALCommonFacade;
 import mx.gob.sat.siat.juridica.cal.dto.ManifiestoDTO;
 import mx.gob.sat.siat.juridica.cal.dto.SolicitudCALDTO;
 import mx.gob.sat.siat.juridica.rrl.util.exception.ArchivoNoGuardadoException;
-
-import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Bean para conectar con el backend, atiende todas las peticiones del
@@ -257,7 +264,7 @@ public abstract class RegistroSolicitudCALCommonBussines extends BaseCloudBusine
      * @param firma
      * @return
      */
-    public String firmaSolicitud(SolicitudCALDTO solicitud, String usuario, FirmaDTO firma) {
+    public Tarea firmaSolicitud(SolicitudCALDTO solicitud, String usuario, FirmaDTO firma) {
         return getRegistroSolicitudCALCommonFacade().firmaSolicitud(solicitud, usuario, firma);
     }
 

@@ -8,9 +8,14 @@
  */
 package mx.gob.sat.siat.juridica.base.service;
 
-import mx.gob.sat.siat.juridica.base.dao.domain.model.*;
-
 import java.io.Serializable;
+
+import mx.gob.sat.siat.juridica.base.dao.domain.model.Firma;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaNotificacion;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaRemision;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaRequerimiento;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaResolucion;
+import mx.gob.sat.siat.juridica.base.dao.domain.model.FirmaSolicitud;
 
 /**
  * 
@@ -70,5 +75,7 @@ public interface FirmarServices extends Serializable {
      *            sello
      */
     Firma obtenFirmaSelloSIAT(String cadenaOriginal);
+
+	Firma obtenerFirmaSolicitud(String idSolicitud, String claveUsuario);
 
 }
