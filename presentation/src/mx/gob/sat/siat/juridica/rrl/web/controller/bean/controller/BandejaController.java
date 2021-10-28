@@ -31,7 +31,6 @@ import mx.gob.sat.siat.juridica.base.constantes.MenusConstantes;
 import mx.gob.sat.siat.juridica.base.constantes.MovimientosConstantes;
 import mx.gob.sat.siat.juridica.base.constantes.ProcesosConstantes;
 import mx.gob.sat.siat.juridica.base.constantes.SistemasConstantes;
-import mx.gob.sat.siat.juridica.base.dao.domain.catalogs.model.TipoTramite;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.DiscriminadorConstants;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.EnumeracionBitacora;
 import mx.gob.sat.siat.juridica.base.dao.domain.constants.EstadoDocumento;
@@ -45,7 +44,6 @@ import mx.gob.sat.siat.juridica.base.excepcion.BusinessException;
 import mx.gob.sat.siat.juridica.base.web.controller.bean.controller.FirmarTareaController;
 import mx.gob.sat.siat.juridica.base.web.util.VistaConstantes;
 import mx.gob.sat.siat.juridica.ca.util.validador.TipoRolContribuyenteIDC;
-import mx.gob.sat.siat.juridica.cal.dto.SolicitudCALDTO;
 import mx.gob.sat.siat.juridica.cal.util.constants.CadenasConstants;
 import mx.gob.sat.siat.juridica.cal.web.controller.bean.controller.AutorizarRemisionCALController;
 import mx.gob.sat.siat.juridica.rrl.dto.DatosBandejaTareaDTO;
@@ -281,32 +279,37 @@ public class BandejaController extends BaseAuditoriaControllerBean {
 	}
 	
 	private void regenerarAcuses(DatosBandejaTareaDTO datoSelected) {
-		getLogger().info("Se re-generando los acuses del asunto: {}",datoSelected.getNumeroAsunto());
+		getLogger().info("Se re-generando los acuses del asunto: {}", datoSelected.getNumeroAsunto());
 		getLogger().info("datoSelected: {}", datoSelected.toString());
 		List<Long> idsDoc = null;
-		if(getBandejaBussines().tieneDocumentosAnexados(datoSelected.getIdSolicitud().toString())) {
-			FirmaDTO firma = getBandejaBussines().obtieneFirma(datoSelected);
-			FirmaDTO firmaSelladora = getBandejaBussines().obtenSelloPromocionSIAT(datoSelected.getNumeroAsunto(),
-					datoSelected.getIdSolicitud(), firma.getFechaFirma());
+		if (getBandejaBussines().tieneDocumentosAnexados(datoSelected.getIdSolicitud().toString())) {
 			try {
-				if (datoSelected.getTipoTramite().startsWith(DiscriminadorConstants.T1_TIPO_TRAMITE_PREFIJO)) {
-					idsDoc = acusesRrl(datoSelected, firma, firmaSelladora);
-				} else {
-					idsDoc = acusesCal(datoSelected, firma, firmaSelladora);
+				FirmaDTO firma = getBandejaBussines().obtieneFirma(datoSelected);
+				if (firma.getSello() != null) {
+					FirmaDTO firmaSelladora = getBandejaBussines().obtenSelloPromocionSIAT(datoSelected.getNumeroAsunto(),
+							datoSelected.getIdSolicitud(), firma.getFechaFirma());
+					if (datoSelected.getTipoTramite().startsWith(DiscriminadorConstants.T1_TIPO_TRAMITE_PREFIJO)) {
+						idsDoc = acusesRrl(datoSelected, firma, firmaSelladora);
+					} else {
+						idsDoc = acusesCal(datoSelected, firma, firmaSelladora);
+					}
 				}
 			} catch (BusinessException e) {
 				getLogger().error(e.getMessage());
 			} catch (IOException e) {
 				getLogger().error(e.getMessage());
+			} catch (Exception e) {
+				getLogger().error(e.getMessage());
 			}
-
 		}
-		
-		if(idsDoc == null) {
-			getLogger().error("Ocurrio un error al re-generar los acuses del asunto: {}", datoSelected.getNumeroAsunto());
-		}else {
-			getLogger().info("Se re-generaron correctamente los acuses del asunto: {}",datoSelected.getNumeroAsunto());
-			getBandejaBussines().cambiarEstadofirmarDocumentos(datoSelected.getIdSolicitud(),EstadoDocumento.ANEXADO.getClave(), EstadoDocumento.FIRMADO.getClave());
+
+		if (idsDoc == null) {
+			getLogger().error("Ocurrio un error al re-generar los acuses del asunto: {}",
+					datoSelected.getNumeroAsunto());
+		} else {
+			getLogger().info("Se re-generaron correctamente los acuses del asunto: {}", datoSelected.getNumeroAsunto());
+			getBandejaBussines().cambiarEstadofirmarDocumentos(datoSelected.getIdSolicitud(),
+					EstadoDocumento.ANEXADO.getClave(), EstadoDocumento.FIRMADO.getClave());
 		}
 	}
 	
