@@ -1676,7 +1676,6 @@ public abstract class RegistroSolicitudCALCommonController extends BaseCloudCont
     
 	/* Firmar Acuses Faltantes */
 	private String firmarFaltantes() throws SgiARAException, BusinessException {
-		List<Long> idsDoc = new ArrayList<Long>();
 		/* generar Asunto */
 		String numAsunto = numeroAsuntoFaltantes;
 		FirmaDTO firmaSelladora = getRegistroSolicitudCALCommonBussines().obtenSelloPromocionSIAT(numAsunto,
@@ -1686,7 +1685,7 @@ public abstract class RegistroSolicitudCALCommonController extends BaseCloudCont
 		datosBandejaTareaDTO.setIdSolicitud(getSolicitud().getIdSolicitud());
 		datosBandejaTareaDTO.setRfcSolicitante(getUserProfile().getRfc());
 		datosBandejaTareaDTO.setFechaAsignacion(getFirma().getFechaFirma());
-		idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocionCAL(datosBandejaTareaDTO,
+		List<Long> idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocionCAL(datosBandejaTareaDTO,
 				TipoAcuse.RECPROM.getClave(), getFirma(), firmaSelladora.getCadenaOriginal(), firmaSelladora.getSello(),
 				getRegistroSolicitudCALCommonBussines()
 						.tieneDocumentosAnexados(getSolicitud().getIdSolicitud().toString()),
@@ -1709,7 +1708,6 @@ public abstract class RegistroSolicitudCALCommonController extends BaseCloudCont
      */
 	
 	private String firmarSinFaltantes() throws BusinessException, Exception {
-		List<Long> idsDoc = new ArrayList<Long>();
 		Tarea tarea = getRegistroSolicitudCALCommonBussines().firmaSolicitud(getSolicitud(),
 				getUserProfile().getRfc(), getFirma());
 		String numAsunto = tarea.getNumeroAsunto();
@@ -1723,7 +1721,7 @@ public abstract class RegistroSolicitudCALCommonController extends BaseCloudCont
 		datosBandejaTareaDTO.setNumeroAsunto(numAsunto);
 		datosBandejaTareaDTO.setIdSolicitud(getSolicitud().getIdSolicitud());
 		datosBandejaTareaDTO.setRfcSolicitante(getUserProfile().getRfc());
-		idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocionCAL(datosBandejaTareaDTO,
+		List<Long> idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocionCAL(datosBandejaTareaDTO,
 				TipoAcuse.RECPROM.getClave(), getFirma(), firmaSelladora.getCadenaOriginal(),
 				firmaSelladora.getSello(),
 				getRegistroSolicitudCALCommonBussines()

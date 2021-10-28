@@ -1056,7 +1056,6 @@ public class CapturaSolicitudController extends
     
 	/* Firmar Acuses Faltantes */
 	private void firmarFaltantes() throws SgiARAException, BusinessException {
-		List<Long> idsDoc = new ArrayList<Long>();
 		/* generar Asunto */
 		String numAsunto = numeroAsuntoFaltantes;
 		// clh profiling firma
@@ -1066,7 +1065,7 @@ public class CapturaSolicitudController extends
 		datosBandejaTareaDTO.setIdSolicitud(getSolicitud().getIdSolicitud());
 		datosBandejaTareaDTO.setRfcSolicitante(getUserProfile().getRfc());
 		datosBandejaTareaDTO.setFechaAsignacion(firma.getFechaFirma());
-		idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocion(datosBandejaTareaDTO,
+		List<Long> idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocion(datosBandejaTareaDTO,
 				TipoAcuse.RECPROM.getClave(), firma.getCadenaOriginal(), firma.getSello(),
 				firmaSelladora.getCadenaOriginal(), firmaSelladora.getSello());
 		getCapturaSolicitudBussines().firmarDocumentos(getSolicitud().getIdSolicitud(), firma);
@@ -1091,7 +1090,6 @@ public class CapturaSolicitudController extends
 	private void firmarSinFaltantes() throws BusinessException, Exception {
 		getLogger().debug("Profiling inicio firmar {}", new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
 
-		List<Long> idsDoc = new ArrayList<Long>();
 		Tarea tarea = getCapturaSolicitudBussines().firmarSolicitud(getSolicitud().getIdSolicitud(), getFirma(),
 				getUserProfile().getRfc(), getSolicitud().getRfcContribuyente(), new Object());
 		String numAsunto = tarea.getNumeroAsunto();
@@ -1113,7 +1111,7 @@ public class CapturaSolicitudController extends
 		// clh profiling firma
 		getLogger().debug("Profiling inicio bussines generarDocumentosPromocion {}",
 				new SimpleDateFormat(FORMATO_FECHA).format(new Date()));
-		idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocion(datosBandejaTareaDTO,
+		List<Long> idsDoc = getGenerarDocumentosHelper().generarDocumentosPromocion(datosBandejaTareaDTO,
 				TipoAcuse.RECPROM.getClave(), firma.getCadenaOriginal(), firma.getSello(),
 				firmaSelladora.getCadenaOriginal(), firmaSelladora.getSello());
 		getLogger().debug("Profiling fin bussines generarDocumentosPromocion {}",
