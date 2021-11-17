@@ -309,7 +309,7 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
     }
 
     private boolean validarListas(List<String> listaUnidades, List<Long> listaTipoTramite) {
-        return listaUnidades.isEmpty() || listaTipoTramite.isEmpty();
+        return !listaUnidades.isEmpty() && !listaTipoTramite.isEmpty();
     }
 
     @Override
