@@ -32,7 +32,6 @@ public class TareaDaoImpl extends BaseJPARepository implements TareaDao {
     @Value("${parametro.tarea}")
     private String parametroTarea;
 
-
     @Override
     public void guardarTarea(Tarea tarea) {
         if (tarea.getIdTarea() == null) {
@@ -42,7 +41,6 @@ public class TareaDaoImpl extends BaseJPARepository implements TareaDao {
         }
         getEntityManager().flush();
     }
-
 
     @Override
     public Tarea obtenerTareaPorTramiteActivo(String idTramite, Long idTarea) {
@@ -56,10 +54,9 @@ public class TareaDaoImpl extends BaseJPARepository implements TareaDao {
 
     @Override
     public Tarea obtenerTareaPorTramiteRequerimientoAtendido(String idTramite, String claveTarea) {
-        Query query =
-                getEntityManager().createQuery(
-                        "select t from Tarea t WHERE t.numeroAsunto = :idTramite AND t.tarea = :claveTarea ORDER BY t.fechaCreacion desc",
-                        Tarea.class);
+        Query query = getEntityManager().createQuery(
+                "select t from Tarea t WHERE t.numeroAsunto = :idTramite AND t.tarea = :claveTarea ORDER BY t.fechaCreacion desc",
+                Tarea.class);
         query.setParameter(this.parametroIdTramite, idTramite);
         query.setParameter(this.parametroTarea, claveTarea);
         List<Tarea> lista = query.getResultList();
@@ -69,8 +66,8 @@ public class TareaDaoImpl extends BaseJPARepository implements TareaDao {
         return null;
     }
 
-    /**1
-     * Metodo que obtiene una lista de tramites segun los atributos
+    /**
+     * 1 Metodo que obtiene una lista de tramites segun los atributos
      * correspondientes
      *
      * @param numAsunto
@@ -80,23 +77,23 @@ public class TareaDaoImpl extends BaseJPARepository implements TareaDao {
      * @return
      */
     @SuppressWarnings(SuppressWarningsConstants.UNCHECKED)
-    public List<Tarea> obtenerTareasporUsuario(String numAsunto,String idusuario, String clavePromovente, Date fechaInicio, Date fechaFin, String estadoProcesal) {
+    public List<Tarea> obtenerTareasporUsuario(String numAsunto, String idusuario, String clavePromovente,
+            Date fechaInicio, Date fechaFin, String estadoProcesal) {
         StringBuffer sql = new StringBuffer(NumerosConstantes.CINCUENTA);
-        
+
         numAsunto = numAsunto != null ? numAsunto.toUpperCase(Locale.ROOT) : "";
         clavePromovente = clavePromovente != null ? clavePromovente.toUpperCase(Locale.ROOT) : "";
-        
+
         sql.append("SELECT t FROM Tarea t, Tramite tr, Solicitud s, TipoTramite tt");
-        sql.append(" WHERE t.numeroAsunto = tr.numeroAsunto AND tr.solicitud = s.idSolicitud AND" +
-                        " s.claveModalidad = tt.idTipoTramite" +
-                            " AND t.estadoTarea = 'PROCESO'");
+        sql.append(" WHERE t.numeroAsunto = tr.numeroAsunto AND tr.solicitud = s.idSolicitud AND"
+                + " s.claveModalidad = tt.idTipoTramite" + " AND t.estadoTarea = 'PROCESO'");
         if (!numAsunto.isEmpty()) {
             sql.append(" AND t.numeroAsunto = :pNumeroAsunto ");
         }
-        if(!idusuario.isEmpty()){
+        if (!idusuario.isEmpty()) {
             sql.append(" AND t.claveAsignado = :pIdUsuario");
         }
-        if(!clavePromovente.isEmpty()){
+        if (!clavePromovente.isEmpty()) {
             sql.append(" AND s.cveUsuarioCapturista = :pClavePromovente");
         }
         if (fechaInicio != null && fechaFin != null) {
@@ -111,10 +108,10 @@ public class TareaDaoImpl extends BaseJPARepository implements TareaDao {
         if (!numAsunto.isEmpty()) {
             query.setParameter("pNumeroAsunto", numAsunto);
         }
-        if(!idusuario.isEmpty()){
+        if (!idusuario.isEmpty()) {
             query.setParameter("pIdUsuario", idusuario);
         }
-        if(!clavePromovente.isEmpty()){
+        if (!clavePromovente.isEmpty()) {
             query.setParameter("pClavePromovente", clavePromovente);
         }
         if (fechaInicio != null && fechaFin != null) {
@@ -128,18 +125,18 @@ public class TareaDaoImpl extends BaseJPARepository implements TareaDao {
         return query.getResultList();
     }
 
-    public List<Tarea> obtenerTareasporUsuarioReasignacion(String numAsunto,String idusuario, String abogado) {
+    public List<Tarea> obtenerTareasporUsuarioReasignacion(String numAsunto, String idusuario, String abogado) {
         numAsunto = numAsunto != null ? numAsunto.toUpperCase(Locale.ROOT) : "";
         abogado = abogado != null ? abogado.toUpperCase(Locale.ROOT) : "";
         StringBuffer sql = new StringBuffer(NumerosConstantes.CINCUENTA);
         sql.append("SELECT t FROM Tarea t, Tramite tr, Solicitud s, TipoTramite tt");
-        sql.append(" WHERE t.numeroAsunto = tr.numeroAsunto AND tr.solicitud = s.idSolicitud AND" +
-                " s.claveModalidad = tt.idTipoTramite" +
-                " AND (t.estadoTarea = 'PROMOVIDO' or t.estadoTarea = 'EN_ESTUDIO')");
+        sql.append(" WHERE t.numeroAsunto = tr.numeroAsunto AND tr.solicitud = s.idSolicitud AND"
+                + " s.claveModalidad = tt.idTipoTramite"
+                + " AND (t.estadoTarea = 'PROMOVIDO' or t.estadoTarea = 'EN_ESTUDIO')");
         if (!numAsunto.isEmpty()) {
             sql.append(" AND t.numeroAsunto = :pNumeroAsunto ");
         }
-        if(!idusuario.isEmpty()){
+        if (!idusuario.isEmpty()) {
             sql.append(" AND t.claveAsignado = :pIdUsuario");
         }
 
@@ -149,29 +146,29 @@ public class TareaDaoImpl extends BaseJPARepository implements TareaDao {
         if (!numAsunto.isEmpty()) {
             query.setParameter("pNumeroAsunto", numAsunto);
         }
-        if(!idusuario.isEmpty()){
+        if (!idusuario.isEmpty()) {
             query.setParameter("pIdUsuario", idusuario);
         }
-        if(!abogado.isEmpty()){
+        if (!abogado.isEmpty()) {
             query.setParameter("pClaveAsignado", abogado);
         }
 
         return query.getResultList();
     }
 
-    public Long obtenerNumeroTareasEmpleado(String idUsuario){
+    public Long obtenerNumeroTareasEmpleado(String idUsuario) {
         Long maxResults;
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT COUNT(*) FROM Tarea t");
         sql.append(" WHERE t.estadoTarea = 'PROCESO'");
 
-        if(!idUsuario.isEmpty()){
+        if (!idUsuario.isEmpty()) {
             sql.append(" AND t.claveAsignado = :pIdUsuario");
         }
 
         Query query = getEntityManager().createQuery(sql.toString());
 
-        if(!idUsuario.isEmpty()){
+        if (!idUsuario.isEmpty()) {
             query.setParameter("pIdUsuario", idUsuario);
         }
 
@@ -182,37 +179,39 @@ public class TareaDaoImpl extends BaseJPARepository implements TareaDao {
     }
 
     @Override
-    public List<Tarea> buscarTareasReasignar(String numeroAsunto, String administrador, String abogado, List<String> listaTramites) {
-            numeroAsunto = numeroAsunto != null ? numeroAsunto.toUpperCase(Locale.ROOT) : "";
-            abogado = abogado != null ? abogado.toUpperCase(Locale.ROOT) : "";
-            administrador = administrador != null ? administrador.toUpperCase(Locale.ROOT) : "";
-          StringBuffer sql = new StringBuffer(NumerosConstantes.DOSCIENTOS_CINCUENTA);
-          sql.append("SELECT t FROM Tarea t ");
-          sql.append("WHERE t.tarea = 'TITAR.ATR' AND t.estadoTarea = 'PROCESO' ");
-          sql.append("AND t.numeroAsunto IN :pListaTramites ");
-          
-          if(!numeroAsunto.isEmpty()){
-                sql.append(" AND t.numeroAsunto LIKE :pNumeroAsunto");
-            }
+    public List<Tarea> buscarTareasReasignar(String numeroAsunto, String administrador, String abogado,
+            List<String> listaTramites) {
+        numeroAsunto = numeroAsunto != null ? numeroAsunto.toUpperCase(Locale.ROOT) : "";
+        abogado = abogado != null ? abogado.toUpperCase(Locale.ROOT) : "";
+        administrador = administrador != null ? administrador.toUpperCase(Locale.ROOT) : "";
+        StringBuffer sql = new StringBuffer(NumerosConstantes.DOSCIENTOS_CINCUENTA);
+        sql.append("SELECT t FROM Tarea t ");
+        sql.append("WHERE t.tarea = 'TITAR.ATR' AND t.estadoTarea = 'PROCESO' ");
+        sql.append("AND t.numeroAsunto IN :pListaTramites ");
 
-          if(!abogado.isEmpty()){
-                sql.append(" AND t.claveAsignado LIKE :pAbogado");
-            }
+        if (!numeroAsunto.isEmpty()) {
+            sql.append(" AND t.numeroAsunto LIKE :pNumeroAsunto");
+        }
 
-            Query query = getEntityManager().createQuery(sql.toString(), Tarea.class);
-            
-            query.setParameter("pListaTramites", listaTramites);
-            
-            if (!numeroAsunto.isEmpty()) {
-                query.setParameter("pNumeroAsunto", numeroAsunto+"%");
-            }
-                
-            if(!abogado.isEmpty()){
-                query.setParameter("pAbogado", abogado);
-            }
-            return query.getResultList() != null ? query.getResultList() : new ArrayList<Tarea>();
+        if (!abogado.isEmpty()) {
+            sql.append(" AND t.claveAsignado LIKE :pAbogado");
+        }
+
+        Query query = getEntityManager().createQuery(sql.toString(), Tarea.class);
+
+        query.setParameter("pListaTramites", listaTramites);
+
+        if (!numeroAsunto.isEmpty()) {
+            query.setParameter("pNumeroAsunto", numeroAsunto + "%");
+        }
+
+        if (!abogado.isEmpty()) {
+            query.setParameter("pAbogado", abogado);
+        }
+
+        return query.getResultList().isEmpty() ? new ArrayList<Tarea>() : query.getResultList();
     }
-  
+
     @Override
     public int obtenerTareasPorAsuntoAbogado(String numeroAsunto, String claveAsignado) {
         numeroAsunto = numeroAsunto != null ? numeroAsunto.toUpperCase(Locale.ROOT) : "";
@@ -230,33 +229,22 @@ public class TareaDaoImpl extends BaseJPARepository implements TareaDao {
         return maxResults;
     }
 
-
     @SuppressWarnings("unchecked")
     @Override
     public List<Tarea> obtenerTareaPorRequerimientoNoAtendido() {
-        Query query =
-                getEntityManager().createQuery(
-                        "select t from Tarea t WHERE t.estadoTarea = 'PROCESO' " +
-                                "AND t.fechaFin IS NOT NULL " +
-                                "AND t.idRequerimeinto IS NOT NULL " +
-                                "AND t.fechaFin <= SYSDATE " +
-                                " ORDER BY t.fechaCreacion desc",
-                        Tarea.class);
+        Query query = getEntityManager().createQuery("select t from Tarea t WHERE t.estadoTarea = 'PROCESO' "
+                + "AND t.fechaFin IS NOT NULL " + "AND t.idRequerimeinto IS NOT NULL " + "AND t.fechaFin <= SYSDATE "
+                + " ORDER BY t.fechaCreacion desc", Tarea.class);
         return (List<Tarea>) query.getResultList();
     }
 
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Tarea> obtenerTareasPorNumAsunto(String numAsunto) {
-		 Query query =
-	                getEntityManager().createQuery(
-	                        "select t from Tarea t WHERE t.numeroAsunto = :idTramite ",
-	                        Tarea.class);
-	        query.setParameter(this.parametroIdTramite, numAsunto);
-	        return (List<Tarea>) query.getResultList() != null ? query.getResultList() : new ArrayList();
-	}
-    
-    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Tarea> obtenerTareasPorNumAsunto(String numAsunto) {
+        Query query = getEntityManager().createQuery("select t from Tarea t WHERE t.numeroAsunto = :idTramite ",
+                Tarea.class);
+        query.setParameter(this.parametroIdTramite, numAsunto);
+        return (List<Tarea>) query.getResultList() != null ? query.getResultList() : new ArrayList();
+    }
 
 }
