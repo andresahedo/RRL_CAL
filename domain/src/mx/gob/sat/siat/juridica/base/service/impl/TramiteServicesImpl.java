@@ -298,13 +298,13 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
         listaEstados.add(EstadoTramite.PROMOVIDO.getClave());
         listaEstados.add(EstadoTramite.EN_ESTUDIO.getClave());
         listaEstados.add(EstadoTramite.REMITIDO.getClave());
-
-        List<Tramite> listaTramiteGen = tramiteDao.obtenerTramitesPorUnidadTipo(listaUnidades, listaTipoTramite,
-                listaEstados);
-        for (Tramite tr : listaTramiteGen) {
-            resultados.add(tr.getNumeroAsunto());
+        if (validarListas(listaUnidades, listaTipoTramite)) {
+            List<Tramite> listaTramiteGen = tramiteDao.obtenerTramitesPorUnidadTipo(listaUnidades, listaTipoTramite,
+                    listaEstados);
+            for (Tramite tr : listaTramiteGen) {
+                resultados.add(tr.getNumeroAsunto());
+            }
         }
-
         return resultados;
     }
 
