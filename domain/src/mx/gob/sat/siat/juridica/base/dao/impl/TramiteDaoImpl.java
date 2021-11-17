@@ -67,9 +67,8 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
      */
     public Tramite obtenerTramitePorId(String idTramite) {
 
-        TypedQuery<Tramite> typedQuery =
-                getEntityManager().createNamedQuery("Tramite.findById", Tramite.class).setParameter(
-                        this.parametroNumeroAsunto, idTramite);
+        TypedQuery<Tramite> typedQuery = getEntityManager().createNamedQuery("Tramite.findById", Tramite.class)
+                .setParameter(this.parametroNumeroAsunto, idTramite);
         List<Tramite> resultados = typedQuery.getResultList();
         if (resultados != null && !resultados.isEmpty()) {
             return resultados.get(0);
@@ -78,18 +77,14 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
     }
 
     /**
-     * Metodo para obtener un tramite por numero de folio de
-     * resolucion
+     * Metodo para obtener un tramite por numero de folio de resolucion
      */
     @SuppressWarnings(SuppressWarningsConstants.UNCHECKED)
     public Tramite obtenerTramitePorResolucion(String numFolio, String numAsunto) {
-        Query query =
-                getEntityManager()
-                .createQuery(
-                        "select t from Tramite as t "
-                                + "where t IN (SELECT  r.tramite from Resolucion r "
-                                + "where r IN (select resol.resolucion from ResolucionImpugnada resol where resol.numeroFolioResolucionImpugnada= :numeroFolioResolucionImpugnada and resol.fechaBaja is null and resol.resolucion.tramite.numeroAsunto <> :numAsunto ))",
-                                Tramite.class);
+        Query query = getEntityManager().createQuery("select t from Tramite as t "
+                + "where t IN (SELECT  r.tramite from Resolucion r "
+                + "where r IN (select resol.resolucion from ResolucionImpugnada resol where resol.numeroFolioResolucionImpugnada= :numeroFolioResolucionImpugnada and resol.fechaBaja is null and resol.resolucion.tramite.numeroAsunto <> :numAsunto ))",
+                Tramite.class);
         query.setParameter("numeroFolioResolucionImpugnada", numFolio);
         query.setParameter("numAsunto", numAsunto);
         List<Tramite> resultados = query.getResultList();
@@ -126,7 +121,6 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
      */
     public void crearTramite(Tramite tramite) {
 
-
         Solicitud solicitud = null;
         if (tramite != null) {
 
@@ -154,9 +148,8 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
      * Metodo para obtener un tramite por id de solicitud
      */
     public Tramite obtenerTramitePorIdSolicitud(Long idSolicitud) {
-        TypedQuery<Tramite> typedQuery =
-                getEntityManager().createNamedQuery("Tramite.findBySolicitud", Tramite.class).setParameter(
-                        "idSolicitud", idSolicitud);
+        TypedQuery<Tramite> typedQuery = getEntityManager().createNamedQuery("Tramite.findBySolicitud", Tramite.class)
+                .setParameter("idSolicitud", idSolicitud);
         List<Tramite> resultados = typedQuery.getResultList();
         if (resultados != null && !resultados.isEmpty()) {
             return resultados.get(0);
@@ -218,27 +211,28 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
             Date fechaInicio, Date fechaFin, String rfc, String rfcPromovente) {
         StringBuilder sb = new StringBuilder();
         List<Tramite> listaTramite = new ArrayList<Tramite>();
-        UserProfileDTO userProfile =
-                (UserProfileDTO) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userProfile");
-        
+        UserProfileDTO userProfile = (UserProfileDTO) FacesContext.getCurrentInstance().getExternalContext()
+                .getSessionMap().get("userProfile");
+
         numeroAsunto = numeroAsunto != null ? numeroAsunto.toUpperCase(Locale.ROOT) : null;
         rfc = rfc != null ? rfc.toUpperCase(Locale.ROOT) : null;
         rfcPromovente = rfcPromovente != null ? rfcPromovente.toUpperCase(Locale.ROOT) : null;
-        
+
         if (userProfile.getRolesNovell().contains("SAT_USU_ADMG_ACJ_ALJ")) {
-            sb.append(validaAdminGlobal(numeroAsunto,estadoProcesal,fechaInicio,fechaFin,rfcPromovente));
+            sb.append(validaAdminGlobal(numeroAsunto, estadoProcesal, fechaInicio, fechaFin, rfcPromovente));
             sb.append(this.orderFechaRecepcion);
             Query query = getEntityManager().createQuery(sb.toString());
-            insertoParametroGlobal(numeroAsunto,estadoProcesal,fechaInicio,fechaFin,rfcPromovente,query);
-            listaTramite =  query.getResultList();
+            insertoParametroGlobal(numeroAsunto, estadoProcesal, fechaInicio, fechaFin, rfcPromovente, query);
+            listaTramite = query.getResultList();
         } else if (userProfile.getRolesNovell().contains("SAT_RRL_ADM_ACJ_ALJ")) {
-            listaTramite.addAll(this.asuntosConcluidos(numeroAsunto, estadoProcesal, fechaInicio, fechaFin, rfc, rfcPromovente));
+            listaTramite.addAll(
+                    this.asuntosConcluidos(numeroAsunto, estadoProcesal, fechaInicio, fechaFin, rfc, rfcPromovente));
         }
         return listaTramite;
     }
-    
-    private List<Tramite> asuntosConcluidos(String numeroAsunto, String estadoProcesal,
-            Date fechaInicio, Date fechaFin, String rfc, String rfcPromovente){
+
+    private List<Tramite> asuntosConcluidos(String numeroAsunto, String estadoProcesal, Date fechaInicio, Date fechaFin,
+            String rfc, String rfcPromovente) {
         StringBuilder sb = new StringBuilder();
         numeroAsunto = numeroAsunto != null ? numeroAsunto.toUpperCase(Locale.ROOT) : null;
         rfc = rfc != null ? rfc.toUpperCase(Locale.ROOT) : null;
@@ -247,53 +241,60 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
         List<Long> tipoTramite = this.obtenerTipoTramitePorAdministradorRes(rfc);
         List<String> unidadesResponsable = this.obtenerUnidadPorAdministradorRes(rfc);
         List<String> listaEstados = new ArrayList<String>();
-        if(estadoProcesal !=null) {
+        if (estadoProcesal != null) {
             switch (EstadoTramite.parse(estadoProcesal)) {
-            case REMITIDO:{
-                asuntosConcluidos = concluidosRemitidos(numeroAsunto,fechaInicio,fechaFin,rfcPromovente, tipoTramite, unidadesResponsable);
+            case REMITIDO: {
+                asuntosConcluidos = concluidosRemitidos(numeroAsunto, fechaInicio, fechaFin, rfcPromovente, tipoTramite,
+                        unidadesResponsable);
                 break;
             }
-            case RESUELTO:{
+            case RESUELTO: {
                 listaEstados.add(EstadoTramite.RESUELTO.getClave());
-                asuntosConcluidos = concluidosResueltos(numeroAsunto,fechaInicio,fechaFin,rfcPromovente, tipoTramite, unidadesResponsable,listaEstados);
+                asuntosConcluidos = concluidosResueltos(numeroAsunto, fechaInicio, fechaFin, rfcPromovente, tipoTramite,
+                        unidadesResponsable, listaEstados);
                 break;
             }
-            case RESUELTO_NOTIFICADO:{
+            case RESUELTO_NOTIFICADO: {
                 listaEstados.add(EstadoTramite.RESUELTO_NOTIFICADO.getClave());
-                asuntosConcluidos = concluidosResueltos(numeroAsunto,fechaInicio,fechaFin,rfcPromovente, tipoTramite, unidadesResponsable,listaEstados);
+                asuntosConcluidos = concluidosResueltos(numeroAsunto, fechaInicio, fechaFin, rfcPromovente, tipoTramite,
+                        unidadesResponsable, listaEstados);
                 break;
             }
             default:
                 break;
             }
-        }else {
+        } else {
             listaEstados.add(EstadoTramite.RESUELTO.getClave());
             listaEstados.add(EstadoTramite.RESUELTO_NOTIFICADO.getClave());
-            asuntosConcluidos = concluidosResueltos(numeroAsunto,fechaInicio,fechaFin,rfcPromovente, tipoTramite, unidadesResponsable,listaEstados);
-            asuntosConcluidos.addAll(concluidosRemitidos(numeroAsunto,fechaInicio,fechaFin,rfcPromovente, tipoTramite, unidadesResponsable));
+            asuntosConcluidos = concluidosResueltos(numeroAsunto, fechaInicio, fechaFin, rfcPromovente, tipoTramite,
+                    unidadesResponsable, listaEstados);
+            asuntosConcluidos.addAll(concluidosRemitidos(numeroAsunto, fechaInicio, fechaFin, rfcPromovente,
+                    tipoTramite, unidadesResponsable));
         }
 
         sb.append(this.orderFechaRecepcion);
-        return asuntosConcluidos !=null ? asuntosConcluidos : new ArrayList<Tramite>();
-     } 
-    
-    private List<Tramite> concluidosResueltos(String numeroAsunto, Date fechaInicio, Date fechaFin, String rfcPromovente, List<Long> tipoTramite, List<String> unidadesResponsable, List<String> listaEstados){
+        return asuntosConcluidos != null ? asuntosConcluidos : new ArrayList<Tramite>();
+    }
+
+    private List<Tramite> concluidosResueltos(String numeroAsunto, Date fechaInicio, Date fechaFin,
+            String rfcPromovente, List<Long> tipoTramite, List<String> unidadesResponsable, List<String> listaEstados) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT DISTINCT t FROM Tramite t  WHERE ");
         sb.append("t.estadoTramite IN :plistaEstados ");
         sb.append("AND t.solicitud.claveModalidad IN :plistaTipoTramite ");
         sb.append(" AND t.solicitud.solicitudDatosGenerales.unidadAdminBalanceo IN :plistaUnidades ");
-        sb.append(validaSolicitud(numeroAsunto,rfcPromovente,fechaInicio,fechaFin));
+        sb.append(validaSolicitud(numeroAsunto, rfcPromovente, fechaInicio, fechaFin));
         sb.append(this.orderFechaRecepcion);
         Query query = getEntityManager().createQuery(sb.toString());
         query.setParameter("plistaEstados", listaEstados);
         query.setParameter("plistaTipoTramite", tipoTramite);
         query.setParameter("plistaUnidades", unidadesResponsable);
-        insertoParametro(numeroAsunto,fechaInicio,fechaFin,rfcPromovente,query);
+        insertoParametro(numeroAsunto, fechaInicio, fechaFin, rfcPromovente, query);
         return query.getResultList();
     }
-    
-    private List<Tramite> concluidosRemitidos(String numeroAsunto, Date fechaInicio, Date fechaFin, String rfcPromovente, List<Long> tipoTramite, List<String> unidadesResponsable){
+
+    private List<Tramite> concluidosRemitidos(String numeroAsunto, Date fechaInicio, Date fechaFin,
+            String rfcPromovente, List<Long> tipoTramite, List<String> unidadesResponsable) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT DISTINCT t FROM Tramite t  WHERE ");
         sb.append("t.estadoTramite = '");
@@ -302,37 +303,37 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
         sb.append(" AND t.numeroAsunto IN ( SELECT DISTINCT r.tramite.numeroAsunto ");
         sb.append("FROM Remision r WHERE r.unidadAdminQueRemite.clave IN ( :plistaUnidades ) ");
         sb.append("AND r.tipoRemision = 'TIPREM.AUEX'  AND r.estadoRemision = 'ESTREM.AU' )");
-        sb.append(validaSolicitud(numeroAsunto,rfcPromovente,fechaInicio,fechaFin));
+        sb.append(validaSolicitud(numeroAsunto, rfcPromovente, fechaInicio, fechaFin));
         sb.append(this.orderFechaRecepcion);
         Query query = getEntityManager().createQuery(sb.toString());
         query.setParameter("plistaTipoTramite", tipoTramite);
         query.setParameter("plistaUnidades", unidadesResponsable);
-        insertoParametro(numeroAsunto,fechaInicio,fechaFin,rfcPromovente,query);
+        insertoParametro(numeroAsunto, fechaInicio, fechaFin, rfcPromovente, query);
         return query.getResultList();
     }
 
-    public void insertoParametroGlobal(String numeroAsunto, String estadoProcesal,
-            Date fechaInicio, Date fechaFin, String rfcPromovente,Query query) {
+    public void insertoParametroGlobal(String numeroAsunto, String estadoProcesal, Date fechaInicio, Date fechaFin,
+            String rfcPromovente, Query query) {
         if (numeroAsunto != null) {
             query.setParameter(this.parametroNumeroAsunto, numeroAsunto.toUpperCase() + "%");
         }
 
-        if(estadoProcesal != null) {
+        if (estadoProcesal != null) {
             query.setParameter(this.parametroEstadoProcesal, estadoProcesal);
         }
 
         if (rfcPromovente != null) {
             query.setParameter("rfcPromovente", rfcPromovente);
-        }       
+        }
 
         if (fechaInicio != null && fechaFin != null) {
             query.setParameter(this.parametroFechaInicio, fechaInicio);
             query.setParameter(this.parametroFechaFin, fechaFin);
-        }        
+        }
     }
 
-    public String validaAdminGlobal(String numeroAsunto, String estadoProcesal,
-            Date fechaInicio, Date fechaFin, String rfcPromovente) {
+    public String validaAdminGlobal(String numeroAsunto, String estadoProcesal, Date fechaInicio, Date fechaFin,
+            String rfcPromovente) {
         StringBuilder sb = new StringBuilder();
         numeroAsunto = numeroAsunto != null ? numeroAsunto.toUpperCase(Locale.ROOT) : null;
         rfcPromovente = rfcPromovente != null ? rfcPromovente.toUpperCase(Locale.ROOT) : null;
@@ -340,9 +341,9 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
         if (numeroAsunto != null) {
             sb.append(this.condicionNumAsunto);
         }
-        if(estadoProcesal != null) {
+        if (estadoProcesal != null) {
             sb.append(this.condicionEdoTramite);
-        }else {
+        } else {
             sb.append("AND t.estadoTramite IN ('ESTTR.RM','ESTTR.RS','ESTTR.RN') ");
         }
         if (rfcPromovente != null) {
@@ -354,22 +355,21 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
         return sb.toString();
     }
 
-    public void insertoParametro(String numeroAsunto,
-            Date fechaInicio, Date fechaFin, String rfcPromovente,Query query) {
+    public void insertoParametro(String numeroAsunto, Date fechaInicio, Date fechaFin, String rfcPromovente,
+            Query query) {
         if (numeroAsunto != null) {
             query.setParameter(this.parametroNumeroAsunto, numeroAsunto.toUpperCase() + "%");
         }
         if (rfcPromovente != null) {
             query.setParameter("rfcPromovente", rfcPromovente);
-        }       
+        }
         if (fechaInicio != null && fechaFin != null) {
             query.setParameter(this.parametroFechaInicio, fechaInicio);
             query.setParameter(this.parametroFechaFin, fechaFin);
         }
     }
 
-
-    public String validaSolicitud(String numeroAsunto, String rfcPromovente,Date fechaInicio, Date fechaFin) {
+    public String validaSolicitud(String numeroAsunto, String rfcPromovente, Date fechaInicio, Date fechaFin) {
         StringBuilder sb = new StringBuilder();
         if (numeroAsunto != null) {
             sb.append(this.condicionNumAsunto);
@@ -382,7 +382,6 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
         }
         return sb.toString();
     }
-
 
     private List<String> obtenerUnidadPorAdministradorRes(String administrador) {
         StringBuilder sb = new StringBuilder();
@@ -395,6 +394,7 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
         query.setParameter("padministrador", administrador);
         return query.getResultList();
     }
+
     private List<Long> obtenerTipoTramitePorAdministradorRes(String administrador) {
         StringBuilder sb = new StringBuilder();
         administrador = administrador != null ? administrador.toUpperCase(Locale.ROOT) : null;
@@ -406,7 +406,7 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
         query.setParameter("padministrador", administrador);
         return query.getResultList();
     }
-    
+
     @SuppressWarnings(SuppressWarningsConstants.UNCHECKED)
     public List<Tramite> obtenerTramitesPorFiltrosOficialia(String numeroAsunto, String estadoProcesal,
             Date fechaInicio, Date fechaFin, String rfc, String folio) {
@@ -495,8 +495,8 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
 
     @SuppressWarnings(SuppressWarningsConstants.UNCHECKED)
     @Override
-    public List<Tramite> obtenerTramitesRechazosPorFiltros(String numeroAsunto, String estadoProcesal,
-            Date fechaInicio, Date fechaFin, String rfc) {
+    public List<Tramite> obtenerTramitesRechazosPorFiltros(String numeroAsunto, String estadoProcesal, Date fechaInicio,
+            Date fechaFin, String rfc) {
         numeroAsunto = numeroAsunto != null ? numeroAsunto.toUpperCase(Locale.ROOT) : null;
         rfc = rfc != null ? rfc.toUpperCase(Locale.ROOT) : null;
         StringBuilder sb = new StringBuilder();
@@ -682,7 +682,7 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
         query.setParameter("padministrador", administrador);
         return query.getResultList();
     }
-        
+
     @Override
     public List<Long> obtenerTipoTramitePorAdministrador(String administrador) {
         StringBuilder sb = new StringBuilder();
@@ -693,7 +693,7 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
         sb.append(" AND ruat.unidadAdminPK.claveUsuario = :padministrador");
         Query query = getEntityManager().createQuery(sb.toString());
         query.setParameter("padministrador", administrador);
-        return query.getResultList();
+        return query.getResultList() != null ? query.getResultList() : new ArrayList<Long>();
     }
 
     @Override
@@ -708,6 +708,6 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
         query.setParameter("plistaEstados", listaEstados);
         query.setParameter("plistaTipoTramite", listaTipoTramite);
         query.setParameter("plistaUnidades", listaUnidades);
-        return query.getResultList();
+        return query.getResultList() != null ? query.getResultList() : new ArrayList<Tramite>();
     }
 }

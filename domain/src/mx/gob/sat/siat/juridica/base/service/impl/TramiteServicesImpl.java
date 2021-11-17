@@ -50,7 +50,7 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
      */
     @Autowired
     private TipoTramiteDAO tipoTramiteDAO;
-    
+
     @Autowired
     private RegistroRecursoRevocacionDAO registroRecursoRevocacionDAO;
 
@@ -58,10 +58,8 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
      * Atributo privado "bpmjmsDao" tipo TipoTramiteDAO
      */
 
-
     /**
-     * Metodo para buscar un tramite por numero de asunto y id de
-     * solicitud
+     * Metodo para buscar un tramite por numero de asunto y id de solicitud
      * 
      * @param numeroAsunto
      * @param idSolicitud
@@ -73,8 +71,7 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
         Tramite tramite = null;
         if (numeroAsunto != null && !numeroAsunto.isEmpty()) {
             tramite = tramiteDao.obtenerTramitePorId(numeroAsunto);
-        }
-        else {
+        } else {
             tramite = tramiteDao.obtenerTramitePorIdSolicitud(idSolicitud);
         }
         return tramite;
@@ -90,10 +87,8 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
         return tramite;
     }
 
-
     /**
-     * Metodo para buscar un tramite por numero de asunto y id de
-     * solicitud
+     * Metodo para buscar un tramite por numero de asunto y id de solicitud
      * 
      * @param numeroAsunto
      * @param idSolicitud
@@ -110,8 +105,8 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
     }
 
     /**
-     * Metodo para obtener los tipos de tramite por filtros (id del
-     * tipo de tramite y id de servicio)
+     * Metodo para obtener los tipos de tramite por filtros (id del tipo de tramite
+     * y id de servicio)
      * 
      * @param idTipoTramite
      * @param idServicio
@@ -134,9 +129,8 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
      */
     public List<Tramite> obtenerTramitesPorFiltros(String numeroAsunto, Integer idTipoTramite, String estadoProcesal,
             Date fechaInicio, Date fechaFin, String rfc) {
-        List<Tramite> tramites =
-                tramiteDao.obtenerTramitesPorFiltros(numeroAsunto, idTipoTramite, estadoProcesal, fechaInicio,
-                        fechaFin, rfc);
+        List<Tramite> tramites = tramiteDao.obtenerTramitesPorFiltros(numeroAsunto, idTipoTramite, estadoProcesal,
+                fechaInicio, fechaFin, rfc);
         for (Tramite tramite : tramites) {
             if (tramite.getSolicitud().getTipoTramiteSolicitud() != null) {
                 tramite.getSolicitud().getTipoTramiteSolicitud().getIdTipoTramite();
@@ -146,9 +140,6 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
         return tramites;
     }
 
-    
-    
-    
     /**
      * Metodo para obtener los tipos de tramite por filtros
      *
@@ -158,14 +149,13 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
      * @param fechaInicio
      * @param fechaFin
      * @param rfc
-     * @param rfc promovente
+     * @param rfc            promovente
      * @return
      */
-    public List<Tramite> obtenerTramitesPorAsuntosConcluidos(String numeroAsunto,  String estadoProcesal,
+    public List<Tramite> obtenerTramitesPorAsuntosConcluidos(String numeroAsunto, String estadoProcesal,
             Date fechaInicio, Date fechaFin, String rfc, String rfcPromovente) {
-        List<Tramite> tramites =
-                tramiteDao.obtenerTramitesPorAsuntosConcluidos(numeroAsunto, estadoProcesal, fechaInicio,
-                        fechaFin, rfc,rfcPromovente);
+        List<Tramite> tramites = tramiteDao.obtenerTramitesPorAsuntosConcluidos(numeroAsunto, estadoProcesal,
+                fechaInicio, fechaFin, rfc, rfcPromovente);
         for (Tramite tramite : tramites) {
             if (tramite.getSolicitud().getTipoTramiteSolicitud() != null) {
                 tramite.getSolicitud().getTipoTramiteSolicitud().getIdTipoTramite();
@@ -175,19 +165,16 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
         return tramites;
     }
 
-    
-    
     public List<DocumentoSolicitud> obtenerDocumentosTramitesPorFiltrosOficialia(String numeroAsunto,
             String estadoProcesal, Date fechaInicio, Date fechaFin, String rfc, String folio) {
-        List<DocumentoSolicitud> documentosTramite =
-                tramiteDao.obtenerDocumentosPorFiltrosOficialia(numeroAsunto, estadoProcesal, fechaInicio, fechaFin,
-                        rfc, folio);
+        List<DocumentoSolicitud> documentosTramite = tramiteDao.obtenerDocumentosPorFiltrosOficialia(numeroAsunto,
+                estadoProcesal, fechaInicio, fechaFin, rfc, folio);
         return documentosTramite;
     }
 
     /**
-     * Metodo para modificar un estado procesal por numero de asunto y
-     * clave del estado
+     * Metodo para modificar un estado procesal por numero de asunto y clave del
+     * estado
      * 
      * @param numeroAsunto
      * @param cveEstado
@@ -205,10 +192,9 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
         tramiteDao.modificarTramite(tramite);
     }
 
-
     /**
-     * Metodo para validar un estado procesal por clave de estado y
-     * clave del estado de tramite
+     * Metodo para validar un estado procesal por clave de estado y clave del estado
+     * de tramite
      * 
      * @param cveEstado
      * @param cveEstadoTramite
@@ -221,8 +207,8 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
     @Override
     public List<Tramite> obtenerTramitesRechazadosPorFiltros(String numeroAsunto, String estadoProcesal,
             Date fechaInicio, Date fechaFin, String rfc) {
-        List<Tramite> tramites =
-                tramiteDao.obtenerTramitesRechazosPorFiltros(numeroAsunto, estadoProcesal, fechaInicio, fechaFin, rfc);
+        List<Tramite> tramites = tramiteDao.obtenerTramitesRechazosPorFiltros(numeroAsunto, estadoProcesal, fechaInicio,
+                fechaFin, rfc);
         for (Tramite tramite : tramites) {
             if (tramite.getSolicitud().getTipoTramiteSolicitud() != null) {
                 tramite.getSolicitud().getTipoTramiteSolicitud().getIdTipoTramite();
@@ -233,11 +219,10 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
     }
 
     @Override
-    public List<Tramite> obtenerTramitesDoctosRechazadosPorFiltros(String numeroAsunto,
-            String estadoDocumentoSolicitud, Date fechaInicio, Date fechaFin, String rfc) {
-        List<Tramite> tramites =
-                tramiteDao.obtenerTramitesDoctosRechazosPorFiltros(numeroAsunto, estadoDocumentoSolicitud, fechaInicio,
-                        fechaFin, rfc);
+    public List<Tramite> obtenerTramitesDoctosRechazadosPorFiltros(String numeroAsunto, String estadoDocumentoSolicitud,
+            Date fechaInicio, Date fechaFin, String rfc) {
+        List<Tramite> tramites = tramiteDao.obtenerTramitesDoctosRechazosPorFiltros(numeroAsunto,
+                estadoDocumentoSolicitud, fechaInicio, fechaFin, rfc);
         for (Tramite tramite : tramites) {
             if (tramite.getSolicitud().getTipoTramiteSolicitud() != null) {
                 tramite.getSolicitud().getTipoTramiteSolicitud().getIdTipoTramite();
@@ -250,9 +235,8 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
     @Override
     public Tramite obtenerTramitePorFiltrosAndIdSolicitud(String numeroAsunto, String estadoProcesal, Date fechaInicio,
             Date fechaFin, String rfc, Long idSolicitud) {
-        Tramite tramite =
-                tramiteDao.obtenerTramitePorFiltrosAndIdSolicitud(numeroAsunto, estadoProcesal, fechaInicio, fechaFin,
-                        rfc, idSolicitud);
+        Tramite tramite = tramiteDao.obtenerTramitePorFiltrosAndIdSolicitud(numeroAsunto, estadoProcesal, fechaInicio,
+                fechaFin, rfc, idSolicitud);
         if (tramite.getSolicitud().getTipoTramiteSolicitud() != null) {
             tramite.getSolicitud().getTipoTramiteSolicitud().getDescripcionModalidad();
         }
@@ -261,8 +245,8 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
 
     public List<Tramite> obtenerTramitesPorFiltrosAndIdSolicitud(String numeroAsunto, String estadoProcesal,
             Date fechaInicio, Date fechaFin, String rfc) {
-        List<Tramite> tramites =
-                tramiteDao.obtenerTramitesPorFiltrosOficialia(numeroAsunto, estadoProcesal, fechaInicio, fechaFin, rfc);
+        List<Tramite> tramites = tramiteDao.obtenerTramitesPorFiltrosOficialia(numeroAsunto, estadoProcesal,
+                fechaInicio, fechaFin, rfc);
         for (Tramite tramite : tramites) {
             if (tramite.getSolicitud().getTipoTramiteSolicitud() != null) {
                 tramite.getSolicitud().getTipoTramiteSolicitud().getDescripcionModalidad();
@@ -275,8 +259,8 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
     @Override
     public List<Tramite> obtenerTramitesPorFiltrosOficialia(String numeroAsunto, String estadoProcesal,
             Date fechaInicio, Date fechaFin, String rfc) {
-        List<Tramite> tramites =
-                tramiteDao.obtenerTramitesPorFiltrosOficialia(numeroAsunto, estadoProcesal, fechaInicio, fechaFin, rfc);
+        List<Tramite> tramites = tramiteDao.obtenerTramitesPorFiltrosOficialia(numeroAsunto, estadoProcesal,
+                fechaInicio, fechaFin, rfc);
         for (Tramite tramite : tramites) {
             if (tramite.getSolicitud().getTipoTramiteSolicitud() != null) {
                 tramite.getSolicitud().getTipoTramiteSolicitud().getDescripcionModalidad();
@@ -309,23 +293,28 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
         List<String> listaUnidades = tramiteDao.obtenerUnidadPorAdministrador(administrador);
         List<String> resultados = new ArrayList<String>();
         List<Long> listaTipoTramite = tramiteDao.obtenerTipoTramitePorAdministrador(administrador);
-        
+
         List<String> listaEstados = new ArrayList<String>();
         listaEstados.add(EstadoTramite.PROMOVIDO.getClave());
         listaEstados.add(EstadoTramite.EN_ESTUDIO.getClave());
         listaEstados.add(EstadoTramite.REMITIDO.getClave());
-        
-        List<Tramite> listaTramiteGen = tramiteDao.obtenerTramitesPorUnidadTipo(listaUnidades,listaTipoTramite,listaEstados);
-        for(Tramite tr : listaTramiteGen) {
+
+        List<Tramite> listaTramiteGen = tramiteDao.obtenerTramitesPorUnidadTipo(listaUnidades, listaTipoTramite,
+                listaEstados);
+        for (Tramite tr : listaTramiteGen) {
             resultados.add(tr.getNumeroAsunto());
         }
 
         return resultados;
     }
 
-	@Override
-	public boolean tieneDocumentosAnexados(String idSolicitud) {
+    private boolean validarListas(List<String> listaUnidades, List<Long> listaTipoTramite) {
+        return listaUnidades.isEmpty() || listaTipoTramite.isEmpty();
+    }
+
+    @Override
+    public boolean tieneDocumentosAnexados(String idSolicitud) {
         return !registroRecursoRevocacionDAO.obtenerDocumentoSolicitudAnexado(idSolicitud).isEmpty();
-	}
+    }
 
 }

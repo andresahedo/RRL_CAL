@@ -209,7 +209,7 @@ public class TareaDaoImpl extends BaseJPARepository implements TareaDao {
             query.setParameter("pAbogado", abogado);
         }
 
-        return query.getResultList().isEmpty() ? new ArrayList<Tarea>() : query.getResultList();
+        return query.getResultList() != null ? query.getResultList() : new ArrayList<Tarea>();
     }
 
     @Override
