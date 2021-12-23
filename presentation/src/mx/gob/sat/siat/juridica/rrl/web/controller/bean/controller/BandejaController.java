@@ -314,12 +314,14 @@ public class BandejaController extends BaseAuditoriaControllerBean {
 	}
 	
 	private List<Long> acusesRrl(DatosBandejaTareaDTO datoSelected, FirmaDTO firma, FirmaDTO firmaSelladora) throws BusinessException {
+		datoSelected.setFechaAsignacion(firma.getFechaFirma());
 		return getGenerarDocumentosHelper().generarDocumentosPromocion(datoSelected,
 				TipoAcuse.RECPROM.getClave(), firma.getCadenaOriginal(), firma.getSello(),
 				firmaSelladora.getCadenaOriginal(), firmaSelladora.getSello());
 	}
 
 	private List<Long> acusesCal(DatosBandejaTareaDTO datoSelected, FirmaDTO firma, FirmaDTO firmaSelladora) throws BusinessException, IOException {
+		datoSelected.setFechaAsignacion(firma.getFechaFirma());
 		return getGenerarDocumentosHelper().generarDocumentosPromocionCAL(datoSelected, TipoAcuse.RECPROM.getClave(), firma,
 				firmaSelladora.getCadenaOriginal(), firmaSelladora.getSello(),
 				getBandejaBussines().tieneDocumentosAnexados(datoSelected.getIdSolicitud().toString()),
