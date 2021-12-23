@@ -8,7 +8,6 @@
  */
 package mx.gob.sat.siat.juridica.base.service.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -288,33 +287,17 @@ public class TramiteServicesImpl extends BaseBusinessServices implements Tramite
     }
 
     @Override
-    public List<String> obtenerAsuntosPorAdministrador(String administrador) {
-        getLogger().debug("TramiteServicesImpl : obtenerAsuntosPorAdministrador");
-        List<String> listaUnidades = tramiteDao.obtenerUnidadPorAdministrador(administrador);
-        List<String> resultados = new ArrayList<String>();
-        List<Long> listaTipoTramite = tramiteDao.obtenerTipoTramitePorAdministrador(administrador);
-
-        List<String> listaEstados = new ArrayList<String>();
-        listaEstados.add(EstadoTramite.PROMOVIDO.getClave());
-        listaEstados.add(EstadoTramite.EN_ESTUDIO.getClave());
-        listaEstados.add(EstadoTramite.REMITIDO.getClave());
-        if (validarListas(listaUnidades, listaTipoTramite)) {
-            List<Tramite> listaTramiteGen = tramiteDao.obtenerTramitesPorUnidadTipo(listaUnidades, listaTipoTramite,
-                    listaEstados);
-            for (Tramite tr : listaTramiteGen) {
-                resultados.add(tr.getNumeroAsunto());
-            }
-        }
-        return resultados;
-    }
-
-    private boolean validarListas(List<String> listaUnidades, List<Long> listaTipoTramite) {
-        return !listaUnidades.isEmpty() && !listaTipoTramite.isEmpty();
-    }
-
-    @Override
     public boolean tieneDocumentosAnexados(String idSolicitud) {
         return !registroRecursoRevocacionDAO.obtenerDocumentoSolicitudAnexado(idSolicitud).isEmpty();
     }
 
+    @Override
+    public List<Long> obtenerTipoTramitePorAdministrador(String administrador) {
+        return tramiteDao.obtenerTipoTramitePorAdministrador(administrador);
+    }
+    
+    @Override
+    public List<String> obtenerUnidadPorAdministrador(String administrador) {
+        return tramiteDao.obtenerUnidadPorAdministrador(administrador);
+    }
 }

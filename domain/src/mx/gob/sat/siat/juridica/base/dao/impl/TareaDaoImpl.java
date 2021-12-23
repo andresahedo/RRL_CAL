@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
@@ -179,15 +180,19 @@ public class TareaDaoImpl extends BaseJPARepository implements TareaDao {
     }
 
     @Override
-    public List<Tarea> buscarTareasReasignar(String numeroAsunto, String administrador, String abogado,
-            List<String> listaTramites) {
-        numeroAsunto = numeroAsunto != null ? numeroAsunto.toUpperCase(Locale.ROOT) : "";
-        abogado = abogado != null ? abogado.toUpperCase(Locale.ROOT) : "";
-        administrador = administrador != null ? administrador.toUpperCase(Locale.ROOT) : "";
+    public List<Tarea> buscarTareasReasignar(Map<String, String> parametros, List<String> listaUnidades,
+            List<Long> listaTipoTramite, List<String> listaEstados) {
+        String numeroAsunto = parametros.get("numeroAsunto");
+        String  abogado = parametros.get("abogado");
         StringBuffer sql = new StringBuffer(NumerosConstantes.DOSCIENTOS_CINCUENTA);
         sql.append("SELECT t FROM Tarea t ");
         sql.append("WHERE t.tarea = 'TITAR.ATR' AND t.estadoTarea = 'PROCESO' ");
-        sql.append("AND t.numeroAsunto IN :pListaTramites ");
+        sql.append("AND t.numeroAsunto IN ( ");
+        sql.append(" SELECT DISTINCT t.numeroAsunto FROM Tramite t  WHERE ");
+        sql.append("t.estadoTramite IN :plistaEstados ");
+        sql.append("AND t.solicitud.claveModalidad IN :plistaTipoTramite ");
+        sql.append(" AND t.solicitud.solicitudDatosGenerales.unidadAdminBalanceo IN :plistaUnidades ");
+        sql.append(") ");
 
         if (!numeroAsunto.isEmpty()) {
             sql.append(" AND t.numeroAsunto LIKE :pNumeroAsunto");
@@ -199,7 +204,9 @@ public class TareaDaoImpl extends BaseJPARepository implements TareaDao {
 
         Query query = getEntityManager().createQuery(sql.toString(), Tarea.class);
 
-        query.setParameter("pListaTramites", listaTramites);
+        query.setParameter("plistaEstados", listaEstados);
+        query.setParameter("plistaTipoTramite", listaTipoTramite);
+        query.setParameter("plistaUnidades", listaUnidades);
 
         if (!numeroAsunto.isEmpty()) {
             query.setParameter("pNumeroAsunto", numeroAsunto + "%");

@@ -5,6 +5,7 @@ import mx.gob.sat.siat.juridica.base.dao.domain.model.Tarea;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface TareaDao extends Serializable {
 
@@ -25,12 +26,13 @@ public interface TareaDao extends Serializable {
 
     Long obtenerNumeroTareasEmpleado(String idUsuario);
 
-    List<Tarea> buscarTareasReasignar(String numeroAsunto, String administrador, String abogado, List<String> listaTramites);
-
     List<Tarea> obtenerTareaPorRequerimientoNoAtendido();
 
     int obtenerTareasPorAsuntoAbogado(String numeroAsunto, String claveAsignado);
 
 	List<Tarea> obtenerTareasPorNumAsunto(String numAsunto);
+
+    List<Tarea> buscarTareasReasignar(Map<String, String> parametros, List<String> listaUnidades,
+            List<Long> listaTipoTramite, List<String> listaEstados);
 
 }

@@ -120,6 +120,4 @@ public interface TramiteDao extends Serializable {
 
     List<Long> obtenerTipoTramitePorAdministrador(String administrador);
 
-    List<Tramite> obtenerTramitesPorUnidadTipo(List<String> listaUnidades, List<Long> listaTipoTramite, List<String> listaEstados);
-
 }

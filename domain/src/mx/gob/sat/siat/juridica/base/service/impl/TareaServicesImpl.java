@@ -2,7 +2,10 @@ package mx.gob.sat.siat.juridica.base.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -96,8 +99,20 @@ public class TareaServicesImpl extends BaseSerializableBusinessServices implemen
     public List<Tarea> buscarTareasReasignar(String numeroAsunto, String administrador, String abogado) {
          this.procesarRequerimientos();
          getLogger().debug("TareaServicesImpl : buscarTareasReasignar");
-         List<String> listaTramites = tramiteServices.obtenerAsuntosPorAdministrador(administrador);
-         return listaTramites.isEmpty() ? new ArrayList<Tarea>() : tareaDao.buscarTareasReasignar(numeroAsunto, administrador, abogado, listaTramites);
+         administrador = administrador != null ? administrador.toUpperCase(Locale.ROOT) : "";
+         List<String> listaUnidades = tramiteServices.obtenerUnidadPorAdministrador(administrador);
+         List<Long> listaTipoTramite = tramiteServices.obtenerTipoTramitePorAdministrador(administrador);
+         List<String> listaEstados = new ArrayList<String>();
+         listaEstados.add(EstadoTramite.PROMOVIDO.getClave());
+         listaEstados.add(EstadoTramite.EN_ESTUDIO.getClave());
+         listaEstados.add(EstadoTramite.REMITIDO.getClave());
+         Map<String, String> parametros = new HashMap<String, String>();
+         parametros.put("numeroAsunto", numeroAsunto = numeroAsunto != null ? numeroAsunto.toUpperCase(Locale.ROOT) : "");
+         parametros.put("abogado", abogado = abogado != null ? abogado.toUpperCase(Locale.ROOT) : "");
+         if(listaUnidades.isEmpty() || listaTipoTramite.isEmpty()) {
+             return new ArrayList<Tarea>();
+         }
+         return tareaDao.buscarTareasReasignar(parametros, listaUnidades, listaTipoTramite,listaEstados);
 
     }
     

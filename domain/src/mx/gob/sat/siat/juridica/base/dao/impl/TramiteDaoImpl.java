@@ -673,7 +673,6 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
     @Override
     public List<String> obtenerUnidadPorAdministrador(String administrador) {
         StringBuilder sb = new StringBuilder();
-        administrador = administrador != null ? administrador.toUpperCase(Locale.ROOT) : null;
         sb.append("SELECT DISTINCT ruat.unidadAdminPK.claveUnidadAdministrativa FROM InfRoleUnidadAdmin ruat WHERE ");
         sb.append("ruat.vigencia.blnActivo = 1 ");
         sb.append(" AND ruat.unidadAdminPK.claveRol = 'administrador'");
@@ -686,7 +685,6 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
     @Override
     public List<Long> obtenerTipoTramitePorAdministrador(String administrador) {
         StringBuilder sb = new StringBuilder();
-        administrador = administrador != null ? administrador.toUpperCase(Locale.ROOT) : null;
         sb.append("SELECT DISTINCT ruat.unidadAdminPK.ideTipoTramite FROM InfRoleUnidadAdmin ruat WHERE ");
         sb.append("ruat.vigencia.blnActivo = 1 ");
         sb.append(" AND ruat.unidadAdminPK.claveRol = 'administrador'");
@@ -696,18 +694,4 @@ public class TramiteDaoImpl extends BaseJPADao implements TramiteDao {
         return query.getResultList() != null ? query.getResultList() : new ArrayList<Long>();
     }
 
-    @Override
-    public List<Tramite> obtenerTramitesPorUnidadTipo(List<String> listaUnidades, List<Long> listaTipoTramite,
-            List<String> listaEstados) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT DISTINCT t FROM Tramite t  WHERE ");
-        sb.append("t.estadoTramite IN :plistaEstados ");
-        sb.append("AND t.solicitud.claveModalidad IN :plistaTipoTramite ");
-        sb.append(" AND t.solicitud.solicitudDatosGenerales.unidadAdminBalanceo IN :plistaUnidades ");
-        Query query = getEntityManager().createQuery(sb.toString());
-        query.setParameter("plistaEstados", listaEstados);
-        query.setParameter("plistaTipoTramite", listaTipoTramite);
-        query.setParameter("plistaUnidades", listaUnidades);
-        return query.getResultList() != null ? query.getResultList() : new ArrayList<Tramite>();
-    }
 }
